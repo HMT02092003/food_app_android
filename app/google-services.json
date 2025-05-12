@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "554915815998",
+    "project_id": "foodcam-1267d",
+    "storage_bucket": "foodcam-1267d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554915815998:android:0340c986fbce131ba1276f",
+        "android_client_info": {
+          "package_name": "com.example.food"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7NQujcbbETjg18hdfsXbpgUX0c0ngazk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
