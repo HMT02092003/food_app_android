@@ -22,7 +22,7 @@
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="590dp"
             android:orientation="vertical"
             android:padding="24dp"
             tools:ignore="MissingConstraints">
@@ -138,7 +138,22 @@
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF" />
 
+            <TextView
+                android:id="@+id/tvGoToLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:rotationX="-2"
+                android:gravity="center_horizontal"
+                android:text="Đã có tài khoản? Đăng nhập"
+                android:textColor="#FF6D00"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
         </LinearLayout>
+
 
 
 

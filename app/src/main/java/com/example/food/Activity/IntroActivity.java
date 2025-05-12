@@ -11,6 +11,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.food.R;
 import com.example.food.databinding.ActivityIntroBinding;
+import android.content.Intent;
+
 
 public class IntroActivity extends BaseActivity {
 ActivityIntroBinding binding;
@@ -36,15 +38,18 @@ ActivityIntroBinding binding;
         binding.loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(IntroActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
 
         binding.signupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(IntroActivity.this, SignupActivity.class);
+                startActivity(intent);
             }
         });
     }
+
 }
