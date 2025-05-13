@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Food</string>
     <string name="client_id">911075402577-bg1m92su2pcs28778jc89ui44s1t6fpm.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">1193988828577641</string>
+    <string name="fb_login_protocol_scheme">1193988828577641</string>
+    <string name="facebook_client_token">a9c50daca70d7d0b84fe125a06c9cbfd</string>
 </resources>
