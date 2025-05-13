@@ -31,7 +31,10 @@
                     android:layout_height="wrap_content"
                     android:text="Nguyễn Hoàng Cầm"
                     android:textStyle="bold"
-                    tools:layout_editor_absoluteY="19dp" />
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textView" />
 
                 <ImageView
                     android:id="@+id/logoutbtn"

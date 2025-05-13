@@ -146,6 +146,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/fullName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nguyễn Hoàng Cầm"
@@ -183,6 +184,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/userEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="phuongliet010@gmail.com"
@@ -219,6 +221,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/phoneNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0356353839"
@@ -228,5 +231,4 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
