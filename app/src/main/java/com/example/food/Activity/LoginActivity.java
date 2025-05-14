@@ -181,8 +181,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Xử lý nút đăng nhập Google
-        findViewById(R.id.imageView5).setOnClickListener(new View.OnClickListener() {
+        // Xử lý nút đăng nhập Google - FIX: sử dụng googleBtn thay vì imageView5
+        findViewById(R.id.googleBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Google Sign-In button clicked");
@@ -195,8 +195,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Xử lý nút đăng nhập Facebook
-        findViewById(R.id.imageView6).setOnClickListener(new View.OnClickListener() {
+        // Xử lý nút đăng nhập Facebook - FIX: sử dụng facebookBtn thay vì imageView6
+        findViewById(R.id.facebookBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Facebook Sign-In button clicked");

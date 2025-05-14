@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -15,8 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -33,15 +33,18 @@
                     android:textStyle="bold"
                     android:clickable="true"
                     android:focusable="true"
+                    android:minHeight="48dp"
+                    android:gravity="center_vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/textView" />
 
                 <ImageView
                     android:id="@+id/logoutbtn"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    tools:layout_editor_absoluteX="353dp"
-                    tools:layout_editor_absoluteY="2dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="14dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:srcCompat="@drawable/logout" />
 
                 <TextView
@@ -72,23 +75,24 @@
                     tools:srcCompat="@drawable/settings" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:minHeight="50dp"
                     android:background="@drawable/grey_background"
                     android:orientation="horizontal">
 
                     <EditText
                         android:id="@+id/searchEdt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_margin="4dp"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
                         android:background="@color/grey"
                         android:drawablePadding="8dp"
                         android:ems="10"
                         android:hint="Search food..."
                         android:inputType="text"
+                        android:padding="8dp"
                         android:textAlignment="center"
                         android:textColor="#6699CC"
                         android:textColorHint="#6699CC"
@@ -129,6 +133,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_weight="0.333"
                     android:background="@drawable/grey_background"
+                    android:minHeight="48dp"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -145,6 +150,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:minHeight="48dp"
                         android:background="@null" />
                 </LinearLayout>
 
@@ -155,10 +161,10 @@
                     android:layout_marginEnd="4dp"
                     android:layout_weight="0.333"
                     android:background="@drawable/grey_background"
+                    android:minHeight="48dp"
                     android:orientation="horizontal">
 
                     <ImageView
-
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -171,19 +177,20 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:minHeight="48dp"
                         android:background="@null" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="0.333"
                     android:background="@drawable/grey_background"
+                    android:minHeight="48dp"
                     android:orientation="horizontal">
 
                     <ImageView
-
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
@@ -196,6 +203,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="4dp"
                         android:layout_weight="1"
+                        android:minHeight="48dp"
                         android:background="@null" />
                 </LinearLayout>
 
