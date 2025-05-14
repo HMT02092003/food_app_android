@@ -19,6 +19,12 @@
 
         <!-- Các activity hiện có -->
         <activity
+            android:name=".Activity.AdminAddFoodActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.AdminFoodActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.PersonInfoDetailActivity"
             android:exported="false" />
         <activity
