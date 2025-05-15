@@ -262,24 +262,35 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
 
                             // Lấy thông tin người dùng
-                            String userName = auth.getCurrentUser().getDisplayName();
                             String userEmail = auth.getCurrentUser().getEmail();
-                            String userPhoto = auth.getCurrentUser().getPhotoUrl() != null ?
-                                    auth.getCurrentUser().getPhotoUrl().toString() : "";
 
-                            // Kiểm tra nếu displayName trống (người dùng đăng ký bằng email)
-                            if (TextUtils.isEmpty(userName)) {
-                                userName = userEmail.split("@")[0]; // Sử dụng phần đầu của email làm tên
+                            // Kiểm tra nếu email là admin@gmail.com
+                            if ("admin@gmail.com".equals(userEmail)) {
+                                // Chuyển đến AdminFoodActivity
+                                Log.d(TAG, "Admin login detected, navigating to AdminFoodActivity");
+                                Intent adminIntent = new Intent(LoginActivity.this, AdminFoodActivity.class);
+                                startActivity(adminIntent);
+                                finish();
+                            } else {
+                                // Đây là người dùng thông thường
+                                String userName = auth.getCurrentUser().getDisplayName();
+                                String userPhoto = auth.getCurrentUser().getPhotoUrl() != null ?
+                                        auth.getCurrentUser().getPhotoUrl().toString() : "";
+
+                                // Kiểm tra nếu displayName trống (người dùng đăng ký bằng email)
+                                if (TextUtils.isEmpty(userName)) {
+                                    userName = userEmail.split("@")[0]; // Sử dụng phần đầu của email làm tên
+                                }
+
+                                // Chuyển sang MainActivity
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("name", userName);
+                                intent.putExtra("email", userEmail);
+                                intent.putExtra("photo", userPhoto);
+                                Log.d(TAG, "Starting MainActivity with name=" + userName + ", email=" + userEmail);
+                                startActivity(intent);
+                                finish();
                             }
-
-                            // Chuyển sang MainActivity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("name", userName);
-                            intent.putExtra("email", userEmail);
-                            intent.putExtra("photo", userPhoto);
-                            Log.d(TAG, "Starting MainActivity with name=" + userName + ", email=" + userEmail);
-                            startActivity(intent);
-                            finish();
                         } else {
                             // Đăng nhập thất bại
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
