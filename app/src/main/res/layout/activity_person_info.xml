@@ -31,27 +31,27 @@
             android:id="@+id/editText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="EDIT"
+            android:text="Sửa"
             android:textColor="#FF7B30"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Title -->
         <TextView
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Personal Info"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Thông tin cá nhân"
             android:textColor="#000000"
-            android:textStyle="bold"
             android:textSize="17sp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/backBtn"
+            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/editText"
             app:layout_constraintHorizontal_bias="0.5"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            app:layout_constraintStart_toEndOf="@id/backBtn"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Avatar + Name + Tagline Group -->
@@ -139,7 +139,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Full Name"
+                        android:text="Họ tên"
                         android:textAllCaps="true"
                         android:textColor="#444444"
                         android:textSize="18sp"
@@ -214,7 +214,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Phone Number"
+                        android:text="Số điện thoại"
                         android:textAllCaps="true"
                         android:textColor="#444444"
                         android:textSize="18sp"

@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Time"
+                android:text="Thời gian"
                 app:layout_constraintStart_toStartOf="@+id/titleTxt"
                 app:layout_constraintTop_toBottomOf="@+id/titleTxt" />
 

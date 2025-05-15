@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".Activity.AdminFoodActivity">
+    tools:context=".Activity.AdminPersonInfoActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/headerLayout"
@@ -25,9 +25,9 @@
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:contentDescription="Back"
             android:padding="8dp"
             android:src="@drawable/arrow"
-            android:contentDescription="Back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,7 +35,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Danh sách món ăn"
+            android:text="Danh sách người dùng"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -45,6 +45,7 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Tabs -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="0dp"
@@ -59,7 +60,7 @@
         app:tabGravity="start"
         app:tabIndicatorColor="#FF7754"
         app:tabIndicatorHeight="3dp"
-        app:tabMode="scrollable"
+        app:tabMode="fixed"
         app:tabPaddingEnd="16dp"
         app:tabPaddingStart="0dp"
         app:tabRippleColor="@android:color/transparent"
@@ -67,48 +68,28 @@
         app:tabTextAppearance="@style/TabTextAppearance"
         app:tabTextColor="#999999">
 
-        <com.google.android.material.tabs.TabItem android:text="Món cơm" />
-        <com.google.android.material.tabs.TabItem android:text="Món nước" />
-        <com.google.android.material.tabs.TabItem android:text="Món kho,hầm" />
-        <com.google.android.material.tabs.TabItem android:text="Món chiên,xào" />
-        <com.google.android.material.tabs.TabItem android:text="Salad" />
-        <com.google.android.material.tabs.TabItem android:text="Món súp" />
-        <com.google.android.material.tabs.TabItem android:text="Đồ ăn đường phố" />
-        <com.google.android.material.tabs.TabItem android:text="Đồ ăn vặt" />
-        <com.google.android.material.tabs.TabItem android:text="Món tráng miệng" />
-        <com.google.android.material.tabs.TabItem android:text="Món vùng miền" />
-
-
+        <com.google.android.material.tabs.TabItem android:text="Tất cả" />
+        <com.google.android.material.tabs.TabItem android:text="Người dùng" />
+        <com.google.android.material.tabs.TabItem android:text="Admin" />
     </com.google.android.material.tabs.TabLayout>
 
-    <TextView
-        android:id="@+id/tvTotal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Total 03 items"
-        android:textColor="#999999"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout" />
-
+    <!-- RecyclerView for user info -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerFood"
+        android:id="@+id/recyclerPerson"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:clipToPadding="false"
         android:paddingHorizontal="16dp"
-        android:paddingBottom="72dp"
+        android:paddingBottom="96dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTotal"
-        tools:listitem="@layout/item_food" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_person_info" />
 
-    <!-- Updated Bottom Navigation with Modern Design -->
+    <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
@@ -126,22 +107,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
-    <!-- Updated FAB with Modern Design -->
+    <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:backgroundTint="#FF7754"
-        android:contentDescription="Add new food"
+        android:contentDescription="Thêm người dùng mới"
         app:borderWidth="0dp"
         app:elevation="10dp"
         app:fabCustomSize="56dp"
         app:maxImageSize="24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomNavigation"
-        app:layout_constraintEnd_toEndOf="@+id/bottomNavigation"
-        app:layout_constraintStart_toStartOf="@+id/bottomNavigation"
-        app:layout_constraintTop_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintBottom_toBottomOf="@id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="@id/bottomNavigation"
+        app:layout_constraintStart_toStartOf="@id/bottomNavigation"
+        app:layout_constraintTop_toTopOf="@id/bottomNavigation"
         app:srcCompat="@drawable/ic_add"
         app:tint="#FFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--  item_person_info -->
