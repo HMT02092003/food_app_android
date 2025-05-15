@@ -127,22 +127,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
-    <!-- Updated FAB with Modern Design -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAdd"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:backgroundTint="#FF7754"
-        android:contentDescription="Add new food"
-        app:borderWidth="0dp"
-        app:elevation="10dp"
-        app:fabCustomSize="56dp"
-        app:maxImageSize="24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomNavigation"
-        app:layout_constraintEnd_toEndOf="@+id/bottomNavigation"
-        app:layout_constraintStart_toStartOf="@+id/bottomNavigation"
-        app:layout_constraintTop_toTopOf="@+id/bottomNavigation"
-        app:srcCompat="@drawable/ic_add"
-        app:tint="#FFFFFF" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

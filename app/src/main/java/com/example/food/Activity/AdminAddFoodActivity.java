@@ -74,16 +74,17 @@ public class AdminAddFoodActivity extends AppCompatActivity {
 
     private void setupCategorySpinner() {
         categoryList = new ArrayList<>();
+        categoryList.add("Tất cả");
         categoryList.add("Món cơm");
-        categoryList.add("Món nước (bún, phở, miến, mì)");
-        categoryList.add("Món kho, hầm, om");
-        categoryList.add("Món xào, chiên");
-        categoryList.add("Món gỏi, nộm");
-        categoryList.add("Món canh, súp");
-        categoryList.add("Đồ nướng và món ăn đường phố");
-        categoryList.add("Bánh và món ăn vặt");
-        categoryList.add("Chè và món tráng miệng");
-        categoryList.add("Đặc sản vùng miền tiêu biểu");
+        categoryList.add("Món nước");
+        categoryList.add("Món kho,hầm");
+        categoryList.add("Món chiên,xào");
+        categoryList.add("Salad");
+        categoryList.add("Món súp");
+        categoryList.add("Đồ ăn đường phố");
+        categoryList.add("Đồ ăn vặt");
+        categoryList.add("Món tráng miệng");
+        categoryList.add("Món vùng miền");
 
         categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categoryList);
         categorySpinner.setAdapter(categoryAdapter);
