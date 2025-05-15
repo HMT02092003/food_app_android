@@ -41,7 +41,7 @@ public class AdminFoodActivity extends AppCompatActivity {
                 if (id == R.id.homeBtn) {
                     // Xử lý khi nút Home được nhấn (nếu cần)
                     return true;
-                } else if (id == R.id.addBtn) {
+                } else if (id == R.id.createBtn) {
                     // Chuyển sang AdminAddFoodActivity khi nút New được nhấn
                     Intent intent = new Intent(AdminFoodActivity.this, AdminAddFoodActivity.class);
                     startActivity(intent);

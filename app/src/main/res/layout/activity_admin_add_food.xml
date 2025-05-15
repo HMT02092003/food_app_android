@@ -18,7 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Top bar -->
         <LinearLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
@@ -49,156 +48,155 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Title -->
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Add New Items"
+            android:text="Thêm mới món ăn"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/topBar" />
 
-        <!-- Item Name -->
+        <TextView
+            android:id="@+id/categoryLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Thể loại"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title" />
+
+        <Spinner
+            android:id="@+id/categorySpinner"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edit_text_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/categoryLabel" />
+
         <EditText
             android:id="@+id/itemName"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/edit_text_bg"
-            android:hint="Mazalichiken Halim"
+            android:hint="Bún bò Huế"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toBottomOf="@id/categorySpinner" />
 
-        <!-- Upload Label -->
         <TextView
             android:id="@+id/uploadLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="UPLOAD PHOTO/VIDEO"
+            android:text="Ảnh"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/itemName" />
 
-        <!-- Upload Photo Layout -->
         <LinearLayout
             android:id="@+id/photoLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:weightSum="3"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/uploadLabel">
 
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/upload_image_placeholder" />
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/upload_image_placeholder" />
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/upload_image_placeholder" />
+            <EditText
+                android:id="@+id/imageUrl1"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/edit_text_bg"
+                android:hint="Image URL 1"
+                android:inputType="textUri"
+                android:padding="12dp" />
         </LinearLayout>
 
-        <!-- Price Label -->
+
         <TextView
             android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:padding="12dp"
-            android:text="PRICE"
+            android:text="Giá tiền"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/photoLayout" />
 
-        <!-- Price Input -->
         <EditText
             android:id="@+id/priceInput"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginTop="68dp"
             android:background="@drawable/edit_text_bg"
-            android:hint="Enter price"
+            android:hint="Nhập giá tiền"
             android:inputType="numberDecimal"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/photoLayout" />
 
-        <!-- Ingredients Label -->
         <TextView
             android:id="@+id/ingredientLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="INGREDIENTS"
+            android:text="Nguyên liệu"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/priceInput" />
 
-        <!-- Ingredients EditText (replacing placeholder) -->
         <EditText
             android:id="@+id/ingredientInput"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_width="377dp"
+            android:layout_height="87dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
-            android:hint="Chips for Salt, Chicken, Onion..."
+            android:hint="Đường, Tiêu, Gà, Hành..."
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ingredientLabel" />
 
-        <!-- Details Label -->
         <TextView
             android:id="@+id/detailsLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="DETAILS"
+            android:text="Mô tả món ăn"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ingredientInput" />
 
-        <!-- Details Input -->
         <EditText
             android:id="@+id/detailsInput"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_width="373dp"
+            android:layout_height="70dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
             android:gravity="top"
-            android:hint="Details"
+            android:hint="Nhập mô tả"
             android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detailsLabel" />
 
-        <!-- Save Button -->
         <Button
             android:id="@+id/saveButton"
             android:layout_width="0dp"
@@ -206,7 +204,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="32dp"
             android:backgroundTint="#FF7622"
-            android:text="SAVE CHANGES"
+            android:text="Tạo mới món ăn"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
