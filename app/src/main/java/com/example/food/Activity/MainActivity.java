@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -36,6 +37,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
     private ActivityMainBinding binding;
+    private TextView nameTextView;
+    private String userName;
+    private String userEmail;
+    private String userPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,35 @@ public class MainActivity extends BaseActivity {
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
 
+        // Nhận dữ liệu từ Intent (Từ code của bạn)
+        Intent intent = getIntent();
+        userName = intent.getStringExtra("name");
+        userEmail = intent.getStringExtra("email");
+        userPhoto = intent.getStringExtra("photo");
+
+        // Khởi tạo TextView (Từ code của bạn)
+        nameTextView = findViewById(R.id.textView3);
+
+        // Hiển thị tên (Từ code của bạn)
+        if (userName != null) {
+            nameTextView.setText(userName);
+        }
+
+        // Xử lý sự kiện nhấp vào tên (Từ code của bạn)
+        if (nameTextView != null) {
+            nameTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent personInfoIntent = new Intent(MainActivity.this, PersonInfoActivity.class);
+                    personInfoIntent.putExtra("name", userName);
+                    personInfoIntent.putExtra("email", userEmail);
+                    personInfoIntent.putExtra("photo", userPhoto);
+                    startActivity(personInfoIntent);
+                }
+            });
+        }
+
+        // Khởi tạo các thành phần từ code mới
         initLocation();
         initTime();
         initPrice();
@@ -51,7 +85,7 @@ public class MainActivity extends BaseActivity {
         initCategory();
         setVariable();
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -59,20 +93,19 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setVariable() {
-
         binding.logoutbtn.setOnClickListener(view -> {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(MainActivity.this,LoginActivity.class));
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
         });
 
         binding.searchBtn.setOnClickListener(view -> {
-             String text=binding.searchEdt.getText().toString();
-             if(!text.isEmpty()) {
-                 Intent intent=new Intent(MainActivity.this, ListFoodsActivity.class);
-                 intent.putExtra("text",text);
-                 intent.putExtra("isSearch",true);
-                 startActivity(intent);
-             }
+            String text = binding.searchEdt.getText().toString();
+            if (!text.isEmpty()) {
+                Intent intent = new Intent(MainActivity.this, ListFoodsActivity.class);
+                intent.putExtra("text", text);
+                intent.putExtra("isSearch", true);
+                startActivity(intent);
+            }
         });
     }
 
@@ -80,17 +113,17 @@ public class MainActivity extends BaseActivity {
         DatabaseReference myRef = database.getReference("Foods");
         binding.progressBarBestFood.setVisibility(ViewStub.VISIBLE);
         ArrayList<Foods> list = new ArrayList<>();
-        Query query=myRef.orderByChild("BestFood").equalTo(true);
+        Query query = myRef.orderByChild("BestFood").equalTo(true);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    for(DataSnapshot issue: snapshot.getChildren()){
+                    for (DataSnapshot issue : snapshot.getChildren()) {
                         list.add(issue.getValue(Foods.class));
                     }
-                    if (list.size()>0) {
-                        binding.bestFoodView.setLayoutManager(new LinearLayoutManager(MainActivity.this,LinearLayoutManager.HORIZONTAL,false));
-                        RecyclerView.Adapter adapter=new BestFoodsAdapter(list);
+                    if (list.size() > 0) {
+                        binding.bestFoodView.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                        RecyclerView.Adapter adapter = new BestFoodsAdapter(list);
                         binding.bestFoodView.setAdapter(adapter);
                     }
                     binding.progressBarBestFood.setVisibility(View.GONE);
@@ -99,7 +132,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Handle error
             }
         });
     }
@@ -113,12 +146,12 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    for(DataSnapshot issue: snapshot.getChildren()){
+                    for (DataSnapshot issue : snapshot.getChildren()) {
                         list.add(issue.getValue(Category.class));
                     }
-                    if (list.size()>0) {
-                        binding.categoryView.setLayoutManager(new GridLayoutManager(MainActivity.this,4));
-                        RecyclerView.Adapter adapter=new CategoryAdapter(list);
+                    if (list.size() > 0) {
+                        binding.categoryView.setLayoutManager(new GridLayoutManager(MainActivity.this, 4));
+                        RecyclerView.Adapter adapter = new CategoryAdapter(list);
                         binding.categoryView.setAdapter(adapter);
                     }
                     binding.progressBarCategory.setVisibility(View.GONE);
@@ -127,7 +160,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Handle error
             }
         });
     }
@@ -144,13 +177,13 @@ public class MainActivity extends BaseActivity {
                     }
                     ArrayAdapter<Location> adapter = new ArrayAdapter<>(MainActivity.this, R.layout.sp_item, list);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    binding.locationSp.setAdapter(adapter); //
+                    binding.locationSp.setAdapter(adapter);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Handle error
             }
         });
     }
@@ -167,13 +200,13 @@ public class MainActivity extends BaseActivity {
                     }
                     ArrayAdapter<Time> adapter = new ArrayAdapter<>(MainActivity.this, R.layout.sp_item, list);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    binding.timeSp.setAdapter(adapter); //
+                    binding.timeSp.setAdapter(adapter);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Handle error
             }
         });
     }
@@ -190,15 +223,14 @@ public class MainActivity extends BaseActivity {
                     }
                     ArrayAdapter<Price> adapter = new ArrayAdapter<>(MainActivity.this, R.layout.sp_item, list);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    binding.priceSp.setAdapter(adapter); //
+                    binding.priceSp.setAdapter(adapter);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // TODO: Handle error
+                // Handle error
             }
         });
     }
-
 }
