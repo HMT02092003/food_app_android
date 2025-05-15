@@ -67,6 +67,7 @@
         app:tabTextAppearance="@style/TabTextAppearance"
         app:tabTextColor="#999999">
 
+        <com.google.android.material.tabs.TabItem android:text="Tất cả" />
         <com.google.android.material.tabs.TabItem android:text="Món cơm" />
         <com.google.android.material.tabs.TabItem android:text="Món nước" />
         <com.google.android.material.tabs.TabItem android:text="Món kho,hầm" />
