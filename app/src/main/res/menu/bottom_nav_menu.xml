@@ -16,7 +16,7 @@
     <!-- Create Button (Add) -->
     <item
         android:id="@+id/createBtn"
-        android:icon="@drawable/ic_add"
+        android:icon="@drawable/plus"
         android:title="New" />
 
     <!-- Notification Button -->
