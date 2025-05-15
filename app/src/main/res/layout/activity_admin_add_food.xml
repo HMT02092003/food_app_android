@@ -1,31 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     tools:context=".Activity.AdminAddFoodActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:padding="8dp">
 
         <LinearLayout
             android:id="@+id/topBar"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="1"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
@@ -36,9 +31,7 @@
                 android:layout_marginTop="8dp"
                 android:contentDescription="Back"
                 android:padding="8dp"
-                android:src="@drawable/arrow"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:src="@drawable/back" />
 
             <Button
                 android:id="@+id/resetBtn"
@@ -49,17 +42,14 @@
                 android:gravity="end|center_vertical"
                 android:text="Cài lại"
                 android:textColor="#FF7622"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/backBtn"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/backBtn" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="Add New Items"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -70,7 +60,7 @@
             android:id="@+id/categoryLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:text="Thể loại"
             android:textSize="14sp"
             android:textStyle="bold"
@@ -83,8 +73,8 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/categoryLabel" />
 
         <EditText
@@ -95,8 +85,8 @@
             android:background="@drawable/edit_text_bg"
             android:hint="Bún bò Huế"
             android:padding="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/categorySpinner" />
 
         <TextView
@@ -116,8 +106,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/uploadLabel">
 
             <EditText
@@ -130,7 +120,6 @@
                 android:inputType="textUri"
                 android:padding="12dp" />
         </LinearLayout>
-
 
         <TextView
             android:id="@+id/priceLabel"
@@ -153,8 +142,8 @@
             android:hint="Nhập giá tiền"
             android:inputType="numberDecimal"
             android:padding="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/priceLabel" />
 
         <TextView
@@ -177,8 +166,8 @@
             android:hint="Đường, Tiêu, Gà, Hành..."
             android:minHeight="48dp"
             android:padding="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ingredientLabel" />
 
         <TextView
@@ -202,8 +191,8 @@
             android:hint="Nhập mô tả"
             android:minHeight="70dp"
             android:padding="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detailsLabel" />
 
         <Button
@@ -216,9 +205,9 @@
             android:text="Tạo mới món ăn"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detailsInput" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

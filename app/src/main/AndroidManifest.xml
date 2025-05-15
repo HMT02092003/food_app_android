@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Food"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.AdminMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.AdminUpdatePersonInfoActivity"
             android:exported="false" />
         <activity
