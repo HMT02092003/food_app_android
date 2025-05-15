@@ -19,7 +19,6 @@ import com.example.food.Adapter.FoodAdapter;
 import com.example.food.FoodModel;
 import com.example.food.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,7 +32,6 @@ import java.util.Map;
 public class AdminFoodActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
-    private FloatingActionButton fabAdd;
     private TabLayout tabLayout;
     private TextView tvTotal;
     private RecyclerView recyclerFood;
@@ -58,7 +56,6 @@ public class AdminFoodActivity extends AppCompatActivity {
 
         // Ánh xạ các view
         bottomNavigationView = findViewById(R.id.bottomNavigation);
-        fabAdd = findViewById(R.id.fabAdd);
         tabLayout = findViewById(R.id.tabLayout);
         tvTotal = findViewById(R.id.tvTotal);
         recyclerFood = findViewById(R.id.recyclerFood);
@@ -68,12 +65,6 @@ public class AdminFoodActivity extends AppCompatActivity {
 
         // Thiết lập listener cho BottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
-
-        // Thiết lập listener cho FloatingActionButton để thêm món ăn mới
-        fabAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminFoodActivity.this, AdminAddFoodActivity.class);
-            startActivity(intent);
-        });
 
         // Thiết lập listener cho TabLayout để lọc món ăn theo thể loại
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
