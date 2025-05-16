@@ -93,12 +93,12 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_height="75dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bg_bottom_nav"
         android:elevation="8dp"
-        app:itemIconSize="40dp"
+        app:itemIconSize="32dp"
         app:itemIconTint="@color/bottom_nav_selector"
         app:itemTextColor="@color/bottom_nav_selector"
         app:labelVisibilityMode="unlabeled"
@@ -107,23 +107,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
-    <!-- Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAdd"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:backgroundTint="#FF7754"
-        android:contentDescription="Thêm người dùng mới"
-        app:borderWidth="0dp"
-        app:elevation="10dp"
-        app:fabCustomSize="56dp"
-        app:maxImageSize="24dp"
-        app:layout_constraintBottom_toBottomOf="@id/bottomNavigation"
-        app:layout_constraintEnd_toEndOf="@id/bottomNavigation"
-        app:layout_constraintStart_toStartOf="@id/bottomNavigation"
-        app:layout_constraintTop_toTopOf="@id/bottomNavigation"
-        app:srcCompat="@drawable/plus"
-        app:tint="#FFFFFF" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
     <!--  item_person_info -->

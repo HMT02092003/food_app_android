@@ -9,7 +9,6 @@
     android:background="#FFFFFF"
     tools:context=".Activity.AdminAddPersonInfoActivity">
 
-    <!-- Top Bar không thay đổi -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -28,26 +27,25 @@
             android:layout_marginStart="8dp"
             android:contentDescription="Back"
             android:padding="8dp"
-            android:src="@drawable/arrow" />
+            android:src="@drawable/back" />
 
         <Button
             android:id="@+id/resetBtn"
-            android:layout_width="348dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:gravity="end"
+            android:gravity="end|center_vertical"
             android:text="Cài lại"
+            android:textSize="18sp"
             android:textColor="#FF7622"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- ScrollView để chứa form nội dung -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/topBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,19 +56,18 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Title -->
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Thêm người dùng mới"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:gravity="center_horizontal"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Upload Photo Label -->
             <TextView
                 android:id="@+id/uploadLabel"
                 android:layout_width="wrap_content"
@@ -82,7 +79,6 @@
                 app:layout_constraintTop_toBottomOf="@id/title"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Upload Photo Area -->
             <FrameLayout
                 android:id="@+id/userPhoto"
                 android:layout_width="100dp"
@@ -94,7 +90,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Name Label -->
             <TextView
                 android:id="@+id/nameLabel"
                 android:layout_width="wrap_content"
@@ -106,7 +101,6 @@
                 app:layout_constraintTop_toBottomOf="@id/userPhoto"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Name Input -->
             <EditText
                 android:id="@+id/userNameInput"
                 android:layout_width="0dp"
@@ -119,7 +113,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Email Label -->
             <TextView
                 android:id="@+id/emailLabel"
                 android:layout_width="wrap_content"
@@ -131,7 +124,6 @@
                 app:layout_constraintTop_toBottomOf="@id/userNameInput"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Email Input -->
             <EditText
                 android:id="@+id/emailInput"
                 android:layout_width="0dp"
@@ -145,7 +137,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Phone Label -->
             <TextView
                 android:id="@+id/phoneLabel"
                 android:layout_width="wrap_content"
@@ -157,7 +148,6 @@
                 app:layout_constraintTop_toBottomOf="@id/emailInput"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Phone Number Input -->
             <EditText
                 android:id="@+id/phoneInput"
                 android:layout_width="0dp"
@@ -171,7 +161,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Address Label -->
             <TextView
                 android:id="@+id/addressLabel"
                 android:layout_width="wrap_content"
@@ -183,7 +172,6 @@
                 app:layout_constraintTop_toBottomOf="@id/phoneInput"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Address Input -->
             <EditText
                 android:id="@+id/addressInput"
                 android:layout_width="0dp"
@@ -196,7 +184,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Bio Label -->
             <TextView
                 android:id="@+id/bioLabel"
                 android:layout_width="wrap_content"
@@ -208,7 +195,6 @@
                 app:layout_constraintTop_toBottomOf="@id/addressInput"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Bio Input -->
             <EditText
                 android:id="@+id/bioInput"
                 android:layout_width="0dp"
@@ -222,7 +208,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Save Button -->
             <Button
                 android:id="@+id/saveButton"
                 android:layout_width="0dp"
