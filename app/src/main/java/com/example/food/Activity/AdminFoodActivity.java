@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.food.Adapter.FoodAdapter;
-import com.example.food.FoodModel; // Corrected import statement
+import com.example.food.FoodModel;
 import com.example.food.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -209,3 +209,4 @@ public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.
         fetchAllFoods();
     }
 }
+

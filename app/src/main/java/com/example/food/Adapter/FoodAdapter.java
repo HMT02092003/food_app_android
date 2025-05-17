@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.util.List;
+import java.util.ArrayList; // Import ArrayList
 
 public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder> {
 
@@ -74,7 +76,16 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         // Thiết lập sự kiện cho nút sửa
         holder.imgEdit.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), AdminUpdateFoodActivity.class);
-            intent.putExtra("FOOD_ID", currentFood.getId());
+            // Truyền dữ liệu FoodModel cho Activity AdminUpdateFoodActivity
+            Bundle bundle = new Bundle();
+            bundle.putString("FOOD_ID", currentFood.getId());
+            bundle.putString("FOOD_NAME", currentFood.getName());
+            bundle.putDouble("FOOD_PRICE", currentFood.getPrice());
+            bundle.putString("FOOD_INGREDIENTS", currentFood.getIngredients());
+            bundle.putString("FOOD_DETAILS", currentFood.getDetails());
+            bundle.putStringArrayList("FOOD_IMAGE_URLS", (ArrayList<String>) currentFood.getImageUrls());
+            bundle.putString("FOOD_CATEGORY", currentFood.getCategory());
+            intent.putExtras(bundle);
             holder.itemView.getContext().startActivity(intent);
         });
     }
