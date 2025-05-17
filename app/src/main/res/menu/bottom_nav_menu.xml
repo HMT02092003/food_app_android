@@ -4,30 +4,30 @@
     <!-- Home Button -->
     <item
         android:id="@+id/homeBtn"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/ic_house"
         android:title="Home" />
 
     <!-- List Button -->
     <item
         android:id="@+id/listBtn"
-        android:icon="@drawable/list"
+        android:icon="@drawable/ic_menu"
         android:title="List" />
 
     <!-- Create Button (Add) -->
     <item
         android:id="@+id/createBtn"
-        android:icon="@drawable/plus"
+        android:icon="@drawable/ic_add"
         android:title="New" />
 
     <!-- Notification Button -->
     <item
         android:id="@+id/notificationBtn"
-        android:icon="@drawable/bell"
+        android:icon="@drawable/ic_notification_bell"
         android:title="Thông báo" />
 
     <!-- Profile Button -->
     <item
         android:id="@+id/profileBtn"
-        android:icon="@drawable/ic_profile"
+        android:icon="@drawable/ic_user"
         android:title="Profile" />
 </menu>
