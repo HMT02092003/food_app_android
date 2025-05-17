@@ -1,26 +1,43 @@
 package com.example.food.Adapter;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.food.Activity.AdminUpdateFoodActivity;
 import com.example.food.FoodModel;
 import com.example.food.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
 import java.util.List;
 
 public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder> {
 
     private List<FoodModel> foodList;
+    private OnFoodDeletedListener onFoodDeletedListener;
+
+    public interface OnFoodDeletedListener {
+        void onFoodDeleted();
+    }
 
     public FoodAdapter(List<FoodModel> foodList) {
         this.foodList = foodList;
+    }
+
+    public void setOnFoodDeletedListener(OnFoodDeletedListener listener) {
+        this.onFoodDeletedListener = listener;
     }
 
     public void updateData(List<FoodModel> newFoodList) {
@@ -32,7 +49,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_food_screen, parent, false); // ĐÃ SỬA TẠI ĐÂY
+                .inflate(R.layout.item_food_screen, parent, false);
         return new FoodViewHolder(itemView);
     }
 
@@ -49,7 +66,17 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
                     .into(holder.imgFood);
         }
 
-        // TODO: Xử lý sự kiện click vào item (nếu cần)
+        // Thiết lập sự kiện cho nút xóa
+        holder.imgDelete.setOnClickListener(v -> {
+            showDeleteConfirmationDialog(holder.itemView.getContext(), currentFood);
+        });
+
+        // Thiết lập sự kiện cho nút sửa
+        holder.imgEdit.setOnClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), AdminUpdateFoodActivity.class);
+            intent.putExtra("FOOD_ID", currentFood.getId());
+            holder.itemView.getContext().startActivity(intent);
+        });
     }
 
     @Override
@@ -62,6 +89,8 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         TextView tvName;
         TextView tvCategory;
         TextView tvPrice;
+        ImageView imgDelete;
+        ImageView imgEdit;
 
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +98,52 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
             tvName = itemView.findViewById(R.id.tvName);
             tvCategory = itemView.findViewById(R.id.tvCategory);
             tvPrice = itemView.findViewById(R.id.tvPrice);
+            imgDelete = itemView.findViewById(R.id.imgDelete);
+            imgEdit = itemView.findViewById(R.id.imgEdit);
         }
+    }
+
+    private void showDeleteConfirmationDialog(Context context, FoodModel food) {
+        new AlertDialog.Builder(context)
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa món " + food.getName() + "?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    deleteFood(context, food);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void deleteFood(Context context, FoodModel food) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Foods").document(food.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    // Xóa ảnh (nếu là đường dẫn trực tiếp)
+                    if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
+                        for (String imageUrl : food.getImageUrls()) {
+                            if (imageUrl != null && !imageUrl.isEmpty()) {
+                                File fileToDelete = new File(Uri.parse(imageUrl).getPath());
+                                if (fileToDelete.exists()) {
+                                    if (fileToDelete.delete()) {
+                                    } else {
+                                    }
+                                } else {
+                                }
+                            }
+                        }
+                    }
+
+                    Toast.makeText(context, "Món ăn đã được xóa thành công", Toast.LENGTH_SHORT).show();
+
+                    // Gọi callback để thông báo cho Activity cập nhật lại danh sách
+                    if (onFoodDeletedListener != null) {
+                        onFoodDeletedListener.onFoodDeleted();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Lỗi khi xóa món ăn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }

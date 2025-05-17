@@ -4,8 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.food.Adapter.FoodAdapter;
-import com.example.food.FoodModel;
+import com.example.food.FoodModel; // Corrected import statement
 import com.example.food.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -29,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AdminFoodActivity extends AppCompatActivity {
+public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.OnFoodDeletedListener {
 
     private BottomNavigationView bottomNavigationView;
     private TabLayout tabLayout;
@@ -39,6 +41,9 @@ public class AdminFoodActivity extends AppCompatActivity {
     private List<FoodModel> allFoodList = new ArrayList<>();
     private Map<String, List<FoodModel>> categorizedFoodMap = new HashMap<>();
     private FirebaseFirestore db;
+    private FirebaseAuth auth;
+    private ImageView backBtn;
+    private String currentCategory = "Tất cả";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,17 +56,25 @@ public class AdminFoodActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Khởi tạo Firebase Firestore
+        // Khởi tạo Firebase Firestore và Auth
         db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
 
         // Ánh xạ các view
+        backBtn = findViewById(R.id.backBtn);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         tabLayout = findViewById(R.id.tabLayout);
         tvTotal = findViewById(R.id.tvTotal);
         recyclerFood = findViewById(R.id.recyclerFood);
         recyclerFood.setLayoutManager(new LinearLayoutManager(this));
-        foodAdapter = new FoodAdapter(new ArrayList<>()); // Khởi tạo adapter với danh sách rỗng
+
+        // Khởi tạo adapter với danh sách rỗng và thiết lập listener
+        foodAdapter = new FoodAdapter(new ArrayList<>());
+        foodAdapter.setOnFoodDeletedListener(this); // Thiết lập listener cho việc xóa món ăn
         recyclerFood.setAdapter(foodAdapter);
+
+        // Thiết lập sự kiện cho nút Back
+        backBtn.setOnClickListener(v -> onBackPressed());
 
         // Thiết lập listener cho BottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
@@ -70,8 +83,8 @@ public class AdminFoodActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                String category = tab.getText().toString();
-                filterFoodByCategory(category);
+                currentCategory = tab.getText().toString();
+                filterFoodByCategory(currentCategory);
             }
 
             @Override
@@ -83,13 +96,35 @@ public class AdminFoodActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
                 // Nếu tab "Tất cả" được chọn lại, hiển thị tất cả món ăn
                 if (tab.getPosition() == 0) {
-                    filterFoodByCategory("Tất cả");
+                    currentCategory = "Tất cả";
+                    filterFoodByCategory(currentCategory);
                 }
             }
         });
 
         // Gọi hàm để lấy dữ liệu món ăn từ Firebase
         fetchAllFoods();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Kiểm tra người dùng đã đăng nhập chưa
+        if (auth.getCurrentUser() == null) {
+            // Nếu chưa đăng nhập, bạn CẦN chuyển hướng người dùng đến trang đăng nhập
+            // This part should remain to handle expired sessions.
+            redirectToLogin(); // Implement this method to navigate to your login activity
+        } else {
+            // Refresh danh sách món ăn mỗi khi quay lại Activity này (sau khi sửa hoặc xóa món ăn)
+            fetchAllFoods();
+        }
+    }
+
+    private void redirectToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class); // Replace LoginActivity with your actual login activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private boolean onNavigationItemSelected(MenuItem item) {
@@ -120,6 +155,10 @@ public class AdminFoodActivity extends AppCompatActivity {
 
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         FoodModel food = document.toObject(FoodModel.class);
+
+                        // Đảm bảo id của món ăn được lưu lại từ Firestore
+                        food.setId(document.getId());
+
                         allFoodList.add(food);
 
                         // Thêm vào danh sách của thể loại tương ứng
@@ -134,12 +173,19 @@ public class AdminFoodActivity extends AppCompatActivity {
                     // Hiển thị tổng số món ăn
                     tvTotal.setText("Total " + allFoodList.size() + " items");
 
-                    // Hiển thị danh sách "Tất cả" ban đầu
-                    filterFoodByCategory("Tất cả");
+                    // Hiển thị danh sách theo thể loại hiện tại
+                    filterFoodByCategory(currentCategory);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("AdminFoodActivity", "Lỗi khi lấy dữ liệu món ăn: ", e);
-                    // Xử lý lỗi (ví dụ: hiển thị thông báo cho người dùng)
+                    Toast.makeText(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    // Kiểm tra nếu lỗi liên quan đến xác thực
+                    if (e.getMessage() != null && (e.getMessage().contains("permission") || e.getMessage().contains("authentication"))) {
+                        // Thông báo và chuyển hướng đến trang đăng nhập nếu có lỗi xác thực
+                        Toast.makeText(this, "Phiên đăng nhập có vấn đề. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show();
+                        redirectToLogin();
+                    }
                 });
     }
 
@@ -154,5 +200,12 @@ public class AdminFoodActivity extends AppCompatActivity {
             }
         }
         foodAdapter.updateData(filteredList);
+    }
+
+    @Override
+    public void onFoodDeleted() {
+        // Refresh lại danh sách món ăn sau khi xóa
+        Toast.makeText(this, "Đã cập nhật danh sách món ăn", Toast.LENGTH_SHORT).show();
+        fetchAllFoods();
     }
 }
