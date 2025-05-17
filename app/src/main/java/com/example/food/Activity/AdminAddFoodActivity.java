@@ -1,5 +1,6 @@
 package com.example.food.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -164,6 +165,12 @@ public class AdminAddFoodActivity extends AppCompatActivity {
                         saveButton.setText("TẠO MỚI MÓN ĂN");
                         showToast("Đã thêm món ăn thành công");
                         resetForm();
+
+                        // Chuyển về trang AdminFoodActivity
+                        Intent intent = new Intent(AdminAddFoodActivity.this, AdminFoodActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Đảm bảo không có nhiều instance của Activity
+                        startActivity(intent);
+                        finish(); // Kết thúc Activity hiện tại
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
