@@ -4,4 +4,5 @@
     <string name="facebook_app_id">1193988828577641</string>
     <string name="fb_login_protocol_scheme">1193988828577641</string>
     <string name="facebook_client_token">a9c50daca70d7d0b84fe125a06c9cbfd</string>
+    <string name="logout">Đăng xuất</string>
 </resources>

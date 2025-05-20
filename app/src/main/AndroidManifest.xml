@@ -22,20 +22,9 @@
             android:name=".Activity.AdminUpdatePersonInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".Fragments.SnacksFragment"
-            android:exported="false" />
-        <activity
-            android:name=".Fragments.BeveragesFragment"
-            android:exported="false" />
-        <activity
-            android:name=".Fragments.VegetarianFragment"
-            android:exported="false" />
-        <activity
-            android:name=".Fragments.MainDishesFragment"
-            android:exported="false" />
-        <activity
-            android:name=".Fragments.AllFragment"
-            android:exported="false" />
+            android:name=".Activity.HomeActivity"
+            android:exported="false">
+        </activity>
         <activity
             android:name=".Activity.AdminAddPersonInfoActivity"
             android:exported="false" />
