@@ -53,6 +53,9 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView forgotPasswordText;
 
+    // Định nghĩa email của admin
+    private static final String ADMIN_EMAIL = "admin@gmail.com";
+
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -77,13 +80,24 @@ public class LoginActivity extends AppCompatActivity {
                                         String userPhoto = auth.getCurrentUser().getPhotoUrl() != null ?
                                                 auth.getCurrentUser().getPhotoUrl().toString() : "";
 
-                                        // Chuyển sang HomeActivity và truyền dữ liệu
-                                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                        intent.putExtra("name", userName);
-                                        intent.putExtra("email", userEmail);
-                                        intent.putExtra("photo", userPhoto);
-                                        Log.d(TAG, "Starting HomeActivity with name=" + userName + ", email=" + userEmail);
-                                        startActivity(intent);
+                                        // Kiểm tra nếu email là email admin
+                                        if (ADMIN_EMAIL.equals(userEmail)) {
+                                            // Nếu là admin thì chuyển đến AdminActivity
+                                            Intent intent = new Intent(LoginActivity.this, AdminFoodActivity.class);
+                                            intent.putExtra("name", userName);
+                                            intent.putExtra("email", userEmail);
+                                            intent.putExtra("photo", userPhoto);
+                                            Log.d(TAG, "Starting AdminActivity with name=" + userName + ", email=" + userEmail);
+                                            startActivity(intent);
+                                        } else {
+                                            // Nếu không phải admin thì chuyển đến HomeActivity như bình thường
+                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                            intent.putExtra("name", userName);
+                                            intent.putExtra("email", userEmail);
+                                            intent.putExtra("photo", userPhoto);
+                                            Log.d(TAG, "Starting HomeActivity with name=" + userName + ", email=" + userEmail);
+                                            startActivity(intent);
+                                        }
                                         finish();
                                     } else {
                                         Log.e(TAG, "Firebase Auth failed: " + task.getException(), task.getException());
@@ -271,13 +285,25 @@ public class LoginActivity extends AppCompatActivity {
                             if (TextUtils.isEmpty(userName)) {
                                 userName = userEmail.split("@")[0]; // Sử dụng phần đầu của email làm tên
                             }
-                            // Chuyển sang HomeActivity và truyền dữ liệu
-                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                            intent.putExtra("name", userName);
-                            intent.putExtra("email", userEmail);
-                            intent.putExtra("photo", userPhoto);
-                            Log.d(TAG, "Starting HomeActivity with name=" + userName + ", email=" + userEmail);
-                            startActivity(intent);
+
+                            // Kiểm tra nếu email là email admin
+                            if (ADMIN_EMAIL.equals(userEmail)) {
+                                // Nếu là admin thì chuyển đến AdminActivity
+                                Intent intent = new Intent(LoginActivity.this, AdminFoodActivity.class);
+                                intent.putExtra("name", userName);
+                                intent.putExtra("email", userEmail);
+                                intent.putExtra("photo", userPhoto);
+                                Log.d(TAG, "Starting AdminActivity with name=" + userName + ", email=" + userEmail);
+                                startActivity(intent);
+                            } else {
+                                // Nếu không phải admin thì chuyển đến HomeActivity như bình thường
+                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                intent.putExtra("name", userName);
+                                intent.putExtra("email", userEmail);
+                                intent.putExtra("photo", userPhoto);
+                                Log.d(TAG, "Starting HomeActivity with name=" + userName + ", email=" + userEmail);
+                                startActivity(intent);
+                            }
                             finish();
 
                         } else {
@@ -339,13 +365,24 @@ public class LoginActivity extends AppCompatActivity {
                     String userPhoto = auth.getCurrentUser().getPhotoUrl() != null ?
                             auth.getCurrentUser().getPhotoUrl().toString() : "";
 
-                    // Chuyển sang HomeActivity và truyền dữ liệu
-                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    intent.putExtra("name", userName);
-                    intent.putExtra("email", userEmail);
-                    intent.putExtra("photo", userPhoto);
-                    Log.d(TAG, "Starting HomeActivity with name=" + userName + ", email=" + userEmail);
-                    startActivity(intent);
+                    // Kiểm tra nếu email là email admin
+                    if (ADMIN_EMAIL.equals(userEmail)) {
+                        // Nếu là admin thì chuyển đến AdminActivity
+                        Intent intent = new Intent(LoginActivity.this, AdminFoodActivity.class);
+                        intent.putExtra("name", userName);
+                        intent.putExtra("email", userEmail);
+                        intent.putExtra("photo", userPhoto);
+                        Log.d(TAG, "Starting AdminActivity with name=" + userName + ", email=" + userEmail);
+                        startActivity(intent);
+                    } else {
+                        // Nếu không phải admin thì chuyển đến HomeActivity như bình thường
+                        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                        intent.putExtra("name", userName);
+                        intent.putExtra("email", userEmail);
+                        intent.putExtra("photo", userPhoto);
+                        Log.d(TAG, "Starting HomeActivity with name=" + userName + ", email=" + userEmail);
+                        startActivity(intent);
+                    }
                     finish();
                 } else {
                     Log.e(TAG, "Firebase Auth with Facebook failed: " + task.getException(), task.getException());
@@ -355,4 +392,3 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 }
-
