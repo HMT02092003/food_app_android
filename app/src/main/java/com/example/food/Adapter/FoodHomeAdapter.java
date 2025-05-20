@@ -38,25 +38,26 @@ public class FoodHomeAdapter extends RecyclerView.Adapter<FoodHomeAdapter.ViewHo
         FoodModel food = foodList.get(position);
         holder.foodNameTextView.setText(food.getName());
         holder.foodPriceTextView.setText(String.format("%.0f VNĐ", food.getPrice()));
+        holder.foodDescriptionTextView.setText(food.getDetails());
 
-        // Kiểm tra xem danh sách imageUrls có tồn tại và không rỗng hay không
-        if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
-            // Lấy URL đầu tiên từ danh sách (hoặc bạn có thể chọn một cách khác nếu cần)
-            String imageUrl = food.getImageUrls().get(0);
-            Glide.with(context)
-                    .load(imageUrl)
+        // Luôn hiển thị ảnh món ăn
+        if (holder.foodImageView != null) {
+            holder.foodImageView.setVisibility(View.VISIBLE);
+            if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
+                Glide.with(context)
+                    .load(food.getImageUrls().get(0))
                     .placeholder(R.drawable.food_placeholder)
                     .into(holder.foodImageView);
-        } else {
-            // Nếu không có URL ảnh, hiển thị placeholder
-            Glide.with(context)
-                    .load(R.drawable.food_placeholder)
-                    .into(holder.foodImageView);
+            } else {
+                holder.foodImageView.setImageResource(R.drawable.food_placeholder);
+            }
         }
 
-        holder.itemView.setOnClickListener(v -> {
-            // Xử lý khi click vào một món ăn (ví dụ: mở trang chi tiết)
-            // Bạn có thể truyền ID của món ăn qua Intent
+        // Không set GONE cho foodImageView nữa
+        // Không ẩn các view khác ở đây
+
+        holder.btnDetail.setOnClickListener(v -> {
+            // Xử lý khi click vào nút Xem chi tiết
         });
     }
 
@@ -69,12 +70,16 @@ public class FoodHomeAdapter extends RecyclerView.Adapter<FoodHomeAdapter.ViewHo
         ImageView foodImageView;
         TextView foodNameTextView;
         TextView foodPriceTextView;
+        TextView foodDescriptionTextView;
+        View btnDetail;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             foodImageView = itemView.findViewById(R.id.foodImageView);
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
             foodPriceTextView = itemView.findViewById(R.id.foodPriceTextView);
+            foodDescriptionTextView = itemView.findViewById(R.id.foodDescriptionTextView);
+            btnDetail = itemView.findViewById(R.id.btnDetail);
         }
     }
 }
