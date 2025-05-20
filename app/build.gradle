@@ -19,7 +19,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
@@ -44,29 +44,34 @@ dependencies {
     implementation(libs.activity.ktx)
     implementation(libs.constraintlayout)
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("androidx.core:core-ktx:1.10.1")
 
     // Firebase platform BOM
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
 
-    // Firebase dependencies
+    // Firebase dependencies (no explicit versions, rely on BOM)
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
+    implementation 'com.google.android.gms:play-services-auth:21.0.1'
+    implementation 'com.google.android.gms:play-services-base:18.2.0'
 
     // Google Play Services
     implementation(libs.play.services.auth)
 
     // Android Credentials API
     implementation(libs.credentials)
-    // It seems 'libs.credentials' might already include the play-services-auth part.
-    // Keeping both for now, but you might want to check your libs.versions.toml
-    // to see if they are indeed the same.
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // Picasso
+    implementation("com.squareup.picasso:picasso:2.8")
 
     // Facebook Login
     implementation("com.facebook.android:facebook-login:latest.release")
@@ -75,21 +80,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    // Potential Redundancies Removed (Cam related)
-    // You had multiple declarations for similar AndroidX and Material libraries.
-    // These are already covered by the 'libs' versions at the top.
-    implementation 'androidx.viewpager2:viewpager2:1.0.0'
-    // implementation 'com.google.android.material:material:1.10.0' // Covered by libs.material
-    // implementation 'androidx.appcompat:appcompat:1.6.1'       // Covered by libs.appcompat
-    // implementation 'com.google.android.material:material:1.8.0' // Covered by libs.material
-    implementation 'androidx.core:core-ktx:1.10.1'
-    // implementation 'androidx.activity:activity-ktx:1.7.1'      // Removed redundant direct declaration
-    // implementation 'androidx.viewpager2:viewpager2:1.0.0' // Removed redundant direct declaration
-
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
-
-    implementation 'com.squareup.picasso:picasso:2.8'
-
 }
+
+apply plugin: 'com.google.gms.google-services'

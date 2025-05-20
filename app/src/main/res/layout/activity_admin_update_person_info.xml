@@ -134,7 +134,7 @@
 
             <!-- Email Input -->
             <EditText
-                android:id="@+id/emailInput"
+                android:id="@+id/userEmailDetail"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
@@ -155,12 +155,12 @@
                 android:text="Số điện thoại"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/emailInput"
+                app:layout_constraintTop_toBottomOf="@id/userEmailDetail"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <!-- Phone Number Input -->
             <EditText
-                android:id="@+id/phoneInput"
+                android:id="@+id/userPhoneDetail"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
@@ -181,7 +181,7 @@
                 android:text="Địa chỉ"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/phoneInput"
+                app:layout_constraintTop_toBottomOf="@id/userPhoneDetail"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <!-- Address Input -->
@@ -211,7 +211,7 @@
 
             <!-- Bio Input -->
             <EditText
-                android:id="@+id/bioInput"
+                android:id="@+id/userBioDetail"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
@@ -235,7 +235,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bioInput" />
+                app:layout_constraintTop_toBottomOf="@id/userBioDetail" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

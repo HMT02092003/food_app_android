@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.food.Adapter.CategoryAdapter;
 import com.example.food.Adapter.UserFoodAdapter;
-import com.example.food.FoodModel;
+import com.example.food.Model.FoodModel;
 import com.example.food.R;
 import com.example.food.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
