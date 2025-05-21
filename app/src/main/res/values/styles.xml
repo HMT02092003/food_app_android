@@ -36,6 +36,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/orange</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!-- Đảm bảo không full screen -->
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
+
+
 
 </resources>

@@ -1,4 +1,4 @@
-package com.example.food;
+package com.example.food.Model;
 
 import java.util.List;
 

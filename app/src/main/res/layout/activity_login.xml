@@ -60,21 +60,29 @@
                 android:textColorHint="#000000"
                 android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/passEdt"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passwordInputLayout"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="32dp"
-                android:background="@drawable/edittext_background"
-                android:ems="10"
-                android:hint="Mật khẩu"
-                android:inputType="text"
-                android:gravity="center"
-                android:textAlignment="center"
-                android:textColorHint="#000000"
-                android:textSize="18sp" />
+                app:passwordToggleEnabled="true"
+                app:hintEnabled="false">
+
+                <EditText
+                    android:id="@+id/passEdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/edittext_background"
+                    android:ems="10"
+                    android:hint="Mật khẩu"
+                    android:inputType="textPassword"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    android:textColorHint="#000000"
+                    android:textSize="18sp"
+                    android:paddingEnd="32dp" /> </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/textView8"
@@ -86,7 +94,6 @@
                 android:textColor="#000000"
                 android:textStyle="bold"
                 android:textSize="18sp" />
-
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/button4"

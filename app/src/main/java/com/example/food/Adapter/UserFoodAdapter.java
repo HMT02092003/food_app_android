@@ -12,9 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.food.FoodModel;
 import com.example.food.R;
-
+import com.example.food.Model.FoodModel;
 import java.util.List;
 
 public class UserFoodAdapter extends RecyclerView.Adapter<UserFoodAdapter.FoodViewHolder> {

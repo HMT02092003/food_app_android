@@ -8,68 +8,69 @@
     android:padding="16dp"
     tools:context=".Activity.PersonInfoDetailActivity">
 
-    <!-- Header: Back + Title -->
+    <!-- Header -->
     <LinearLayout
         android:id="@+id/headerLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Nút Back -->
         <ImageView
             android:id="@+id/backButton"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="@drawable/arrow"
-            android:backgroundTint="#00040404"
-            android:padding="8dp"
-            android:src="@drawable/arrow" />
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/back" />
 
-        <!-- Tiêu đề -->
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"
-            android:gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="Sửa thông tin"
             android:textColor="#000000"
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Avatar + nút chỉnh sửa -->
+    <!-- Avatar with Pencil Icon -->
     <FrameLayout
         android:id="@+id/avatarLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         app:layout_constraintTop_toBottomOf="@id/headerLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Ảnh đại diện -->
-        <View
-            android:id="@+id/avatar"
+        <ImageView
+            android:id="@+id/avatarDetail"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:background="@drawable/circle_background"
             android:backgroundTint="#FFD4BC"
-            android:background="@drawable/circle_background" />
+            android:scaleType="centerCrop"
+            android:contentDescription="Ảnh đại diện" />
 
-        <!-- Nút chỉnh ảnh -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/editAvatar"
+        <ImageView
+            android:id="@+id/editPencil"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="bottom|end"
             android:layout_margin="4dp"
-            android:src="@drawable/pencil" />
+            android:background="@drawable/circle_background"
+            android:contentDescription="Chỉnh sửa ảnh"
+            android:padding="4dp"
+            android:src="@drawable/ic_pencil" />
     </FrameLayout>
 
-    <!-- Container chứa các trường thông tin -->
+    <!-- User Info Form -->
     <LinearLayout
         android:id="@+id/infoContainer"
         android:layout_width="0dp"
@@ -77,16 +78,14 @@
         android:orientation="vertical"
         android:background="@drawable/info_background"
         android:padding="16dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintTop_toBottomOf="@id/avatarLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Họ và Tên -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="Họ tên"
             android:textAllCaps="true"
             android:textColor="#444444"
@@ -94,41 +93,39 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/nameInput"
+            android:id="@+id/userNameDetail"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
             android:hint="Nguyễn Hoàng Cầm"
             android:padding="12dp"
-            android:textSize="20sp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:layout_marginTop="8dp" />
+            android:textSize="20sp" />
 
-        <!-- Email -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="EMAIL"
             android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="20sp"
             android:textColor="#444444"
-            android:layout_marginTop="16dp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/emailInput"
+            android:id="@+id/userEmailDetail"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
             android:hint="phuongliet010@gmail.com"
             android:padding="12dp"
-            android:textSize="20sp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:layout_marginTop="8dp" />
+            android:textSize="20sp" />
 
-        <!-- Số điện thoại -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -140,50 +137,49 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/phoneInput"
+            android:id="@+id/userPhoneDetail"
             android:layout_width="match_parent"
             android:layout_height="48dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
             android:hint="0356353839"
             android:padding="12dp"
-            android:textSize="20sp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:layout_marginTop="8dp" />
+            android:textSize="20sp" />
 
-        <!-- Bio -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="BIO"
             android:textAllCaps="true"
-            android:textStyle="bold"
-            android:textSize="20sp"
             android:textColor="#444444"
-            android:layout_marginTop="16dp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/bioInput"
+            android:id="@+id/userBioDetail"
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
             android:gravity="top|start"
             android:hint="I love fast food"
             android:padding="12dp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:textSize="20sp"
-            android:layout_marginTop="8dp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
-    <!-- Nút Lưu -->
-    <Button
+    <!-- Save Button -->
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/saveButton"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/btn_background"
-        android:text="Save"
+        android:text="SAVE"
         android:textAllCaps="true"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
