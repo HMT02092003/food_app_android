@@ -2,7 +2,6 @@ package com.example.food.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.food.Adapter.CategoryHomeAdapter;
 import com.example.food.Adapter.FoodHomeAdapter;
+import com.example.food.Adapter.FoodVerticalAdapter; // <-- THÊM DÒNG NÀY
 import com.example.food.FoodModel;
 import com.example.food.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,19 +54,14 @@ public class HomeActivity extends AppCompatActivity {
     private CategoryHomeAdapter categoryAdapter;
     private Button categorySeeMoreButton;
     private List<String> categoryList = new ArrayList<>();
-    private List<FoodModel> categoryFoodList = new ArrayList<>();
 
-    private RecyclerView categoryFoodRecyclerView;
-    private FoodHomeAdapter categoryFoodAdapter;
+    // KHAI BÁO MỚI CHO DANH SÁCH MÓN ĂN THEO THỂ LOẠI DẠNG DỌC
+    private RecyclerView categoryFoodRecyclerView; // Ánh xạ từ XML
+    private FoodVerticalAdapter categoryFoodAdapter; // Adapter mới
+    private List<FoodModel> categoryFoodList = new ArrayList<>(); // Danh sách dữ liệu cho adapter này
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String userName;
-
-    // Thêm biến cho slideshow hero
-    private int currentHeroIndex = 0;
-    private Handler heroHandler = new Handler(android.os.Looper.getMainLooper());
-    private Runnable heroRunnable;
-    private List<String> heroImageUrls = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +96,21 @@ public class HomeActivity extends AppCompatActivity {
         categoryRecyclerView = findViewById(R.id.categoryRecyclerView);
         categorySeeMoreButton = findViewById(R.id.categorySeeMoreButton);
 
+        // ÁNH XẠ VÀ CÀI ĐẶT CHO categoryFoodRecyclerView MỚI
         categoryFoodRecyclerView = findViewById(R.id.categoryFoodRecyclerView);
-        categoryFoodAdapter = new FoodHomeAdapter(this, categoryFoodList);
         categoryFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        categoryFoodAdapter = new FoodVerticalAdapter(this, categoryFoodList);
         categoryFoodRecyclerView.setAdapter(categoryFoodAdapter);
+        // Tùy chọn: Đặt lắng nghe sự kiện click cho các item trong danh sách dọc
+        categoryFoodAdapter.setOnItemClickListener(food -> {
+            // Xử lý khi click vào một món ăn trong danh sách thể loại (ví dụ: mở trang chi tiết)
+            Toast.makeText(HomeActivity.this, "Bạn đã chọn: " + food.getName(), Toast.LENGTH_SHORT).show();
+            // Bạn có thể mở ListFoodsActivity hoặc DetailActivity ở đây
+            // Intent detailIntent = new Intent(HomeActivity.this, FoodDetailActivity.class);
+            // detailIntent.putExtra("foodId", food.getId());
+            // startActivity(detailIntent);
+        });
+
 
         // Hiển thị tên người dùng
         if (userName != null) {
@@ -180,8 +186,9 @@ public class HomeActivity extends AppCompatActivity {
         suggestedFoodAdapter = new FoodHomeAdapter(this, suggestedFoodList);
         suggestedFoodRecyclerView.setAdapter(suggestedFoodAdapter);
 
+        // Lấy 5 món ăn đề xuất trong ngày
         db.collection("Foods")
-                .limit(10)
+                .limit(5) // Giới hạn 5 món
                 .get()
                 .addOnSuccessListener(query -> {
                     suggestedFoodList.clear();
@@ -191,45 +198,11 @@ public class HomeActivity extends AppCompatActivity {
                         suggestedFoodList.add(food);
                     }
                     suggestedFoodAdapter.notifyDataSetChanged();
-
-                    heroImageUrls.clear();
-                    for (int i = 0; i < Math.min(5, suggestedFoodList.size()); i++) {
-                        FoodModel food = suggestedFoodList.get(i);
-                        if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
-                            heroImageUrls.add(food.getImageUrls().get(0));
-                        }
-                    }
-                    startHeroSlideshow();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("HomeActivity", "Lỗi khi tải món ăn đề xuất: ", e);
                     Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                 });
-    }
-
-    private void startHeroSlideshow() {
-        if (heroImageUrls.isEmpty()) return;
-        if (heroRunnable != null) heroHandler.removeCallbacks(heroRunnable);
-        heroRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Glide.with(HomeActivity.this)
-                    .load(heroImageUrls.get(currentHeroIndex))
-                    .placeholder(R.drawable.hero_placeholder)
-                    .into(heroImageView);
-                currentHeroIndex = (currentHeroIndex + 1) % heroImageUrls.size();
-                heroHandler.postDelayed(this, 10000); // 5 giây
-            }
-        };
-        heroHandler.post(heroRunnable);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (heroHandler != null && heroRunnable != null) {
-            heroHandler.removeCallbacks(heroRunnable);
-        }
     }
 
     private void loadFoodCategories() {
@@ -247,6 +220,7 @@ public class HomeActivity extends AppCompatActivity {
                 "Món tráng miệng",
                 "Món vùng miền"
         ));
+        // Khi click vào một thể loại, sẽ gọi loadFoodsByCategory để cập nhật danh sách dọc
         categoryAdapter = new CategoryHomeAdapter(this, categoryList, this::loadFoodsByCategory);
         categoryRecyclerView.setAdapter(categoryAdapter);
 
@@ -256,40 +230,51 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadFoodsByCategory(String category) {
         if (category.equals("Tất cả")) {
+            // Lấy 5 món ăn bất kỳ cho thể loại "Tất cả"
             db.collection("Foods")
-                    .limit(10)
+                    .limit(5) // Hoặc bạn có thể lấy nhiều hơn nếu muốn
                     .get()
                     .addOnSuccessListener(query -> {
-                        categoryFoodList.clear();
+                        List<FoodModel> categoryFoods = new ArrayList<>();
                         for (QueryDocumentSnapshot document : query) {
                             FoodModel food = document.toObject(FoodModel.class);
                             food.setId(document.getId());
-                            categoryFoodList.add(food);
+                            categoryFoods.add(food);
                         }
-                        categoryFoodAdapter.notifyDataSetChanged();
+                        updateCategoryFoodList(categoryFoods);
                     })
                     .addOnFailureListener(e -> {
                         Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại: ", e);
                         Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                     });
         } else {
+            // Lấy món ăn cho thể loại cụ thể
             db.collection("Foods")
                     .whereEqualTo("category", category)
-                    .limit(10)
+                    .limit(5) // Hoặc bạn có thể lấy nhiều hơn
                     .get()
                     .addOnSuccessListener(query -> {
-                        categoryFoodList.clear();
+                        List<FoodModel> categoryFoods = new ArrayList<>();
                         for (QueryDocumentSnapshot document : query) {
                             FoodModel food = document.toObject(FoodModel.class);
                             food.setId(document.getId());
-                            categoryFoodList.add(food);
+                            categoryFoods.add(food);
                         }
-                        categoryFoodAdapter.notifyDataSetChanged();
+                        updateCategoryFoodList(categoryFoods);
                     })
                     .addOnFailureListener(e -> {
                         Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại: ", e);
                         Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                     });
+        }
+    }
+
+    private void updateCategoryFoodList(List<FoodModel> foods) {
+        categoryFoodList.clear();
+        categoryFoodList.addAll(foods);
+        // CẬP NHẬT UI CỦA DANH SÁCH DỌC
+        if (categoryFoodAdapter != null) {
+            categoryFoodAdapter.notifyDataSetChanged();
         }
     }
 
@@ -299,9 +284,4 @@ public class HomeActivity extends AppCompatActivity {
         intent.putExtra("isSearch", false); // Không phải là tìm kiếm
         startActivity(intent);
     }
-//
-//    private void navigateToCategoryListActivity() {
-//        Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-//        startActivity(intent);
-//    }
 }

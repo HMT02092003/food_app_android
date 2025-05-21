@@ -28,4 +28,5 @@
     <color name="card_background">#FFFFFF</color>
     <color name="text_color">#212121</color>
     <color name="text_color_secondary">#757575</color>
+    <color name="gray_200">#EEEEEE</color>
 </resources>
