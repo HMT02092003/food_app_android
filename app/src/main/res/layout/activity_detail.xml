@@ -81,8 +81,9 @@
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ratingSectionLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp">
@@ -96,39 +97,51 @@
                     android:progressTint="#FFC106"
                     android:rating="3.5"
                     android:stepSize="0.1"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <TextView
                     android:id="@+id/rateTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5 Rating"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
                     app:layout_constraintStart_toEndOf="@+id/ratingBar"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@+id/ratingBar" />
 
-                <ImageView
-                    android:id="@+id/imageView9"
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/categorySectionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp" android:layout_marginEnd="16dp">
+
+                <TextView
+                    android:id="@+id/categoryLabelTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/time"
-                    app:tint="@color/red"
+                    android:text="Thể loại món ăn:"
+                    android:textColor="@color/blue_grey"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/timeTxt"
+                    android:id="@+id/categoryTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="15 min"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView9"
-                    app:layout_constraintTop_toTopOf="parent" />
-
+                    android:layout_marginStart="8dp"
+                    android:text="Món Cơm"
+                    android:textColor="@color/blue_grey"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/categoryLabelTxt"
+                    app:layout_constraintStart_toEndOf="@+id/categoryLabelTxt"
+                    app:layout_constraintTop_toTopOf="@+id/categoryLabelTxt" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -156,8 +169,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
-
-                android:layout_marginEnd="16dp">
+                android:layout_marginEnd="16dp"
+                android:paddingBottom="16dp">
 
                 <TextView
                     android:id="@+id/textView13"
