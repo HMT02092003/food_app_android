@@ -123,6 +123,7 @@ public class HomeActivity extends AppCompatActivity {
             // Intent detailIntent = new Intent(HomeActivity.this, FoodDetailActivity.class);
             // detailIntent.putExtra("foodId", food.getId());
             // startActivity(detailIntent);
+
         });
 
 
@@ -149,6 +150,11 @@ public class HomeActivity extends AppCompatActivity {
 
         categorySeeMoreButton.setOnClickListener(v -> {
             navigateToCategoryListActivity();
+        });
+        // Cài đặt sự kiện click cho userNameTextView
+        userNameTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, PersonInfoActivity.class);
+            startActivity(intent);
         });
     }
 
