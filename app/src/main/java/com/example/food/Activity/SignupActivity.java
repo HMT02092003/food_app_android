@@ -30,7 +30,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 public class SignupActivity extends AppCompatActivity {
 
     private static final String TAG = "SignupActivity";
-    private EditText etFullName, etEmail, etPassword, etRePassword;
+    private EditText etFullName, etEmail, etPassword, etRePassword, etAddress, etPhone, etBio;
     private Button btnLogin;
     private CheckBox cbRemember;
     private TextView tvForgotPassword, tvGoToLogin;
@@ -52,6 +52,9 @@ public class SignupActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etRePassword = findViewById(R.id.etRePassword);
+        etAddress = findViewById(R.id.etAddress);
+        etPhone = findViewById(R.id.etPhone);
+        etBio = findViewById(R.id.etBio);
         btnLogin = findViewById(R.id.btnLogin);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvGoToLogin = findViewById(R.id.tvGoToLogin);
@@ -96,6 +99,9 @@ public class SignupActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
         String rePassword = etRePassword.getText().toString().trim();
+        String address = etAddress.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
+        String bio = etBio.getText().toString().trim();
 
         // Kiểm tra thông tin
         if (TextUtils.isEmpty(fullName)) {
@@ -103,41 +109,49 @@ public class SignupActivity extends AppCompatActivity {
             etFullName.requestFocus();
             return;
         }
-
         if (TextUtils.isEmpty(email)) {
             etEmail.setError("Vui lòng nhập email");
             etEmail.requestFocus();
             return;
         }
-
         if (TextUtils.isEmpty(password)) {
             etPassword.setError("Vui lòng nhập mật khẩu");
             etPassword.requestFocus();
             return;
         }
-
         if (password.length() < 6) {
             etPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
             etPassword.requestFocus();
             return;
         }
-
         if (!password.equals(rePassword)) {
             etRePassword.setError("Mật khẩu nhập lại không khớp");
             etRePassword.requestFocus();
             return;
         }
-
+        if (TextUtils.isEmpty(address)) {
+            etAddress.setError("Vui lòng nhập địa chỉ");
+            etAddress.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(phone)) {
+            etPhone.setError("Vui lòng nhập số điện thoại");
+            etPhone.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(bio)) {
+            etBio.setError("Vui lòng nhập bio");
+            etBio.requestFocus();
+            return;
+        }
         // Hiển thị loading (có thể thêm ProgressBar)
         btnLogin.setEnabled(false);
         btnLogin.setText("Đang xử lý...");
-
         // Kiểm tra email tồn tại
-        checkEmailExists(email, fullName, password);
+        checkEmailExists(email, fullName, password, address, phone, bio);
     }
 
-    private void checkEmailExists(final String email, final String fullName, final String password) {
-        // Phương thức để kiểm tra email đã tồn tại trong hệ thống chưa
+    private void checkEmailExists(final String email, final String fullName, final String password, final String address, final String phone, final String bio) {
         mAuth.fetchSignInMethodsForEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<>() {
                     @Override
@@ -145,10 +159,8 @@ public class SignupActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
                             if (isNewUser) {
-                                // Email chưa được sử dụng, tiến hành đăng ký
-                                createAccount(email, password, fullName);
+                                createAccount(email, password, fullName, address, phone, bio);
                             } else {
-                                // Email đã tồn tại
                                 btnLogin.setEnabled(true);
                                 btnLogin.setText("ĐĂNG KÝ");
                                 etEmail.setError("Email này đã được sử dụng");
@@ -158,7 +170,6 @@ public class SignupActivity extends AppCompatActivity {
                                         Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            // Có lỗi xảy ra khi kiểm tra email
                             btnLogin.setEnabled(true);
                             btnLogin.setText("ĐĂNG KÝ");
                             Toast.makeText(SignupActivity.this,
@@ -169,60 +180,64 @@ public class SignupActivity extends AppCompatActivity {
                 });
     }
 
-    private void createAccount(String email, String password, String fullName) {
-        // Đăng ký tài khoản với Firebase Auth
+    private void createAccount(String email, String password, String fullName, String address, String phone, String bio) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Đăng ký thành công
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-
-                            // Cập nhật profile với fullName
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(fullName)
                                     .build();
-
                             user.updateProfile(profileUpdates)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                Log.d(TAG, "User profile updated.");
-                                                Toast.makeText(SignupActivity.this, "Đăng ký thành công!",
-                                                        Toast.LENGTH_SHORT).show();
-
-                                                FirebaseAuth.getInstance().signOut();
-
-                                                // Chuyển tới màn hình đăng nhập
-                                                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                                        Intent.FLAG_ACTIVITY_CLEAR_TASK |
-                                                        Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                startActivity(intent);
-                                                finish();
+                                                // Lưu thông tin cá nhân vào Firestore
+                                                String uid = user.getUid();
+                                                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                                        .collection("Users")
+                                                        .document(uid)
+                                                        .set(new java.util.HashMap<String, Object>() {{
+                                                            put("name", fullName);
+                                                            put("email", email);
+                                                            put("address", address);
+                                                            put("phone", phone);
+                                                            put("bio", bio);
+                                                        }})
+                                                        .addOnSuccessListener(aVoid -> {
+                                                            Toast.makeText(SignupActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                                                            FirebaseAuth.getInstance().signOut();
+                                                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                                                    Intent.FLAG_ACTIVITY_CLEAR_TASK |
+                                                                    Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                            startActivity(intent);
+                                                            finish();
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            Toast.makeText(SignupActivity.this, "Lỗi lưu thông tin cá nhân", Toast.LENGTH_SHORT).show();
+                                                        });
                                             }
                                         }
                                     });
                         } else {
-                            // Đăng ký thất bại
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             btnLogin.setEnabled(true);
                             btnLogin.setText("ĐĂNG KÝ");
-
                             String errorMessage = "Đăng ký thất bại. Vui lòng thử lại.";
                             if (task.getException() != null) {
-                                if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                    // Email đã tồn tại trong hệ thống
+                                if (task.getException() instanceof com.google.firebase.auth.FirebaseAuthUserCollisionException) {
                                     errorMessage = "Email này đã được sử dụng bởi một tài khoản khác";
                                 } else {
                                     errorMessage = task.getException().getMessage();
                                 }
                             }
                             Toast.makeText(SignupActivity.this, errorMessage,
-                                    Toast.LENGTH_LONG).show();
+                                    android.widget.Toast.LENGTH_LONG).show();
                         }
                     }
                 });

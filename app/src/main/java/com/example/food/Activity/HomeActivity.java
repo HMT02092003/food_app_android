@@ -117,6 +117,13 @@ public class HomeActivity extends AppCompatActivity {
             userNameTextView.setText(userName);
         }
 
+        // Sự kiện click vào tên người dùng
+        userNameTextView.setOnClickListener(v -> {
+            Intent personInfoIntent = new Intent(HomeActivity.this, PersonInfoActivity.class);
+            personInfoIntent.putExtra("name", userName);
+            startActivity(personInfoIntent);
+        });
+
         // Cài đặt sự kiện click cho nút đăng xuất
         logoutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
