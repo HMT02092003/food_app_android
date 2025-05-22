@@ -107,7 +107,7 @@ public class HomeActivity extends AppCompatActivity {
         categoryFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         categoryFoodAdapter = new FoodVerticalAdapter(this, categoryFoodList);
         categoryFoodRecyclerView.setAdapter(categoryFoodAdapter);
-        
+
         // Hiển thị tên người dùng nếu có
         if (userName != null) {
             userNameTextView.setText(userName);
@@ -119,7 +119,17 @@ public class HomeActivity extends AppCompatActivity {
         categoryFoodAdapter.setOnItemClickListener(food -> {
             // Xử lý khi click vào một món ăn trong danh sách thể loại (ví dụ: mở trang chi tiết)
             Toast.makeText(HomeActivity.this, "Bạn đã chọn: " + food.getName(), Toast.LENGTH_SHORT).show();
+            // Bạn có thể mở ListFoodsActivity hoặc DetailActivity ở đây
+            // Intent detailIntent = new Intent(HomeActivity.this, FoodDetailActivity.class);
+            // detailIntent.putExtra("foodId", food.getId());
+            // startActivity(detailIntent);
         });
+
+
+        // Hiển thị tên người dùng
+        if (userName != null) {
+            userNameTextView.setText(userName);
+        }
 
         // Cài đặt sự kiện click cho nút đăng xuất
         logoutButton.setOnClickListener(v -> {
@@ -132,11 +142,11 @@ public class HomeActivity extends AppCompatActivity {
         featuredFoodSeeMoreButton.setOnClickListener(v -> {
             navigateToFoodListActivity("Món ăn nổi bật");
         });
-        
+
         suggestedFoodSeeMoreButton.setOnClickListener(v -> {
             navigateToFoodListActivity("Gợi ý hôm nay");
         });
-        
+
         categorySeeMoreButton.setOnClickListener(v -> {
             navigateToCategoryListActivity();
         });
@@ -161,7 +171,7 @@ public class HomeActivity extends AppCompatActivity {
             // Fallback to setting background color if image loading fails
             heroImageView.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
         }
-        
+
         heroTitleTextView.setText("Khám phá hương vị mới mỗi ngày!");
         heroExploreButton.setOnClickListener(v -> {
             navigateToFoodListActivity("Khám phá");
