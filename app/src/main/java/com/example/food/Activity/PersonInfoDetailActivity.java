@@ -19,16 +19,21 @@ import com.example.food.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class PersonInfoDetailActivity extends AppCompatActivity {
 
-    private EditText userNameDetail, userEmailDetail, userPhoneDetail, userBioDetail;
+    private EditText userNameDetail, userEmailDetail, userPhoneDetail, userBioDetail, userAddressDetail;
     private ImageView avatarDetail, backButton, editAvatarIcon;
     private TextView titleTextView;
     private Button saveButton;
 
     private String photoUrl;
     private FirebaseUser firebaseUser;
+    private FirebaseFirestore db;
+    private String userId;
 
     private static final int REQUEST_CODE_PICK_IMAGE = 1;
 
@@ -42,6 +47,7 @@ public class PersonInfoDetailActivity extends AppCompatActivity {
         userEmailDetail = findViewById(R.id.userEmailDetail);
         userPhoneDetail = findViewById(R.id.userPhoneDetail);
         userBioDetail = findViewById(R.id.userBioDetail);
+        userAddressDetail = findViewById(R.id.userAddressDetail);
         avatarDetail = findViewById(R.id.avatarDetail);
         editAvatarIcon = findViewById(R.id.editPencil);
         titleTextView = findViewById(R.id.title);
@@ -49,6 +55,8 @@ public class PersonInfoDetailActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+        userId = firebaseUser != null ? firebaseUser.getUid() : null;
 
         loadUserInfo();
 
@@ -69,23 +77,30 @@ public class PersonInfoDetailActivity extends AppCompatActivity {
     }
 
     private void loadUserInfo() {
-        if (firebaseUser != null) {
-            String name = firebaseUser.getDisplayName();
-            String email = firebaseUser.getEmail();
-            Uri photoUri = firebaseUser.getPhotoUrl();
-
-            titleTextView.setText("Sửa thông tin");
-            userNameDetail.setText(name != null ? name : "");
-            userEmailDetail.setText(email != null ? email : "");
-
-            if (photoUri != null) {
-                photoUrl = photoUri.toString();
-                Glide.with(this).load(photoUrl).into(avatarDetail);
-            } else {
-                avatarDetail.setImageResource(R.drawable.default_avatar); // Ảnh mặc định
-            }
-
-            // Tùy ý load thêm phone và bio nếu bạn muốn lưu chúng từ trước
+        if (firebaseUser != null && userId != null) {
+            DocumentReference userRef = db.collection("user").document(userId);
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String name = documentSnapshot.getString("name");
+                    String email = documentSnapshot.getString("email");
+                    String phone = documentSnapshot.getString("phone");
+                    String bio = documentSnapshot.getString("bio");
+                    String photo = documentSnapshot.getString("photo");
+                    String address = documentSnapshot.getString("address");
+                    titleTextView.setText("Sửa thông tin");
+                    userNameDetail.setText(name != null ? name : "");
+                    userEmailDetail.setText(email != null ? email : "");
+                    userPhoneDetail.setText(phone != null ? phone : "");
+                    userBioDetail.setText(bio != null ? bio : "");
+                    userAddressDetail.setText(address != null ? address : "");
+                    if (photo != null && !photo.isEmpty()) {
+                        photoUrl = photo;
+                        Glide.with(this).load(photoUrl).into(avatarDetail);
+                    } else {
+                        avatarDetail.setImageResource(R.drawable.default_avatar);
+                    }
+                }
+            });
         }
     }
 
@@ -125,49 +140,59 @@ public class PersonInfoDetailActivity extends AppCompatActivity {
     private void updateFirebaseUser() {
         String updatedName = userNameDetail.getText().toString().trim();
         String updatedEmail = userEmailDetail.getText().toString().trim();
-
-        if (firebaseUser == null) {
+        String updatedPhone = userPhoneDetail.getText().toString().trim();
+        String updatedBio = userBioDetail.getText().toString().trim();
+        String updatedAddress = userAddressDetail.getText().toString().trim();
+        if (firebaseUser == null || userId == null) {
             Toast.makeText(this, "Không tìm thấy người dùng", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        firebaseUser.updateEmail(updatedEmail)
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(this, "Lỗi cập nhật email: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(updatedName)
-                .setPhotoUri(photoUrl != null ? Uri.parse(photoUrl) : null)
-                .build();
-
-        firebaseUser.updateProfile(profileUpdates)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        firebaseUser.reload().addOnCompleteListener(reloadTask -> {
-                            if (reloadTask.isSuccessful()) {
-                                firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                                loadUserInfo(); // cập nhật lại UI
-
-                                Toast.makeText(this, "Đã cập nhật thông tin người dùng", Toast.LENGTH_SHORT).show();
-
-                                // Trả dữ liệu về cho màn trước
-                                Intent resultIntent = new Intent();
-                                resultIntent.putExtra("name", updatedName);
-                                resultIntent.putExtra("email", updatedEmail);
-                                resultIntent.putExtra("photo", photoUrl);
-                                setResult(RESULT_OK, resultIntent);
-                                finish();
-                            } else {
-                                Toast.makeText(this, "Lỗi tải lại thông tin người dùng", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } else {
-                        Toast.makeText(this, "Lỗi cập nhật hồ sơ: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        // Cập nhật Firestore
+        DocumentReference userRef = db.collection("user").document(userId);
+        userRef.update(
+                "name", updatedName,
+                "email", updatedEmail,
+                "phone", updatedPhone,
+                "bio", updatedBio,
+                "address", updatedAddress,
+                "photo", photoUrl
+        ).addOnSuccessListener(aVoid -> {
+            // Cập nhật Auth như cũ
+            firebaseUser.updateEmail(updatedEmail)
+                    .addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            Toast.makeText(this, "Lỗi cập nhật email: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(updatedName)
+                    .setPhotoUri(photoUrl != null ? Uri.parse(photoUrl) : null)
+                    .build();
+            firebaseUser.updateProfile(profileUpdates)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            firebaseUser.reload().addOnCompleteListener(reloadTask -> {
+                                if (reloadTask.isSuccessful()) {
+                                    firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                                    loadUserInfo();
+                                    Toast.makeText(this, "Đã cập nhật thông tin người dùng", Toast.LENGTH_SHORT).show();
+                                    Intent resultIntent = new Intent();
+                                    resultIntent.putExtra("name", updatedName);
+                                    resultIntent.putExtra("email", updatedEmail);
+                                    resultIntent.putExtra("photo", photoUrl);
+                                    setResult(RESULT_OK, resultIntent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(this, "Lỗi tải lại thông tin người dùng", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(this, "Lỗi cập nhật hồ sơ: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override

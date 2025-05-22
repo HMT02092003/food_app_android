@@ -63,7 +63,7 @@
             android:maxLines="3"
             android:ellipsize="end" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnDetail"
             android:layout_width="match_parent"
             android:layout_height="36dp"

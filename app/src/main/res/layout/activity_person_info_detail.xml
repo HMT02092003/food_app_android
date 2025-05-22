@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:fitsSystemWindows="true"
     tools:context=".Activity.PersonInfoDetailActivity">
 
     <!-- Header -->
@@ -86,10 +87,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Họ tên"
+            android:text="Họ và tên"
             android:textAllCaps="true"
             android:textColor="#444444"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <EditText
@@ -98,11 +99,11 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
-            android:hint="Nguyễn Hoàng Cầm"
+            android:hint="Nhập họ và tên"
             android:padding="12dp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -111,7 +112,7 @@
             android:text="EMAIL"
             android:textAllCaps="true"
             android:textColor="#444444"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <EditText
@@ -120,11 +121,11 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
-            android:hint="phuongliet010@gmail.com"
+            android:hint="Nhập email"
             android:padding="12dp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -133,7 +134,7 @@
             android:text="Số điện thoại"
             android:textAllCaps="true"
             android:textColor="#444444"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <EditText
@@ -142,11 +143,33 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
-            android:hint="0356353839"
+            android:hint="Nhập số điện thoại"
             android:padding="12dp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Địa chỉ"
+            android:textAllCaps="true"
+            android:textColor="#444444"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/userAddressDetail"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Nhập địa chỉ"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:textColorHint="#888888"
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -155,7 +178,7 @@
             android:text="BIO"
             android:textAllCaps="true"
             android:textColor="#444444"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <EditText
@@ -165,11 +188,11 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
             android:gravity="top|start"
-            android:hint="I love fast food"
+            android:hint="Nhập bio"
             android:padding="12dp"
             android:textColor="#000000"
             android:textColorHint="#888888"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <!-- Save Button -->

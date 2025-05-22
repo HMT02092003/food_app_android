@@ -2,6 +2,7 @@ package com.example.food.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
@@ -11,10 +12,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.food.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class PersonInfoActivity extends AppCompatActivity {
     private ImageView avatar, backBtn;
-    private TextView userName, userEmail, fullName, editText;
+    private TextView userName, userEmail, userBio, phoneNumber, userAddress;
+    private Button btnLogout, btnEditInfo;
+    private FirebaseFirestore db;
+    private FirebaseUser firebaseUser;
+    private String userId;
 
     // ActivityResultLauncher để nhận kết quả sau khi sửa
     private final ActivityResultLauncher<Intent> editInfoLauncher =
@@ -25,8 +34,6 @@ public class PersonInfoActivity extends AppCompatActivity {
                     String photo = result.getData().getStringExtra("photo");
 
                     userName.setText(name);
-                    fullName.setText(name);
-                    userEmail.setText(email);
                     if (photo != null && !photo.isEmpty()) {
                         Glide.with(this).load(photo).into(avatar);
                     }
@@ -41,33 +48,61 @@ public class PersonInfoActivity extends AppCompatActivity {
         // Khởi tạo view
         avatar = findViewById(R.id.avatarDetail);
         userName = findViewById(R.id.userName);
-        fullName = findViewById(R.id.fullName);
+        userBio = findViewById(R.id.userBio);
         userEmail = findViewById(R.id.userEmail);
-        editText = findViewById(R.id.editText);
+        phoneNumber = findViewById(R.id.phoneNumber);
+        userAddress = findViewById(R.id.userAddress);
         backBtn = findViewById(R.id.backBtn);
+        btnLogout = findViewById(R.id.btnLogout);
+        btnEditInfo = findViewById(R.id.btnEditInfo);
 
-        // Xử lý nút quay lại
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+        userId = firebaseUser != null ? firebaseUser.getUid() : null;
+
         backBtn.setOnClickListener(v -> finish());
-
-        // Nhận dữ liệu từ Firebase hoặc Intent (lần đầu)
-        Intent intent = getIntent();
-        String name = intent.getStringExtra("name");
-        String email = intent.getStringExtra("email");
-        String photo = intent.getStringExtra("photo");
-
-        userName.setText(name);
-        fullName.setText(name);
-        userEmail.setText(email);
-        if (photo != null && !photo.isEmpty()) {
-            Glide.with(this).load(photo).into(avatar);
-        }
-
-        editText.setOnClickListener(v -> {
-            Intent detailIntent = new Intent(PersonInfoActivity.this, PersonInfoDetailActivity.class);
-            detailIntent.putExtra("name", name);
-            detailIntent.putExtra("email", email);
-            detailIntent.putExtra("photo", photo);
-            editInfoLauncher.launch(detailIntent);
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(PersonInfoActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
+        btnEditInfo.setOnClickListener(v -> {
+            Intent intent = new Intent(PersonInfoActivity.this, PersonInfoDetailActivity.class);
+            startActivity(intent);
+        });
+
+        loadUserInfo();
+    }
+
+    private void loadUserInfo() {
+        if (firebaseUser != null && userId != null) {
+            DocumentReference userRef = db.collection("user").document(userId);
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                String name = null, email = null, phone = null, bio = null, photo = null, address = null;
+                if (documentSnapshot.exists()) {
+                    name = documentSnapshot.getString("name");
+                    email = documentSnapshot.getString("email");
+                    phone = documentSnapshot.getString("phone");
+                    bio = documentSnapshot.getString("bio");
+                    photo = documentSnapshot.getString("photo");
+                    address = documentSnapshot.getString("address");
+                }
+                if (name == null) name = firebaseUser.getDisplayName();
+                if (email == null) email = firebaseUser.getEmail();
+                if (photo == null && firebaseUser.getPhotoUrl() != null) photo = firebaseUser.getPhotoUrl().toString();
+                userName.setText(name != null ? name : "");
+                userEmail.setText(email != null ? email : "");
+                userBio.setText(bio != null ? bio : "");
+                phoneNumber.setText(phone != null ? phone : "");
+                userAddress.setText(address != null ? address : "");
+                if (photo != null && !photo.isEmpty()) {
+                    Glide.with(this).load(photo).into(avatar);
+                } else {
+                    avatar.setImageResource(R.drawable.default_avatar);
+                }
+            });
+        }
     }
 }

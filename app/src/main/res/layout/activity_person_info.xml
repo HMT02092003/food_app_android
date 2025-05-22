@@ -3,84 +3,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        tools:context=".Activity.PersonInfoActivity">
+        android:orientation="vertical"
+        android:padding="0dp"
+        android:gravity="center_horizontal">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/headerLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/backBtnContainer"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/circle_background"
-                android:backgroundTint="#D3D3D3"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:id="@+id/backBtn"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/back"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <TextView
-                android:id="@+id/editText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sửa"
-                android:textColor="#FF7B30"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/titleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:text="Thông tin cá nhân"
-                android:textColor="#000000"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/editText"
-                app:layout_constraintHorizontal_bias="0.502"
-                app:layout_constraintStart_toEndOf="@id/backBtnContainer"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <!-- Header -->
         <LinearLayout
-            android:id="@+id/avatarGroup"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/headerLayout">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="32dp"
+            android:paddingBottom="8dp">
+            <ImageView
+                android:id="@+id/backBtn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/back"
+                android:background="@drawable/circle_background"
+                android:backgroundTint="#F3F3F3"
+                android:padding="4dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Profile"
+                android:textColor="#222"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
+        <!-- Avatar, Name, Tagline -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="8dp">
             <ImageView
                 android:id="@+id/avatarDetail"
                 android:layout_width="100dp"
@@ -88,156 +54,200 @@
                 android:background="@drawable/circle_background"
                 android:backgroundTint="#FFD4BC"
                 android:scaleType="centerCrop"
-                android:src="@drawable/intro_pic" />
-
+                android:src="@drawable/intro_pic"
+                android:layout_marginTop="8dp" />
             <TextView
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Nguyễn Hoàng Cầm"
-                android:textColor="#000000"
-                android:textSize="18sp"
+                android:layout_marginTop="12dp"
+                android:text="Tên người dùng"
+                android:textColor="#222"
+                android:textSize="22sp"
                 android:textStyle="bold" />
-
             <TextView
-                android:id="@+id/userTagline"
+                android:id="@+id/userBio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="I love fast food"
-                android:textColor="#999999"
+                android:text="Bio"
+                android:textColor="#999"
                 android:textSize="16sp" />
         </LinearLayout>
 
+        <!-- CardView: Thông tin cá nhân -->
         <androidx.cardview.widget.CardView
-            android:id="@+id/infoCard"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:cardCornerRadius="20dp"
             app:cardElevation="2dp"
-            android:backgroundTint="#F8FAFB"
-            app:layout_constraintTop_toBottomOf="@id/avatarGroup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp">
-
+            android:backgroundTint="#FFFFFF">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
-
+                android:padding="20dp">
+                <!-- Họ tên -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
                     <ImageView
-                        android:layout_width="35dp"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/icon" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_person"
+                        android:contentDescription="icon person" />
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Họ tên"
-                            android:textAllCaps="true"
-                            android:textColor="#444444"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/fullName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Nguyễn Hoàng Cầm"
-                            android:textColor="#000000"
-                            android:textSize="18sp" />
-                    </LinearLayout>
+                        android:layout_marginStart="12dp"
+                        android:text="Họ và tên: "
+                        android:textColor="#444"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/fullName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text=""
+                        android:textColor="#222"
+                        android:textSize="16sp" />
                 </LinearLayout>
-
+                <!-- Email -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
                     <ImageView
-                        android:layout_width="35dp"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/email" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_gmail"
+                        android:contentDescription="icon email" />
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="EMAIL"
-                            android:textAllCaps="true"
-                            android:textColor="#444444"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/userEmail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="phuongliet010@gmail.com"
-                            android:textColor="#000000"
-                            android:textSize="18sp" />
-                    </LinearLayout>
+                        android:layout_marginStart="12dp"
+                        android:text="Email: "
+                        android:textColor="#444"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/userEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text=""
+                        android:textColor="#222"
+                        android:textSize="16sp" />
                 </LinearLayout>
-
+                <!-- Địa chỉ -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
                     <ImageView
-                        android:layout_width="35dp"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/phone" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        android:tint="#7B61FF"
+                        android:contentDescription="icon address" />
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Số điện thoại"
-                            android:textAllCaps="true"
-                            android:textColor="#444444"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/phoneNumber"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0356353839"
-                            android:textColor="#000000"
-                            android:textSize="18sp" />
-                    </LinearLayout>
+                        android:layout_marginStart="12dp"
+                        android:text="Địa chỉ: "
+                        android:textColor="#444"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/userAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text=""
+                        android:textColor="#222"
+                        android:textSize="16sp" />
+                </LinearLayout>
+                <!-- Số điện thoại -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_phone"
+                        android:contentDescription="icon phone" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="Số điện thoại: "
+                        android:textColor="#444"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/phoneNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text=""
+                        android:textColor="#222"
+                        android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Nút chỉnh sửa thông tin cá nhân -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnEditInfo"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:backgroundTint="@color/orange"
+            android:text="Chỉnh sửa thông tin"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="@drawable/btn_background" />
+
+        <!-- Spacer để đẩy nút đăng xuất xuống cuối -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Nút đăng xuất -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:backgroundTint="@color/orange"
+            android:text="Đăng xuất"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="@drawable/btn_background" />
+
+    </LinearLayout>
 </ScrollView>
