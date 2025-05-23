@@ -30,9 +30,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+import java.util.Random; // Random không được sử dụng, có thể xóa nếu không cần
 
-public class HomeActivity extends AppCompatActivity {
+// SỬA LỖI: Thêm 'implements CategoryHomeAdapter.OnCategoryClickListener' vào đây
+public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapter.OnCategoryClickListener {
 
     private TextView userNameTextView;
     private ImageView logoutButton;
@@ -55,10 +56,9 @@ public class HomeActivity extends AppCompatActivity {
     private Button categorySeeMoreButton;
     private List<String> categoryList = new ArrayList<>();
 
-    // KHAI BÁO MỚI CHO DANH SÁCH MÓN ĂN THEO THỂ LOẠI DẠNG DỌC
-    private RecyclerView categoryFoodRecyclerView; // Ánh xạ từ XML
-    private FoodVerticalAdapter categoryFoodAdapter; // Adapter mới
-    private List<FoodModel> categoryFoodList = new ArrayList<>(); // Danh sách dữ liệu cho adapter này
+    private RecyclerView categoryFoodRecyclerView;
+    private FoodVerticalAdapter categoryFoodAdapter;
+    private List<FoodModel> categoryFoodList = new ArrayList<>();
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String userName;
@@ -117,15 +117,30 @@ public class HomeActivity extends AppCompatActivity {
     private void setupListeners() {
         // Tùy chọn: Đặt lắng nghe sự kiện click cho các item trong danh sách dọc
         categoryFoodAdapter.setOnItemClickListener(food -> {
-            // Xử lý khi click vào một món ăn trong danh sách thể loại (ví dụ: mở trang chi tiết)
             Toast.makeText(HomeActivity.this, "Bạn đã chọn: " + food.getName(), Toast.LENGTH_SHORT).show();
-            // Bạn có thể mở ListFoodsActivity hoặc DetailActivity ở đây
-            // Intent detailIntent = new Intent(HomeActivity.this, FoodDetailActivity.class);
-            // detailIntent.putExtra("foodId", food.getId());
-            // startActivity(detailIntent);
 
+            // Đảm bảo truyền đúng các key và lấy đúng giá trị từ FoodModel
+            Intent detailIntent = new Intent(HomeActivity.this, DetailActivity.class);
+            detailIntent.putExtra("foodId", food.getId());
+            detailIntent.putExtra("foodName", food.getName());
+            detailIntent.putExtra("foodPrice", food.getPrice());
+            detailIntent.putExtra("foodIngredients", food.getIngredients());
+
+            // Truyền 'details' (FoodModel.getDetails()) vào key "foodDescription"
+            detailIntent.putExtra("foodDescription", food.getDetails());
+
+            // Lấy URL ảnh đầu tiên từ danh sách 'imageUrls' để truyền dưới dạng String
+            String imageUrlToPass = "";
+            if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
+                imageUrlToPass = food.getImageUrls().get(0);
+            }
+            detailIntent.putExtra("foodImagePath", imageUrlToPass);
+
+            detailIntent.putExtra("foodCategory", food.getCategory());
+            detailIntent.putExtra("foodRating", food.getRating());
+
+            startActivity(detailIntent);
         });
-
 
         // Hiển thị tên người dùng
         if (userName != null) {
@@ -139,27 +154,23 @@ public class HomeActivity extends AppCompatActivity {
             finish();
         });
 
-        // Cài đặt sự kiện click cho nút "Xem thêm"
+        // Cài đặt sự kiện click cho nút "Xem thêm" Featured Food
         featuredFoodSeeMoreButton.setOnClickListener(v -> {
             navigateToFoodListActivity("Món ăn nổi bật");
         });
 
+        // Cài đặt sự kiện click cho nút "Xem thêm" Suggested Food
         suggestedFoodSeeMoreButton.setOnClickListener(v -> {
             navigateToFoodListActivity("Gợi ý hôm nay");
         });
 
+        // Cài đặt sự kiện click cho nút "Xem thêm" Category (hiện tại chỉ Toast)
         categorySeeMoreButton.setOnClickListener(v -> {
             navigateToCategoryListActivity();
-        });
-        // Cài đặt sự kiện click cho userNameTextView
-        userNameTextView.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, PersonInfoActivity.class);
-            startActivity(intent);
         });
     }
 
     private void loadData() {
-        // Tải dữ liệu
         loadHeroSection();
         loadFeaturedFoods();
         loadSuggestedFoods();
@@ -168,13 +179,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadHeroSection() {
         try {
-            // Sử dụng placeholder đơn giản
             Glide.with(this)
                     .load(R.drawable.hero_placeholder)
                     .into(heroImageView);
         } catch (Exception e) {
             Log.e("HomeActivity", "Error loading hero image: " + e.getMessage());
-            // Fallback to setting background color if image loading fails
             heroImageView.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
         }
 
@@ -189,9 +198,7 @@ public class HomeActivity extends AppCompatActivity {
         featuredFoodAdapter = new FoodHomeAdapter(this, featuredFoodList);
         featuredFoodRecyclerView.setAdapter(featuredFoodAdapter);
 
-        // Show a loading indicator or placeholder while data is being fetched
         try {
-            // Lấy 5 món ăn nổi bật - với timeout để tránh ANR
             db.collection("Foods")
                     .limit(5)
                     .get()
@@ -203,7 +210,7 @@ public class HomeActivity extends AppCompatActivity {
                                 food.setId(document.getId());
                                 featuredFoodList.add(food);
                             } catch (Exception e) {
-                                Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu: " + e.getMessage());
+                                Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu khi tải món ăn nổi bật: " + e.getMessage());
                             }
                         }
                         if (isDestroyed() || isFinishing()) return;
@@ -215,7 +222,7 @@ public class HomeActivity extends AppCompatActivity {
                         Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                     });
         } catch (Exception e) {
-            Log.e("HomeActivity", "Lỗi không xác định: " + e.getMessage());
+            Log.e("HomeActivity", "Lỗi không xác định khi tải món ăn nổi bật: " + e.getMessage());
         }
     }
 
@@ -225,7 +232,6 @@ public class HomeActivity extends AppCompatActivity {
         suggestedFoodRecyclerView.setAdapter(suggestedFoodAdapter);
 
         try {
-            // Lấy 5 món ăn đề xuất trong ngày
             db.collection("Foods")
                     .limit(5)
                     .get()
@@ -238,7 +244,7 @@ public class HomeActivity extends AppCompatActivity {
                                 food.setId(document.getId());
                                 suggestedFoodList.add(food);
                             } catch (Exception e) {
-                                Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu: " + e.getMessage());
+                                Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu khi tải món ăn đề xuất: " + e.getMessage());
                             }
                         }
                         suggestedFoodAdapter.notifyDataSetChanged();
@@ -249,7 +255,7 @@ public class HomeActivity extends AppCompatActivity {
                         Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                     });
         } catch (Exception e) {
-            Log.e("HomeActivity", "Lỗi không xác định: " + e.getMessage());
+            Log.e("HomeActivity", "Lỗi không xác định khi tải món ăn đề xuất: " + e.getMessage());
         }
     }
 
@@ -268,18 +274,33 @@ public class HomeActivity extends AppCompatActivity {
                 "Món tráng miệng",
                 "Món vùng miền"
         ));
-        // Khi click vào một thể loại, sẽ gọi loadFoodsByCategory để cập nhật danh sách dọc
-        categoryAdapter = new CategoryHomeAdapter(this, categoryList, this::loadFoodsByCategory);
+
+        // Khởi tạo CategoryHomeAdapter và truyền 'this' làm OnCategoryClickListener
+        // HomeActivity giờ đã implement interface này.
+        categoryAdapter = new CategoryHomeAdapter(this, categoryList, this); // Truyền 'this' ở đây
         categoryRecyclerView.setAdapter(categoryAdapter);
 
         // Load món ăn cho thể loại "Tất cả" ngay khi khởi tạo
+        // và đảm bảo category "Tất cả" được đánh dấu là selected
         loadFoodsByCategory("Tất cả");
+        categoryAdapter.setSelectedCategory("Tất cả"); // Đặt "Tất cả" là được chọn ban đầu
     }
 
+    // THÊM PHƯƠNG THỨC NÀY ĐỂ IMPLEMENT CategoryHomeAdapter.OnCategoryClickListener
+    @Override
+    public void onCategoryClick(String category) {
+        // Log.d("HomeActivity", "Category clicked: " + category); // Để debug
+        loadFoodsByCategory(category); // Tải món ăn theo category được chọn
+        // Không cần gọi categoryAdapter.setSelectedCategory(category) ở đây
+        // vì logic đó đã được xử lý bên trong adapter khi click.
+    }
+
+
     private void loadFoodsByCategory(String category) {
+        // Log.d("HomeActivity", "Loading foods for category: " + category); // Để debug
+
         try {
             if (category.equals("Tất cả")) {
-                // Lấy 5 món ăn bất kỳ cho thể loại "Tất cả"
                 db.collection("Foods")
                         .limit(5)
                         .get()
@@ -292,18 +313,17 @@ public class HomeActivity extends AppCompatActivity {
                                     food.setId(document.getId());
                                     categoryFoods.add(food);
                                 } catch (Exception e) {
-                                    Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu: " + e.getMessage());
+                                    Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu khi tải thể loại 'Tất cả': " + e.getMessage());
                                 }
                             }
                             updateCategoryFoodList(categoryFoods);
                         })
                         .addOnFailureListener(e -> {
                             if (isDestroyed() || isFinishing()) return;
-                            Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại: ", e);
+                            Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại 'Tất cả': ", e);
                             Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                         });
             } else {
-                // Lấy món ăn cho thể loại cụ thể
                 db.collection("Foods")
                         .whereEqualTo("category", category)
                         .limit(5)
@@ -317,26 +337,25 @@ public class HomeActivity extends AppCompatActivity {
                                     food.setId(document.getId());
                                     categoryFoods.add(food);
                                 } catch (Exception e) {
-                                    Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu: " + e.getMessage());
+                                    Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu khi tải thể loại '" + category + "': " + e.getMessage());
                                 }
                             }
                             updateCategoryFoodList(categoryFoods);
                         })
                         .addOnFailureListener(e -> {
                             if (isDestroyed() || isFinishing()) return;
-                            Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại: ", e);
+                            Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại '" + category + "': ", e);
                             Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
                         });
             }
         } catch (Exception e) {
-            Log.e("HomeActivity", "Lỗi không xác định: " + e.getMessage());
+            Log.e("HomeActivity", "Lỗi không xác định khi tải món ăn theo thể loại: " + e.getMessage());
         }
     }
 
     private void updateCategoryFoodList(List<FoodModel> foods) {
         categoryFoodList.clear();
         categoryFoodList.addAll(foods);
-        // CẬP NHẬT UI CỦA DANH SÁCH DỌC
         if (categoryFoodAdapter != null) {
             categoryFoodAdapter.notifyDataSetChanged();
         }
@@ -345,12 +364,11 @@ public class HomeActivity extends AppCompatActivity {
     private void navigateToFoodListActivity(String title) {
         Intent intent = new Intent(HomeActivity.this, ListFoodsActivity.class);
         intent.putExtra("title", title);
-        intent.putExtra("isSearch", false); // Không phải là tìm kiếm
+        intent.putExtra("isSearch", false);
         startActivity(intent);
     }
 
     private void navigateToCategoryListActivity() {
-        // Implement the logic to navigate to the category list activity
         Toast.makeText(this, "Chức năng xem thêm thể loại sẽ được cập nhật sau", Toast.LENGTH_SHORT).show();
     }
 }
