@@ -63,7 +63,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
             titleTxt=itemView.findViewById(R.id.titleTxt);
             priceTxt=itemView.findViewById(R.id.priceTxt);
             rateTxt=itemView.findViewById(R.id.rateTxt);
-            timeTxt=itemView.findViewById(R.id.timeTxt);
+            timeTxt=itemView.findViewById(R.id.commentTxt);
             pic=itemView.findViewById(R.id.img);
 
         }

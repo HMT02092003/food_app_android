@@ -60,7 +60,7 @@ public class BestFoodsAdapter extends RecyclerView.Adapter<BestFoodsAdapter.view
             titleTxt=itemView.findViewById(R.id.titleTxt);
             priceTxt=itemView.findViewById(R.id.priceTxt);
             starTxt=itemView.findViewById(R.id.starTxt);
-            timeTxt=itemView.findViewById(R.id.timeTxt);
+            timeTxt=itemView.findViewById(R.id.commentTxt);
             pic=itemView.findViewById(R.id.pic);
         }
     }

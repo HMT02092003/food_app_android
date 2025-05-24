@@ -42,29 +42,19 @@ public class CategoryHomeAdapter extends RecyclerView.Adapter<CategoryHomeAdapte
         String categoryName = categoryList.get(position);
         holder.categoryNameTextView.setText(categoryName);
 
-        // Đặt trạng thái selected cho TextView dựa trên vị trí hiện tại
+        // Set selected state for TextView
         holder.categoryNameTextView.setSelected(position == selectedPosition);
 
-        // Đặt lắng nghe sự kiện click cho toàn bộ item (CardView)
+        // Set click listener for the entire item
         holder.itemView.setOnClickListener(v -> {
-            // *** ĐÃ SỬA: SỬ DỤNG holder.getAdapterPosition() ĐỂ LẤY VỊ TRÍ CHÍNH XÁC ***
             int clickedPosition = holder.getAdapterPosition();
-
-            // Đảm bảo clickedPosition là hợp lệ
             if (clickedPosition != RecyclerView.NO_POSITION) {
-                // Chỉ cập nhật nếu vị trí click khác với vị trí đã chọn
                 if (clickedPosition != selectedPosition) {
                     int previousSelectedPosition = selectedPosition;
-                    selectedPosition = clickedPosition; // Cập nhật vị trí được chọn mới
-
-                    // Thông báo cho RecyclerView cập nhật lại trạng thái màu của
-                    // cả item cũ (không còn được chọn) và item mới (được chọn)
+                    selectedPosition = clickedPosition;
                     notifyItemChanged(previousSelectedPosition);
                     notifyItemChanged(selectedPosition);
                 }
-
-                // Gọi callback cho HomeActivity biết category nào đã được chọn
-                // Sử dụng categoryList.get(clickedPosition) để đảm bảo lấy đúng category
                 if (onCategoryClickListener != null) {
                     onCategoryClickListener.onCategoryClick(categoryList.get(clickedPosition));
                 }

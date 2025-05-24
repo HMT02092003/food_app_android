@@ -1,19 +1,16 @@
 package com.example.food.Adapter;
 
 import android.content.Context;
-import android.content.Intent; // Import Intent
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Button; // Import Button nếu btnDetail là Button
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.food.Activity.DetailActivity; // Import DetailActivity
 import com.example.food.Model.FoodModel;
 import com.example.food.R;
 
@@ -23,6 +20,17 @@ public class FoodHomeAdapter extends RecyclerView.Adapter<FoodHomeAdapter.ViewHo
 
     private Context context;
     private List<FoodModel> foodList;
+    private OnItemClickListener listener;
+
+    // Interface để xử lý sự kiện click trên item
+    public interface OnItemClickListener {
+        void onItemClick(FoodModel food);
+    }
+
+    // Setter cho listener, để HomeActivity có thể đăng ký
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public FoodHomeAdapter(Context context, List<FoodModel> foodList) {
         this.context = context;
@@ -39,37 +47,35 @@ public class FoodHomeAdapter extends RecyclerView.Adapter<FoodHomeAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FoodModel food = foodList.get(position);
-        holder.foodNameTextView.setText(food.getName());
-        holder.foodPriceTextView.setText(String.format("%,.0f VNĐ", food.getPrice())); // Thêm định dạng tiền tệ
-        holder.foodDescriptionTextView.setText(food.getDetails()); // Sử dụng getDetails() thay vì getDescription()
 
-        // Luôn hiển thị ảnh món ăn
-        if (holder.foodImageView != null) {
-            holder.foodImageView.setVisibility(View.VISIBLE);
-            if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
-                Glide.with(context)
-                        .load(food.getImageUrls().get(0))
-                        .placeholder(R.drawable.food_placeholder)
-                        .into(holder.foodImageView);
-            } else {
-                holder.foodImageView.setImageResource(R.drawable.food_placeholder);
-            }
+        holder.foodNameTextView.setText(food.getName());
+        holder.foodPriceTextView.setText(String.format("%,.0f VNĐ", food.getPrice()));
+        holder.foodDescriptionTextView.setText(food.getDetails());
+
+        // Load hình ảnh bằng Glide
+        if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
+            Glide.with(context)
+                    .load(food.getImageUrls().get(0))
+                    .placeholder(R.drawable.food_placeholder)
+                    .error(R.drawable.food_placeholder)
+                    .into(holder.foodImageView);
+        } else {
+            holder.foodImageView.setImageResource(R.drawable.food_placeholder);
         }
 
-        // --- Xử lý sự kiện click cho nút "Xem chi tiết" ---
-        holder.btnDetail.setOnClickListener(v -> {
-            Intent intent = new Intent(context, DetailActivity.class);
-            // Truyền tất cả thông tin của món ăn sang DetailActivity
-            intent.putExtra("foodId", food.getId()); // ID của món ăn
-            intent.putExtra("foodName", food.getName());
-            intent.putExtra("foodPrice", food.getPrice());
-            intent.putExtra("foodDescription", food.getDetails()); // Truyền getDetails()
-            intent.putExtra("foodImagePath", food.getImageUrls() != null && !food.getImageUrls().isEmpty() ? food.getImageUrls().get(0) : ""); // Lấy URL ảnh đầu tiên
-            intent.putExtra("foodRating", food.getRating()); // Giả sử FoodModel có getRating()
-            intent.putExtra("foodCategory", food.getCategory()); // Giả sử FoodModel có getCategory()
-            intent.putExtra("foodIngredients", food.getIngredients()); // Giả sử FoodModel có getIngredients()
+        // --- Đặt dữ liệu cho Rating và Review Count ---
+        // Đảm bảo FoodModel của bạn có các phương thức getRating() và getReviewCount()
+        // Nếu FoodModel không có các trường này, bạn cần thêm chúng vào FoodModel.java
+        // và đảm bảo dữ liệu này có trong Firestore.
+        holder.ratingTextView.setText(String.valueOf(food.getRating())); // Hiển thị rating (ví dụ: 4.5)
+        holder.reviewCountTextView.setText(String.format("(%d đánh giá)", food.getReviewCount())); // Hiển thị số lượng đánh giá (ví dụ: (120 đánh giá))
 
-            context.startActivity(intent);
+
+        // --- Đặt OnClickListener cho toàn bộ itemView ---
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(food);
+            }
         });
     }
 
@@ -83,7 +89,8 @@ public class FoodHomeAdapter extends RecyclerView.Adapter<FoodHomeAdapter.ViewHo
         TextView foodNameTextView;
         TextView foodPriceTextView;
         TextView foodDescriptionTextView;
-        Button btnDetail; // Thay đổi từ View sang Button vì bạn dùng AppCompatButton
+        TextView ratingTextView;    // Ánh xạ TextView rating
+        TextView reviewCountTextView; // Ánh xạ TextView review count
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -91,7 +98,8 @@ public class FoodHomeAdapter extends RecyclerView.Adapter<FoodHomeAdapter.ViewHo
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
             foodPriceTextView = itemView.findViewById(R.id.foodPriceTextView);
             foodDescriptionTextView = itemView.findViewById(R.id.foodDescriptionTextView);
-            btnDetail = itemView.findViewById(R.id.btnDetail); // Ánh xạ đúng kiểu Button
+            ratingTextView = itemView.findViewById(R.id.ratingTextView); // Ánh xạ từ item_food_home.xml
+            reviewCountTextView = itemView.findViewById(R.id.reviewCountTextView); // Ánh xạ từ item_food_home.xml
         }
     }
 }

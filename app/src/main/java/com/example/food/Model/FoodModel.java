@@ -7,19 +7,20 @@ public class FoodModel {
     private String name;
     private double price;
     private String ingredients; // Trường nguyên liệu
-    private String details;     // Trường mô tả chi tiết món ăn (tên cũ là 'description' ở các lần trước)
-    private List<String> imageUrls; // Danh sách các URL ảnh (tên cũ là 'imagePath' nếu là 1 ảnh duy nhất)
+    private String details;     // Trường mô tả chi tiết món ăn
+    private List<String> imageUrls; // Danh sách các URL ảnh
     private String category;
     private float rating;
+    private int reviewCount; // *** ĐÃ THÊM: Trường để lưu số lượng đánh giá ***
 
     public FoodModel() {
         // Constructor rỗng cần thiết cho Firestore để tự động chuyển đổi dữ liệu
     }
 
     // Constructor đầy đủ
-    // Đã bao gồm tất cả các trường hiện có
+    // Đã bao gồm tất cả các trường hiện có, bao gồm reviewCount
     public FoodModel(String id, String name, double price, String ingredients, String details,
-                     List<String> imageUrls, String category, float rating) {
+                     List<String> imageUrls, String category, float rating, int reviewCount) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -28,6 +29,7 @@ public class FoodModel {
         this.imageUrls = imageUrls;
         this.category = category;
         this.rating = rating;
+        this.reviewCount = reviewCount; // Khởi tạo reviewCount
     }
 
     // --- Getters và Setters ---
@@ -65,22 +67,18 @@ public class FoodModel {
         this.ingredients = ingredients;
     }
 
-    // Getter cho trường 'details' (mô tả)
     public String getDetails() {
         return details;
     }
 
-    // Setter cho trường 'details' (mô tả)
     public void setDetails(String details) {
         this.details = details;
     }
 
-    // Getter cho trường 'imageUrls' (danh sách URL ảnh)
     public List<String> getImageUrls() {
         return imageUrls;
     }
 
-    // Setter cho trường 'imageUrls' (danh sách URL ảnh)
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
     }
@@ -99,5 +97,14 @@ public class FoodModel {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    // *** ĐÃ THÊM: Getter và Setter cho reviewCount ***
+    public int getReviewCount() {
+        return reviewCount;
+    }
+
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
     }
 }

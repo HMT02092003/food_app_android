@@ -115,15 +115,6 @@
                 android:textSize="13sp"
                 tools:text="Mô tả ngắn về món ăn này và các thành phần chính của nó" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/orderButton"
-                android:layout_width="match_parent"
-                android:layout_height="36dp"
-                android:layout_marginTop="8dp"
-                android:text="Xem thêm"
-                android:textColor="@android:color/white"
-                app:cornerRadius="8dp" />
-
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

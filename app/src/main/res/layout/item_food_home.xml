@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="200dp"
     android:layout_height="320dp"
     android:layout_margin="8dp"
@@ -51,30 +52,61 @@
         <TextView
             android:id="@+id/foodDescriptionTextView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="4dp"
+            android:text="Mô tả ngắn về món ăn này và các thành phần chính của nó"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="Mô tả ngắn về món ăn này và các thành phần chính của nó"
-            android:textSize="13sp"
-            android:textColor="@color/text_color_secondary"
-            android:maxLines="3"
-            android:ellipsize="end" />
+            android:paddingBottom="8dp"
+            android:gravity="center_vertical">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnDetail"
-            android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="8dp"
-            android:text="Xem chi tiết"
-            android:textColor="@android:color/white"
-            android:background="@drawable/rounded_button_orange"
-            android:textSize="14sp"
-            android:elevation="2dp" />
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_star"
+                app:tint="@color/orange_500"
+                android:contentDescription="Icon ngôi sao đánh giá" />
+
+            <TextView
+                android:id="@+id/ratingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="4.5" />
+
+            <TextView
+                android:id="@+id/reviewCountTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@color/text_color_secondary"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                tools:text="(120 đánh giá)" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
 
     </LinearLayout>
 

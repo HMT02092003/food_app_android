@@ -20,21 +20,22 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
+                android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/backBtn"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:padding="12dp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/arrow" />
 
                 <TextView
                     android:id="@+id/titleTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Title"
+                    android:text="Món ăn nổi bật"
                     android:textColor="#263238"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -43,6 +44,115 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/filterBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/grey_background"
+                    android:padding="12dp"
+                    android:visibility="gone"
+                    tools:srcCompat="@drawable/settings" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/grey_background"
+                    android:minHeight="50dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/searchEdt"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:background="@color/grey"
+                        android:drawablePadding="8dp"
+                        android:ems="10"
+                        android:hint="Tìm kiếm món ăn..."
+                        android:inputType="text"
+                        android:padding="8dp"
+                        android:textAlignment="center"
+                        android:textColor="#6699CC"
+                        android:textColorHint="#6699CC"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:id="@+id/searchBtn"
+                        android:layout_width="42dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="4dp"
+                        android:layout_weight="1"
+                        android:padding="4dp"
+                        tools:srcCompat="@drawable/search_icon" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/cartBtn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/grey_background"
+                    android:padding="12dp"
+                    android:visibility="gone"
+                    tools:srcCompat="@drawable/basket" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:text="Chọn thể loại món ăn"
+                android:textColor="#B0BEC5"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="120dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/categoryView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/progressBarCategory"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/categoryView"
+                    app:layout_constraintStart_toStartOf="@+id/categoryView"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -54,18 +164,18 @@
                     android:layout_height="match_parent"
                     tools:layout_editor_absoluteX="0dp"
                     tools:layout_editor_absoluteY="26dp" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/foodListView" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="@+id/scrollView2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

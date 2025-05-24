@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,13 +27,13 @@ import com.example.food.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random; // Random không được sử dụng, có thể xóa nếu không cần
 
-// SỬA LỖI: Thêm 'implements CategoryHomeAdapter.OnCategoryClickListener' vào đây
 public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapter.OnCategoryClickListener {
 
     private TextView userNameTextView;
@@ -53,7 +54,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
     private RecyclerView categoryRecyclerView;
     private CategoryHomeAdapter categoryAdapter;
-    private Button categorySeeMoreButton;
+    private ProgressBar progressBarCategory;
+    private ProgressBar progressBarFoodList;
     private List<String> categoryList = new ArrayList<>();
 
     private RecyclerView categoryFoodRecyclerView;
@@ -74,7 +76,6 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
             return insets;
         });
 
-        // Nhận thông tin người dùng (nếu có)
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("name")) {
             userName = intent.getStringExtra("name");
@@ -86,7 +87,6 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
     }
 
     private void initViews() {
-        // Ánh xạ các view
         userNameTextView = findViewById(R.id.userNameTextView);
         logoutButton = findViewById(R.id.logoutButton);
         heroImageView = findViewById(R.id.heroImageView);
@@ -100,73 +100,56 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         suggestedFoodSeeMoreButton = findViewById(R.id.suggestedFoodSeeMoreButton);
 
         categoryRecyclerView = findViewById(R.id.categoryRecyclerView);
-        categorySeeMoreButton = findViewById(R.id.categorySeeMoreButton);
-
-        // ÁNH XẠ VÀ CÀI ĐẶT CHO categoryFoodRecyclerView MỚI
+        progressBarCategory = findViewById(R.id.progressBarCategory);
+        progressBarFoodList = findViewById(R.id.progressBarFoodList);
         categoryFoodRecyclerView = findViewById(R.id.categoryFoodRecyclerView);
         categoryFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         categoryFoodAdapter = new FoodVerticalAdapter(this, categoryFoodList);
         categoryFoodRecyclerView.setAdapter(categoryFoodAdapter);
 
-        // Hiển thị tên người dùng nếu có
         if (userName != null) {
             userNameTextView.setText(userName);
         }
     }
 
     private void setupListeners() {
-        // Tùy chọn: Đặt lắng nghe sự kiện click cho các item trong danh sách dọc
+        // Áp dụng OnItemClickListener cho FoodHomeAdapter (Featured và Suggested)
+        // Đây là phương thức giả định sẽ được thêm vào FoodHomeAdapter
+        FoodHomeAdapter.OnItemClickListener foodHomeClickListener = food -> {
+            navigateToDetailActivity(food);
+        };
+
+        // Gán listener cho Featured Food Adapter
+        if (featuredFoodAdapter != null) {
+            featuredFoodAdapter.setOnItemClickListener(foodHomeClickListener);
+        }
+
+        // Gán listener cho Suggested Food Adapter
+        if (suggestedFoodAdapter != null) {
+            suggestedFoodAdapter.setOnItemClickListener(foodHomeClickListener);
+        }
+
+        // Đã có listener cho Category Food Adapter
         categoryFoodAdapter.setOnItemClickListener(food -> {
-            Toast.makeText(HomeActivity.this, "Bạn đã chọn: " + food.getName(), Toast.LENGTH_SHORT).show();
-
-            // Đảm bảo truyền đúng các key và lấy đúng giá trị từ FoodModel
-            Intent detailIntent = new Intent(HomeActivity.this, DetailActivity.class);
-            detailIntent.putExtra("foodId", food.getId());
-            detailIntent.putExtra("foodName", food.getName());
-            detailIntent.putExtra("foodPrice", food.getPrice());
-            detailIntent.putExtra("foodIngredients", food.getIngredients());
-
-            // Truyền 'details' (FoodModel.getDetails()) vào key "foodDescription"
-            detailIntent.putExtra("foodDescription", food.getDetails());
-
-            // Lấy URL ảnh đầu tiên từ danh sách 'imageUrls' để truyền dưới dạng String
-            String imageUrlToPass = "";
-            if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
-                imageUrlToPass = food.getImageUrls().get(0);
-            }
-            detailIntent.putExtra("foodImagePath", imageUrlToPass);
-
-            detailIntent.putExtra("foodCategory", food.getCategory());
-            detailIntent.putExtra("foodRating", food.getRating());
-
-            startActivity(detailIntent);
+            navigateToDetailActivity(food);
         });
 
-        // Hiển thị tên người dùng
         if (userName != null) {
             userNameTextView.setText(userName);
         }
 
-        // Cài đặt sự kiện click cho nút đăng xuất
         logoutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(HomeActivity.this, LoginActivity.class));
             finish();
         });
 
-        // Cài đặt sự kiện click cho nút "Xem thêm" Featured Food
         featuredFoodSeeMoreButton.setOnClickListener(v -> {
             navigateToFoodListActivity("Món ăn nổi bật");
         });
 
-        // Cài đặt sự kiện click cho nút "Xem thêm" Suggested Food
         suggestedFoodSeeMoreButton.setOnClickListener(v -> {
             navigateToFoodListActivity("Gợi ý hôm nay");
-        });
-
-        // Cài đặt sự kiện click cho nút "Xem thêm" Category (hiện tại chỉ Toast)
-        categorySeeMoreButton.setOnClickListener(v -> {
-            navigateToCategoryListActivity();
         });
     }
 
@@ -174,7 +157,9 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         loadHeroSection();
         loadFeaturedFoods();
         loadSuggestedFoods();
-        loadFoodCategories();
+        initCategoryList();
+        initCategoryRecyclerView();
+        loadFoodsByCategory("Tất cả");
     }
 
     private void loadHeroSection() {
@@ -197,6 +182,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         featuredFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         featuredFoodAdapter = new FoodHomeAdapter(this, featuredFoodList);
         featuredFoodRecyclerView.setAdapter(featuredFoodAdapter);
+        // Gán listener sau khi adapter được khởi tạo
+        featuredFoodAdapter.setOnItemClickListener(food -> navigateToDetailActivity(food));
 
         try {
             db.collection("Foods")
@@ -230,6 +217,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         suggestedFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         suggestedFoodAdapter = new FoodHomeAdapter(this, suggestedFoodList);
         suggestedFoodRecyclerView.setAdapter(suggestedFoodAdapter);
+        // Gán listener sau khi adapter được khởi tạo
+        suggestedFoodAdapter.setOnItemClickListener(food -> navigateToDetailActivity(food));
 
         try {
             db.collection("Foods")
@@ -259,8 +248,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         }
     }
 
-    private void loadFoodCategories() {
-        categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+    private void initCategoryList() {
+        categoryList.clear();
         categoryList.addAll(Arrays.asList(
                 "Tất cả",
                 "Món cơm",
@@ -274,101 +263,78 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
                 "Món tráng miệng",
                 "Món vùng miền"
         ));
-
-        // Khởi tạo CategoryHomeAdapter và truyền 'this' làm OnCategoryClickListener
-        // HomeActivity giờ đã implement interface này.
-        categoryAdapter = new CategoryHomeAdapter(this, categoryList, this); // Truyền 'this' ở đây
-        categoryRecyclerView.setAdapter(categoryAdapter);
-
-        // Load món ăn cho thể loại "Tất cả" ngay khi khởi tạo
-        // và đảm bảo category "Tất cả" được đánh dấu là selected
-        loadFoodsByCategory("Tất cả");
-        categoryAdapter.setSelectedCategory("Tất cả"); // Đặt "Tất cả" là được chọn ban đầu
     }
 
-    // THÊM PHƯƠNG THỨC NÀY ĐỂ IMPLEMENT CategoryHomeAdapter.OnCategoryClickListener
+    private void initCategoryRecyclerView() {
+        progressBarCategory.setVisibility(View.GONE);
+        categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        categoryAdapter = new CategoryHomeAdapter(this, categoryList, this);
+        categoryRecyclerView.setAdapter(categoryAdapter);
+    }
+
     @Override
     public void onCategoryClick(String category) {
-        // Log.d("HomeActivity", "Category clicked: " + category); // Để debug
-        loadFoodsByCategory(category); // Tải món ăn theo category được chọn
-        // Không cần gọi categoryAdapter.setSelectedCategory(category) ở đây
-        // vì logic đó đã được xử lý bên trong adapter khi click.
+        loadFoodsByCategory(category);
     }
-
 
     private void loadFoodsByCategory(String category) {
-        // Log.d("HomeActivity", "Loading foods for category: " + category); // Để debug
+        progressBarFoodList.setVisibility(View.VISIBLE);
+        categoryFoodList.clear();
+        CollectionReference foodsRef = db.collection("Foods");
+        Query query;
 
-        try {
-            if (category.equals("Tất cả")) {
-                db.collection("Foods")
-                        .limit(5)
-                        .get()
-                        .addOnSuccessListener(query -> {
-                            if (isDestroyed() || isFinishing()) return;
-                            List<FoodModel> categoryFoods = new ArrayList<>();
-                            for (QueryDocumentSnapshot document : query) {
-                                try {
-                                    FoodModel food = document.toObject(FoodModel.class);
-                                    food.setId(document.getId());
-                                    categoryFoods.add(food);
-                                } catch (Exception e) {
-                                    Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu khi tải thể loại 'Tất cả': " + e.getMessage());
-                                }
-                            }
-                            updateCategoryFoodList(categoryFoods);
-                        })
-                        .addOnFailureListener(e -> {
-                            if (isDestroyed() || isFinishing()) return;
-                            Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại 'Tất cả': ", e);
-                            Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
-                        });
-            } else {
-                db.collection("Foods")
-                        .whereEqualTo("category", category)
-                        .limit(5)
-                        .get()
-                        .addOnSuccessListener(query -> {
-                            if (isDestroyed() || isFinishing()) return;
-                            List<FoodModel> categoryFoods = new ArrayList<>();
-                            for (QueryDocumentSnapshot document : query) {
-                                try {
-                                    FoodModel food = document.toObject(FoodModel.class);
-                                    food.setId(document.getId());
-                                    categoryFoods.add(food);
-                                } catch (Exception e) {
-                                    Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu khi tải thể loại '" + category + "': " + e.getMessage());
-                                }
-                            }
-                            updateCategoryFoodList(categoryFoods);
-                        })
-                        .addOnFailureListener(e -> {
-                            if (isDestroyed() || isFinishing()) return;
-                            Log.e("HomeActivity", "Lỗi khi tải món ăn theo thể loại '" + category + "': ", e);
-                            Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
-                        });
-            }
-        } catch (Exception e) {
-            Log.e("HomeActivity", "Lỗi không xác định khi tải món ăn theo thể loại: " + e.getMessage());
+        if (!category.equals("Tất cả")) {
+            query = foodsRef.whereEqualTo("category", category);
+        } else {
+            query = foodsRef;
         }
+
+        query.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    categoryFoodList.clear();
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            FoodModel food = document.toObject(FoodModel.class);
+                            food.setId(document.getId());
+                            categoryFoodList.add(food);
+                        }
+                    }
+                    if (categoryFoodAdapter != null) {
+                        categoryFoodAdapter.notifyDataSetChanged();
+                    }
+                    progressBarFoodList.setVisibility(View.GONE);
+                })
+                .addOnFailureListener(e -> {
+                    progressBarFoodList.setVisibility(View.GONE);
+                    Log.e("HomeActivity", "Lỗi khi lấy dữ liệu món ăn từ Firestore: ", e);
+                    Toast.makeText(HomeActivity.this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
-    private void updateCategoryFoodList(List<FoodModel> foods) {
-        categoryFoodList.clear();
-        categoryFoodList.addAll(foods);
-        if (categoryFoodAdapter != null) {
-            categoryFoodAdapter.notifyDataSetChanged();
+    // Phương thức chung để điều hướng đến DetailActivity
+    private void navigateToDetailActivity(FoodModel food) {
+        Intent detailIntent = new Intent(HomeActivity.this, DetailActivity.class);
+        detailIntent.putExtra("foodId", food.getId());
+        detailIntent.putExtra("foodName", food.getName());
+        detailIntent.putExtra("foodPrice", food.getPrice());
+        detailIntent.putExtra("foodIngredients", food.getIngredients());
+        detailIntent.putExtra("foodDescription", food.getDetails()); // Sử dụng getDetails()
+        String imageUrlToPass = "";
+        if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
+            imageUrlToPass = food.getImageUrls().get(0); // Lấy URL ảnh đầu tiên
         }
+        detailIntent.putExtra("foodImagePath", imageUrlToPass);
+        detailIntent.putExtra("foodCategory", food.getCategory());
+        detailIntent.putExtra("foodRating", food.getRating());
+        startActivity(detailIntent);
     }
 
     private void navigateToFoodListActivity(String title) {
         Intent intent = new Intent(HomeActivity.this, ListFoodsActivity.class);
-        intent.putExtra("title", title);
+        intent.putExtra("title", title); // Dùng cho tiêu đề của ListFoodsActivity
         intent.putExtra("isSearch", false);
+        // Nếu bạn muốn lọc theo loại (Featured, Suggested), bạn có thể thêm extra ở đây
+        // Ví dụ: intent.putExtra("filterType", title);
         startActivity(intent);
-    }
-
-    private void navigateToCategoryListActivity() {
-        Toast.makeText(this, "Chức năng xem thêm thể loại sẽ được cập nhật sau", Toast.LENGTH_SHORT).show();
     }
 }
