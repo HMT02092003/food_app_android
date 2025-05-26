@@ -19,16 +19,17 @@ import com.example.food.Adapter.FoodListAdapter;
 import com.example.food.Domain.Foods;
 import com.example.food.R;
 import com.example.food.databinding.ActivityListFoodsBinding;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import android.util.Log;
 
 public class ListFoodsActivity extends BaseActivity {
 
@@ -40,7 +41,8 @@ public class ListFoodsActivity extends BaseActivity {
     private String searchText;
     private boolean isSearch;
     private List<String> categoryList;
-    private RecyclerView categoryRecyclerView;
+    private FirebaseFirestore db;
+    private String currentCategory = "Tất cả";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +51,15 @@ public class ListFoodsActivity extends BaseActivity {
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
 
+        db = FirebaseFirestore.getInstance();
         getIntentExtra();
         initCategoryList();
         initCategoryRecyclerView();
         initList();
         setVariable();
+
+        // Ẩn progressBarCategory ngay khi vào màn hình
+        binding.progressBarCategory.setVisibility(View.GONE);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -63,72 +69,88 @@ public class ListFoodsActivity extends BaseActivity {
     }
 
     private void setVariable() {
+        binding.searchBtn.setOnClickListener(view -> {
+            performSearch();
+        });
+        binding.searchEdt.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
+                actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER && event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
+                performSearch();
+                return true;
+            }
+            return false;
+        });
+    }
 
+    private void performSearch() {
+        String keyword = binding.searchEdt.getText().toString().trim();
+        if (!keyword.isEmpty()) {
+            searchText = keyword;
+            isSearch = true;
+        } else {
+            searchText = null;
+            isSearch = false;
+        }
+        initList();
     }
 
     private void initList() {
-        DatabaseReference myRef = database.getReference("Foods");
         binding.progressBar.setVisibility(View.VISIBLE);
         ArrayList<Foods> list = new ArrayList<>();
 
         Query query;
-        if(isSearch) {
-            query = myRef.orderByChild("Titile").startAt(searchText).endAt(searchText+'\uf8ff');
+        if (isSearch && searchText != null && !searchText.isEmpty()) {
+            // Nếu đang tìm kiếm, lấy tất cả rồi lọc ở client (Firestore không hỗ trợ contains/LIKE cho text)
+            query = db.collection("Foods");
+        } else if (currentCategory.equals("Tất cả")) {
+            query = db.collection("Foods");
         } else {
-            if (categoryId == 0) {
-                query = myRef;
-            } else {
-                query = myRef.orderByChild("CategoryId").equalTo(categoryId);
-            }
+            query = db.collection("Foods").whereEqualTo("category", currentCategory);
         }
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    list.clear();
-                    for(DataSnapshot issue : snapshot.getChildren()) {
-                        Foods food = issue.getValue(Foods.class);
-                        if (food != null) {
-                            if (food.getStar() == 0) {
-                                food.setStar(0.0);
-                            }
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                list.clear();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Foods food = new Foods();
+                    food.setId(document.getString("id") != null ? document.getString("id") : document.getId());
+                    String title = document.getString("name");
+                    food.setTitle(title != null ? title : "Không tên");
+                    List<String> imageUrls = (List<String>) document.get("imageUrls");
+                    String imagePath = (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : "";
+                    food.setImagePath(imagePath);
+                    Double price = document.getDouble("price");
+                    food.setPrice(price != null ? price : 0);
+                    Double star = document.getDouble("rating");
+                    food.setStar(star != null ? star : 0.0);
+                    // Nếu đang tìm kiếm thì chỉ add nếu tên chứa từ khóa
+                    if (isSearch && searchText != null && !searchText.isEmpty()) {
+                        if (food.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
                             list.add(food);
                         }
-                    }
-                    
-                    Collections.sort(list, (food1, food2) -> {
-                        double rating1 = food1.getStar();
-                        double rating2 = food2.getStar();
-                        return Double.compare(rating2, rating1);
-                    });
-
-                    if(list.size() > 0) {
-                        binding.foodListView.setLayoutManager(new GridLayoutManager(ListFoodsActivity.this, 2));
-                        adapterListFood = new FoodListAdapter(list);
-                        binding.foodListView.setAdapter(adapterListFood);
-                        binding.foodListView.setVisibility(View.VISIBLE);
-                        binding.emptyView.setVisibility(View.GONE);
                     } else {
-                        binding.foodListView.setVisibility(View.GONE);
-                        binding.emptyView.setVisibility(View.VISIBLE);
-                        Toast.makeText(ListFoodsActivity.this, "Không tìm thấy món ăn nào", Toast.LENGTH_SHORT).show();
+                        list.add(food);
                     }
+                }
+                Collections.sort(list, (food1, food2) -> Double.compare(food2.getStar(), food1.getStar()));
+                if(list.size() > 0) {
+                    binding.foodListView.setLayoutManager(new GridLayoutManager(ListFoodsActivity.this, 2));
+                    adapterListFood = new FoodListAdapter(list);
+                    binding.foodListView.setAdapter(adapterListFood);
+                    binding.foodListView.setVisibility(View.VISIBLE);
+                    binding.emptyView.setVisibility(View.GONE);
                 } else {
                     binding.foodListView.setVisibility(View.GONE);
                     binding.emptyView.setVisibility(View.VISIBLE);
-                    Toast.makeText(ListFoodsActivity.this, "Không có dữ liệu món ăn", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListFoodsActivity.this, "Không tìm thấy món ăn nào", Toast.LENGTH_SHORT).show();
                 }
-                binding.progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                binding.progressBar.setVisibility(View.GONE);
+            } else {
                 binding.foodListView.setVisibility(View.GONE);
                 binding.emptyView.setVisibility(View.VISIBLE);
-                Toast.makeText(ListFoodsActivity.this, "Lỗi khi tải dữ liệu: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListFoodsActivity.this, "Lỗi khi tải dữ liệu: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             }
+            binding.progressBar.setVisibility(View.GONE);
         });
     }
 
@@ -161,25 +183,8 @@ public class ListFoodsActivity extends BaseActivity {
     private void initCategoryRecyclerView() {
         binding.categoryView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         categoryAdapter = new CategoryAdapter(categoryList, category -> {
-            if (category.equals("Tất cả")) {
-                categoryId = 0;
-            } else {
-                switch (category) {
-                    case "Món cơm": categoryId = 1; break;
-                    case "Món nước": categoryId = 2; break;
-                    case "Món kho,hầm": categoryId = 3; break;
-                    case "Món chiên,xào": categoryId = 4; break;
-                    case "Salad": categoryId = 5; break;
-                    case "Món súp": categoryId = 6; break;
-                    case "Đồ ăn đường phố": categoryId = 7; break;
-                    case "Đồ ăn vặt": categoryId = 8; break;
-                    case "Món tráng miệng": categoryId = 9; break;
-                    case "Món vùng miền": categoryId = 10; break;
-                    default: categoryId = 0;
-                }
-            }
-            categoryName = category;
-            binding.titleTxt.setText(categoryName);
+            currentCategory = category;
+            binding.titleTxt.setText(currentCategory);
             initList();
         });
         binding.categoryView.setAdapter(categoryAdapter);

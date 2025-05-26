@@ -1,6 +1,7 @@
 package com.example.food.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,57 +11,64 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.food.Model.Dish;  // Mình giả định bạn có class Dish
+import com.bumptech.glide.Glide;
+import com.example.food.Activity.DetailActivity;
+import com.example.food.Domain.Foods;
 import com.example.food.R;
-import com.squareup.picasso.Picasso; // Thư viện load ảnh
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class PopularDishesAdapter extends RecyclerView.Adapter<PopularDishesAdapter.DishViewHolder> {
+public class PopularDishesAdapter extends RecyclerView.Adapter<PopularDishesAdapter.Viewholder> {
+    ArrayList<Foods> items;
+    Context context;
 
-    private Context context;
-    private List<Dish> dishList;
-
-    public PopularDishesAdapter(Context context, List<Dish> dishList) {
-        this.context = context;
-        this.dishList = dishList;
+    public PopularDishesAdapter(ArrayList<Foods> items) {
+        this.items = items;
     }
 
     @NonNull
     @Override
-    public DishViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_popular_dish, parent, false);
-        return new DishViewHolder(view);
+    public PopularDishesAdapter.Viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        context = parent.getContext();
+        View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_popular_dishes, parent, false);
+        return new Viewholder(inflate);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DishViewHolder holder, int position) {
-        Dish dish = dishList.get(position);
-        holder.tvDishName.setText(dish.getName());
-        holder.tvLikes.setText(dish.getLikes() + " lượt yêu thích");
+    public void onBindViewHolder(@NonNull PopularDishesAdapter.Viewholder holder, int position) {
+        holder.titleTxt.setText(items.get(position).getTitle());
+        holder.priceTxt.setText(items.get(position).getPrice() + " VNĐ");
+        holder.starTxt.setText(String.format("%.1f", items.get(position).getStar()));
 
-        // Load ảnh món ăn bằng Picasso hoặc Glide (phải thêm thư viện vào gradle)
-        Picasso.get()
-                .load(dish.getImageUrl())
-                .placeholder(R.drawable.placeholder) // ảnh tạm khi chưa load xong
-                .error(R.drawable.placeholder) // ảnh lỗi
-                .into(holder.imgDish);
+        // Sử dụng Glide thay vì Picasso
+        Glide.with(context)
+            .load(items.get(position).getImagePath())
+            .placeholder(R.drawable.placeholder_image) // Thêm ảnh placeholder nếu cần
+            .error(R.drawable.error_image) // Thêm ảnh error nếu cần
+            .into(holder.pic);
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("foodId", items.get(position).getId());
+            context.startActivity(intent);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return dishList.size();
+        return items.size();
     }
 
-    static class DishViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgDish;
-        TextView tvDishName, tvLikes;
+    public class Viewholder extends RecyclerView.ViewHolder {
+        TextView titleTxt, priceTxt, starTxt;
+        ImageView pic;
 
-        public DishViewHolder(@NonNull View itemView) {
+        public Viewholder(@NonNull View itemView) {
             super(itemView);
-            imgDish = itemView.findViewById(R.id.imgDish);
-            tvDishName = itemView.findViewById(R.id.tvDishName);
-            tvLikes = itemView.findViewById(R.id.tvLikes);
+            titleTxt = itemView.findViewById(R.id.titleTxt);
+            priceTxt = itemView.findViewById(R.id.priceTxt);
+            starTxt = itemView.findViewById(R.id.starTxt);
+            pic = itemView.findViewById(R.id.pic);
         }
     }
 }

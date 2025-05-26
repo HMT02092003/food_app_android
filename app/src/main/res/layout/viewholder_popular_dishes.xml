@@ -5,60 +5,65 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="15dp"
-    app:cardElevation="3dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:padding="12dp">
 
         <ImageView
-            android:id="@+id/img"
-            android:layout_width="0dp"
-            android:layout_height="111dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/pic"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Food Image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:src="@drawable/food_placeholder" />
 
         <TextView
             android:id="@+id/titleTxt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/blue_grey"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="@color/text_color"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/pic"
+            app:layout_constraintTop_toTopOf="@id/pic"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/img"
             tools:text="Tên món ăn" />
 
         <TextView
             android:id="@+id/priceTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@color/red"
-            android:textSize="18sp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/orange"
+            android:textSize="15sp"
             android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/pic"
             app:layout_constraintTop_toBottomOf="@id/titleTxt"
-            app:layout_constraintStart_toStartOf="@id/titleTxt"
             tools:text="70.000 VNĐ" />
 
         <LinearLayout
-            android:id="@+id/starLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/priceTxt"
-            app:layout_constraintStart_toStartOf="@id/priceTxt"
-            android:layout_marginBottom="12dp">
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toEndOf="@id/pic"
+            app:layout_constraintTop_toBottomOf="@id/priceTxt">
 
             <ImageView
                 android:layout_width="16dp"
@@ -68,7 +73,7 @@
                 android:contentDescription="Rating star" />
 
             <TextView
-                android:id="@+id/rateTxt"
+                android:id="@+id/starTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -78,4 +83,5 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+
+</androidx.cardview.widget.CardView> 
