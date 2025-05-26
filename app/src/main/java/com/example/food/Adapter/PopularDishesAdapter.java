@@ -10,9 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide; // Import Glide
 import com.example.food.Model.Dish;  // Mình giả định bạn có class Dish
 import com.example.food.R;
-import com.squareup.picasso.Picasso; // Thư viện load ảnh
+// import com.squareup.picasso.Picasso; // Xóa hoặc comment dòng này
 
 import java.util.List;
 
@@ -39,11 +40,12 @@ public class PopularDishesAdapter extends RecyclerView.Adapter<PopularDishesAdap
         holder.tvDishName.setText(dish.getName());
         holder.tvLikes.setText(dish.getLikes() + " lượt yêu thích");
 
-        // Load ảnh món ăn bằng Picasso hoặc Glide (phải thêm thư viện vào gradle)
-        Picasso.get()
+        // Load ảnh món ăn bằng Glide
+        // Đảm bảo dish.getImageUrl() trả về một String URL hợp lệ
+        Glide.with(holder.itemView.getContext()) // Sử dụng holder.itemView.getContext() hoặc context
                 .load(dish.getImageUrl())
-                .placeholder(R.drawable.placeholder) // ảnh tạm khi chưa load xong
-                .error(R.drawable.placeholder) // ảnh lỗi
+                .placeholder(R.drawable.food_placeholder) // Đổi từ placeholder sang food_placeholder nếu đó là tên của bạn
+                .error(R.drawable.food_placeholder) // Đổi từ placeholder sang food_placeholder nếu đó là tên của bạn
                 .into(holder.imgDish);
     }
 
@@ -61,6 +63,7 @@ public class PopularDishesAdapter extends RecyclerView.Adapter<PopularDishesAdap
             imgDish = itemView.findViewById(R.id.imgDish);
             tvDishName = itemView.findViewById(R.id.tvDishName);
             tvLikes = itemView.findViewById(R.id.tvLikes);
+            // Đảm bảo item_popular_dish.xml có các ID này
         }
     }
 }

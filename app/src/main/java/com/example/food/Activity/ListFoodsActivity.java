@@ -3,6 +3,7 @@ package com.example.food.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+import android.util.Log; // Thêm import này cho Log
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -19,11 +20,12 @@ import com.example.food.Adapter.FoodListAdapter;
 import com.example.food.Domain.Foods;
 import com.example.food.R;
 import com.example.food.databinding.ActivityListFoodsBinding;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+
+// Imports mới cho Firestore
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +44,9 @@ public class ListFoodsActivity extends BaseActivity {
     private List<String> categoryList;
     private RecyclerView categoryRecyclerView;
 
+    // Khởi tạo Firestore
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +57,7 @@ public class ListFoodsActivity extends BaseActivity {
         getIntentExtra();
         initCategoryList();
         initCategoryRecyclerView();
-        initList();
+        initList(); // Gọi phương thức initList đã được cập nhật
         setVariable();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -63,45 +68,61 @@ public class ListFoodsActivity extends BaseActivity {
     }
 
     private void setVariable() {
-
+        // Có thể thêm các biến hoặc sự kiện khác nếu cần
     }
 
     private void initList() {
-        DatabaseReference myRef = database.getReference("Foods");
         binding.progressBar.setVisibility(View.VISIBLE);
         ArrayList<Foods> list = new ArrayList<>();
+        CollectionReference foodsRef = db.collection("Foods"); // Tham chiếu tới collection "Foods"
 
         Query query;
+
         if(isSearch) {
-            query = myRef.orderByChild("Titile").startAt(searchText).endAt(searchText+'\uf8ff');
+            // Đối với tìm kiếm, bạn có thể thực hiện tìm kiếm trên trường 'Title'
+            // Firestore hỗ trợ tìm kiếm 'startsWith' bằng cách kết hợp startAt và endAt
+            query = foodsRef.orderBy("Title").startAt(searchText).endAt(searchText + '\uf8ff');
         } else {
             if (categoryId == 0) {
-                query = myRef;
+                // Lấy tất cả món ăn, sau đó sẽ sắp xếp theo rating trong ứng dụng
+                query = foodsRef;
             } else {
-                query = myRef.orderByChild("CategoryId").equalTo(categoryId);
+                // Lọc theo CategoryId
+                query = foodsRef.whereEqualTo("CategoryId", categoryId);
             }
         }
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
+        query.get() // Thực hiện truy vấn Firestore
+                .addOnSuccessListener(queryDocumentSnapshots -> {
                     list.clear();
-                    for(DataSnapshot issue : snapshot.getChildren()) {
-                        Foods food = issue.getValue(Foods.class);
-                        if (food != null) {
-                            if (food.getStar() == 0) {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            Foods food = document.toObject(Foods.class);
+                            // Đảm bảo ID được gán vào đối tượng Foods nếu bạn cần nó sau này
+                            // food.setId(document.getId()); // Nếu Id trong Foods là String và khớp với document ID của Firestore
+
+                            // Xử lý rating mặc định là 0.0 nếu chưa có
+                            if (food.getStar() == 0) { // Kiểm tra xem giá trị hiện tại có phải là 0 không
                                 food.setStar(0.0);
                             }
+                            // Nếu bạn có khả năng Star có thể là null từ Firestore,
+                            // hãy kiểm tra null trước khi gọi food.getStar()
+                            // if (food.getStar() == null) {
+                            //    food.setStar(0.0);
+                            // }
+
+
                             list.add(food);
                         }
                     }
-                    
+
+                    // Sắp xếp danh sách theo rating giảm dần (rating cao nhất ở đầu)
                     Collections.sort(list, (food1, food2) -> {
-                        double rating1 = food1.getStar();
-                        double rating2 = food2.getStar();
-                        return Double.compare(rating2, rating1);
+                        double rating1 = (food1.getStar() != 0) ? food1.getStar() : 0.0; // Đảm bảo rating là 0.0 nếu chưa có
+                        double rating2 = (food2.getStar() != 0) ? food2.getStar() : 0.0; // Đảm bảo rating là 0.0 nếu chưa có
+                        return Double.compare(rating2, rating1); // Giảm dần (rating cao hơn đứng trước)
                     });
+
 
                     if(list.size() > 0) {
                         binding.foodListView.setLayoutManager(new GridLayoutManager(ListFoodsActivity.this, 2));
@@ -114,22 +135,14 @@ public class ListFoodsActivity extends BaseActivity {
                         binding.emptyView.setVisibility(View.VISIBLE);
                         Toast.makeText(ListFoodsActivity.this, "Không tìm thấy món ăn nào", Toast.LENGTH_SHORT).show();
                     }
-                } else {
+                })
+                .addOnFailureListener(e -> {
+                    binding.progressBar.setVisibility(View.GONE);
                     binding.foodListView.setVisibility(View.GONE);
                     binding.emptyView.setVisibility(View.VISIBLE);
-                    Toast.makeText(ListFoodsActivity.this, "Không có dữ liệu món ăn", Toast.LENGTH_SHORT).show();
-                }
-                binding.progressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                binding.progressBar.setVisibility(View.GONE);
-                binding.foodListView.setVisibility(View.GONE);
-                binding.emptyView.setVisibility(View.VISIBLE);
-                Toast.makeText(ListFoodsActivity.this, "Lỗi khi tải dữ liệu: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    Log.e("ListFoodsActivity", "Lỗi khi tải dữ liệu món ăn từ Firestore: ", e); // Log lỗi để debug
+                    Toast.makeText(ListFoodsActivity.this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void getIntentExtra() {
@@ -144,17 +157,17 @@ public class ListFoodsActivity extends BaseActivity {
 
     private void initCategoryList() {
         categoryList = Arrays.asList(
-            "Tất cả",
-            "Món cơm",
-            "Món nước",
-            "Món kho,hầm",
-            "Món chiên,xào",
-            "Salad",
-            "Món súp",
-            "Đồ ăn đường phố",
-            "Đồ ăn vặt",
-            "Món tráng miệng",
-            "Món vùng miền"
+                "Tất cả",
+                "Món cơm",
+                "Món nước",
+                "Món kho,hầm",
+                "Món chiên,xào",
+                "Salad",
+                "Món súp",
+                "Đồ ăn đường phố",
+                "Đồ ăn vặt",
+                "Món tráng miệng",
+                "Món vùng miền"
         );
     }
 
@@ -180,7 +193,8 @@ public class ListFoodsActivity extends BaseActivity {
             }
             categoryName = category;
             binding.titleTxt.setText(categoryName);
-            initList();
+            isSearch = false; // Đảm bảo tắt chế độ tìm kiếm khi lọc theo danh mục
+            initList(); // Gọi lại initList để tải dữ liệu mới
         });
         binding.categoryView.setAdapter(categoryAdapter);
     }

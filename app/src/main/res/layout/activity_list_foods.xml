@@ -19,8 +19,10 @@
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
                 <ImageView
                     android:id="@+id/backBtn"
                     android:layout_width="50dp"
@@ -46,6 +48,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
+                android:id="@+id/searchFilterLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -110,7 +113,7 @@
             </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/categorySelectionTitleTxt" android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
@@ -161,8 +164,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
+                android:layout_height="wrap_content"
+                android:minHeight="300dp">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/foodListView"
                     android:layout_width="match_parent"
@@ -171,10 +174,11 @@
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryView"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintVertical_bias="0" />
                 <TextView
                     android:id="@+id/emptyView"
                     android:layout_width="wrap_content"
@@ -183,7 +187,7 @@
                     android:textSize="18sp"
                     android:textColor="@color/blue_grey"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryView"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent" />
@@ -200,5 +204,4 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

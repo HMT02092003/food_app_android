@@ -4,7 +4,7 @@ public class Foods {
     private int CategoryId;
     private String Description;
     private boolean BestFood;
-    private int Id;
+    private String Id; // ĐÃ SỬA: Thay đổi kiểu dữ liệu từ int sang String
     private int LocationId;
     private double Price;
     private String ImagePath;
@@ -47,11 +47,11 @@ public class Foods {
         BestFood = bestFood;
     }
 
-    public int getId() {
+    public String getId() { // ĐÃ SỬA: Thay đổi kiểu trả về từ int sang String
         return Id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) { // ĐÃ SỬA: Thay đổi kiểu tham số từ int sang String
         Id = id;
     }
 
