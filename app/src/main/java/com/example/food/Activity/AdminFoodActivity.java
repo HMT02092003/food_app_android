@@ -43,6 +43,7 @@ public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private ImageView backBtn;
+    private ImageView logoutBtn;
     private String currentCategory = "Tất cả";
 
     @Override
@@ -62,6 +63,7 @@ public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.
 
         // Ánh xạ các view
         backBtn = findViewById(R.id.backBtn);
+        logoutBtn = findViewById(R.id.logoutBtn);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         tabLayout = findViewById(R.id.tabLayout);
         tvTotal = findViewById(R.id.tvTotal);
@@ -75,6 +77,12 @@ public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.
 
         // Thiết lập sự kiện cho nút Back
         backBtn.setOnClickListener(v -> onBackPressed());
+
+        // Thiết lập sự kiện cho nút Logout
+        logoutBtn.setOnClickListener(v -> {
+            auth.signOut();
+            redirectToLogin();
+        });
 
         // Thiết lập listener cho BottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
@@ -102,7 +110,7 @@ public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.
             }
         });
 
-        // Gọi hàm để lấy dữ liệu món ăn từ Firebase
+        // Gọi hàm để lấy dữ liệu món ăn từ Firebase    
         fetchAllFoods();
     }
 
