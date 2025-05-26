@@ -44,6 +44,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView categoryTxt; // Giá trị thể loại món ăn (ví dụ: "Món Cơm")
     private TextView descriptionTxt; // Mô tả món ăn
     private TextView ingridentTxt; // Nguyên liệu món ăn
+    private TextView recipeContentTxt; // Thêm TextView cho công thức
     private RatingBar userRatingBar;
     private EditText commentInput;
     private Button submitRatingBtn;
@@ -96,6 +97,7 @@ public class DetailActivity extends AppCompatActivity {
         categoryTxt = findViewById(R.id.categoryTxt);
         descriptionTxt = findViewById(R.id.descriptionTxt);
         ingridentTxt = findViewById(R.id.ingridentTxt);
+        recipeContentTxt = findViewById(R.id.recipeContentTxt); // Ánh xạ TextView cho công thức
         userRatingBar = findViewById(R.id.userRatingBar);
         commentInput = findViewById(R.id.commentInput);
         submitRatingBtn = findViewById(R.id.submitRatingBtn);
@@ -112,25 +114,25 @@ public class DetailActivity extends AppCompatActivity {
         if (foodId == null) return;
 
         db.collection("Foods")
-            .document(foodId)
-            .collection("comments")
-            .orderBy("timestamp")
-            .addSnapshotListener((value, error) -> {
-                if (error != null) {
-                    Toast.makeText(this, "Error loading comments: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                comments.clear();
-                if (value != null) {
-                    for (QueryDocumentSnapshot doc : value) {
-                        Comment comment = doc.toObject(Comment.class);
-                        comments.add(comment);
+                .document(foodId)
+                .collection("comments")
+                .orderBy("timestamp")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Toast.makeText(this, "Error loading comments: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    commentAdapter.updateComments(comments);
-                    updateAverageRating();
-                }
-            });
+
+                    comments.clear();
+                    if (value != null) {
+                        for (QueryDocumentSnapshot doc : value) {
+                            Comment comment = doc.toObject(Comment.class);
+                            comments.add(comment);
+                        }
+                        commentAdapter.updateComments(comments);
+                        updateAverageRating();
+                    }
+                });
     }
 
     private void updateAverageRating() {
@@ -150,8 +152,8 @@ public class DetailActivity extends AppCompatActivity {
 
         // Update food document with new average rating
         db.collection("Foods").document(foodId)
-            .update("rating", averageRating)
-            .addOnFailureListener(e -> Toast.makeText(this, "Error updating rating: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .update("rating", averageRating)
+                .addOnFailureListener(e -> Toast.makeText(this, "Error updating rating: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void getAndSetFoodData() {
@@ -167,17 +169,19 @@ public class DetailActivity extends AppCompatActivity {
             String foodImagePath = extras.getString("foodImagePath", "");
             double foodRating = extras.getDouble("foodRating", 0.0);
             String foodCategory = extras.getString("foodCategory", "Chưa phân loại");
-            String foodIngredients = extras.getString("foodIngredients", "Nguyên liệu đang được cập nhật..."); // Lấy nguyên liệu
+            String foodIngredients = extras.getString("foodIngredients", "Nguyên liệu đang được cập nhật...");
+            String foodRecipe = extras.getString("foodRecipe", "Công thức đang được cập nhật...");
 
             // Đặt dữ liệu vào các View
             titleTxt.setText(foodName);
-            priceTxt.setText(String.format("%,.0f VNĐ", foodPrice)); // Định dạng giá VNĐ
+            priceTxt.setText(String.format("%,.0f VNĐ", foodPrice));
             descriptionTxt.setText(foodDescription);
-            ingridentTxt.setText(foodIngredients); // Đặt nguyên liệu
+            ingridentTxt.setText(foodIngredients);
+            recipeContentTxt.setText(foodRecipe);
 
             // Đặt RatingBar và Rate Text
             ratingBar.setRating((float) foodRating);
-            rateTxt.setText(String.format("%.1f Rating", foodRating)); // Hiển thị rating dạng số (ví dụ: "4.5 Rating")
+            rateTxt.setText(String.format("%.1f Rating", foodRating));
 
             // Đặt thể loại món ăn
             categoryTxt.setText(foodCategory);
@@ -186,14 +190,37 @@ public class DetailActivity extends AppCompatActivity {
             if (!foodImagePath.isEmpty()) {
                 Glide.with(this)
                         .load(foodImagePath)
-                        .placeholder(R.drawable.food_placeholder) // Ảnh placeholder khi đang tải
-                        .error(R.drawable.food_placeholder) // Ảnh lỗi nếu tải thất bại
+                        .placeholder(R.drawable.food_placeholder)
+                        .error(R.drawable.food_placeholder)
                         .into(imageView8);
             } else {
-                // Nếu không có đường dẫn ảnh, hiển thị ảnh placeholder mặc định
                 imageView8.setImageResource(R.drawable.food_placeholder);
             }
+
+            // Nếu không có recipe từ Intent, thử lấy từ Firestore
+            if (foodRecipe.equals("Công thức đang được cập nhật...") && !foodId.isEmpty()) {
+                loadFoodDataFromFirestore();
+            }
         }
+    }
+
+    private void loadFoodDataFromFirestore() {
+        if (foodId == null || foodId.isEmpty()) return;
+
+        db.collection("Foods")
+                .document(foodId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String recipe = documentSnapshot.getString("recipe");
+                        if (recipe != null && !recipe.isEmpty()) {
+                            recipeContentTxt.setText(recipe);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi khi tải công thức: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     /**
@@ -234,28 +261,28 @@ public class DetailActivity extends AppCompatActivity {
         // Create new comment
         String commentId = UUID.randomUUID().toString();
         Comment comment = new Comment(
-            commentId,
-            currentUser.getUid(),
-            currentUser.getDisplayName(),
-            currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "",
-            foodId,
-            commentText,
-            rating
+                commentId,
+                currentUser.getUid(),
+                currentUser.getDisplayName(),
+                currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "",
+                foodId,
+                commentText,
+                rating
         );
 
         // Save to Firebase
         db.collection("Foods")
-            .document(foodId)
-            .collection("comments")
-            .document(commentId)
-            .set(comment)
-            .addOnSuccessListener(aVoid -> {
-                Toast.makeText(this, "Đánh giá thành công", Toast.LENGTH_SHORT).show();
-                commentInput.setText("");
-                userRatingBar.setRating(0);
-            })
-            .addOnFailureListener(e -> 
-                Toast.makeText(this, "Lỗi khi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-            );
+                .document(foodId)
+                .collection("comments")
+                .document(commentId)
+                .set(comment)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Đánh giá thành công", Toast.LENGTH_SHORT).show();
+                    commentInput.setText("");
+                    userRatingBar.setRating(0);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Lỗi khi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 }

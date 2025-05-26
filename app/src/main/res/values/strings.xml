@@ -5,4 +5,8 @@
     <string name="fb_login_protocol_scheme">1193988828577641</string>
     <string name="facebook_client_token">a9c50daca70d7d0b84fe125a06c9cbfd</string>
     <string name="logout">Đăng xuất</string>
+    
+    <!-- Google Play Services configuration -->
+    <string name="app_id">1:911075402577:android:a80ac4fcfe7eb8ba54a970</string>
+    <string name="api_key">AIzaSyBoTG3XPvFOAnlN7stfda-FjC6CAlBLS-w</string>
 </resources>
