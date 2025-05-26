@@ -128,6 +128,16 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
 
 
+    private RecyclerView sharedRecipesRecyclerView;
+
+    private FoodVerticalAdapter sharedRecipesAdapter;
+
+    private List<FoodModel> sharedRecipesList = new ArrayList<>();
+
+    private Button shareRecipeButton;
+
+
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private String userName;
@@ -218,6 +228,22 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
 
 
+        sharedRecipesRecyclerView = findViewById(R.id.sharedRecipesRecyclerView);
+
+        shareRecipeButton = findViewById(R.id.shareRecipeButton);
+
+        
+
+        // Setup shared recipes RecyclerView
+
+        sharedRecipesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        sharedRecipesAdapter = new FoodVerticalAdapter(this, sharedRecipesList);
+
+        sharedRecipesRecyclerView.setAdapter(sharedRecipesAdapter);
+
+
+
         if (userName != null) {
 
             userNameTextView.setText(userName);
@@ -229,6 +255,18 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
 
     private void setupListeners() {
+
+        // Thêm click listener cho userNameTextView
+
+        userNameTextView.setOnClickListener(v -> {
+
+            Intent intent = new Intent(HomeActivity.this, PersonInfoActivity.class);
+
+            startActivity(intent);
+
+        });
+
+
 
         // Áp dụng OnItemClickListener cho FoodHomeAdapter (Featured và Suggested)
 
@@ -356,6 +394,18 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
         }
 
+
+
+        // Xử lý nút chia sẻ công thức
+
+        shareRecipeButton.setOnClickListener(v -> {
+
+            Intent intent = new Intent(HomeActivity.this, UserShareRecipeActivity.class);
+
+            startActivity(intent);
+
+        });
+
     }
 
 
@@ -373,6 +423,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         initCategoryRecyclerView();
 
         loadFoodsByCategory("Tất cả");
+
+        loadSharedRecipes();
 
     }
 
@@ -622,11 +674,11 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
         if (!category.equals("Tất cả")) {
 
-            query = foodsRef.whereEqualTo("category", category);
+            query = foodsRef.whereEqualTo("category", category).limit(10);
 
         } else {
 
-            query = foodsRef;
+            query = foodsRef.limit(10);
 
         }
 
@@ -669,6 +721,50 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
                     Log.e("HomeActivity", "Lỗi khi lấy dữ liệu món ăn từ Firestore: ", e);
 
                     Toast.makeText(HomeActivity.this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                });
+
+    }
+
+
+
+    private void loadSharedRecipes() {
+
+        db.collection("PendingRecipes")
+
+                .whereEqualTo("status", "approved")
+
+                .limit(5)
+
+                .get()
+
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                    sharedRecipesList.clear();
+
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+
+                        FoodModel recipe = document.toObject(FoodModel.class);
+
+                        recipe.setId(document.getId());
+
+                        sharedRecipesList.add(recipe);
+
+                    }
+
+                    if (sharedRecipesAdapter != null) {
+
+                        sharedRecipesAdapter.notifyDataSetChanged();
+
+                    }
+
+                })
+
+                .addOnFailureListener(e -> {
+
+                    Log.e("HomeActivity", "Lỗi khi tải công thức được chia sẻ: ", e);
+
+                    Toast.makeText(this, "Lỗi khi tải dữ liệu", Toast.LENGTH_SHORT).show();
 
                 });
 

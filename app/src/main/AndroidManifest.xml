@@ -86,6 +86,12 @@
             android:name=".Activity.BaseActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.UserShareRecipeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.AdminPendingRecipesActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.IntroActivity"
             android:exported="true">
             <intent-filter>
@@ -94,6 +100,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activity.PendingRecipesActivity" />
     </application>
 
 </manifest>
