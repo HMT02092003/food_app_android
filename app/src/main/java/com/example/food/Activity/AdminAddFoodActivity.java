@@ -35,6 +35,7 @@ public class AdminAddFoodActivity extends AppCompatActivity {
     private Button resetBtn, saveButton;
     private EditText itemName, priceInput, ingredientInput, detailsInput;
     private EditText imageUrl1;
+    private EditText recipeInput;
     private LinearLayout photoLayout;
     private Spinner categorySpinner;
     private ArrayAdapter<String> categoryAdapter;
@@ -68,6 +69,7 @@ public class AdminAddFoodActivity extends AppCompatActivity {
         priceInput = findViewById(R.id.priceInput);
         ingredientInput = findViewById(R.id.ingredientInput);
         detailsInput = findViewById(R.id.detailsInput);
+        recipeInput = findViewById(R.id.recipeInput);
         photoLayout = findViewById(R.id.photoLayout);
         categorySpinner = findViewById(R.id.categorySpinner);
         imageUrl1 = findViewById(R.id.imageUrl1);
@@ -122,6 +124,7 @@ public class AdminAddFoodActivity extends AppCompatActivity {
         priceInput.setText("");
         ingredientInput.setText("");
         detailsInput.setText("");
+        recipeInput.setText("");
         imageUrl1.setText("");
         categorySpinner.setSelection(0);
     }
@@ -153,6 +156,7 @@ public class AdminAddFoodActivity extends AppCompatActivity {
         }
         food.setIngredients(ingredientInput.getText().toString().trim());
         food.setDetails(detailsInput.getText().toString().trim());
+        food.setRecipe(recipeInput.getText().toString().trim());
         food.setImageUrls(imageUrls);
 
         db.collection("Foods")

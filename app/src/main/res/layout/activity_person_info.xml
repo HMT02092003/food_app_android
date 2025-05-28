@@ -227,6 +227,22 @@
             android:textStyle="bold"
             android:background="@drawable/btn_background" />
 
+        <!-- Nút xem món ăn đề xuất -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRecommendedFoods"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:backgroundTint="#40a9ff"
+            android:text="Xem món ăn đề xuất"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="@drawable/btn_background" />
+
         <!-- Spacer để đẩy nút đăng xuất xuống cuối -->
         <View
             android:layout_width="match_parent"
