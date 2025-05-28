@@ -182,6 +182,18 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
         loadData();
 
+
+
+        // Load ảnh bo góc ở cuối màn hình Home
+
+        ImageView homeBottomIllustration = findViewById(R.id.homeBottomIllustration);
+
+        Glide.with(this)
+
+            .load("https://baodongkhoi.vn/image/fckeditor/upload/2023/20230510/images/nau%20an.png")
+
+            .into(homeBottomIllustration);
+
     }
 
 

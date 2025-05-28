@@ -11,7 +11,9 @@
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="267dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,6 +23,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <ImageView
                     android:id="@+id/backBtn"
                     android:layout_width="50dp"
@@ -171,32 +174,32 @@
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryView"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/categoryView" />
 
                 <TextView
                     android:id="@+id/emptyView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Không tìm thấy món ăn nào"
-                    android:textSize="18sp"
                     android:textColor="@color/blue_grey"
+                    android:textSize="18sp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryView"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/categoryView" />
 
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
