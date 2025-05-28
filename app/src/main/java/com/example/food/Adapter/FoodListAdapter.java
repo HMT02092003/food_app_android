@@ -42,20 +42,23 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
         
         // Set text for each field
         holder.titleTxt.setText(food.getTitle());
-        holder.timeTxt.setText(food.getTimeValue() + " min");
         holder.priceTxt.setText(String.format("%,.0f VNĐ", food.getPrice()));
         
-        // Handle rating display
+        // Handle rating display: chỉ hiển thị số sao, nếu chưa có đánh giá thì là 0
         double rating = food.getStar();
         holder.rateTxt.setText(String.format("%.1f", rating));
 
         // Load image using Glide
-        Glide.with(context)
-                .load(food.getImagePath())
-                .transform(new CenterCrop(), new RoundedCorners(30))
-                .placeholder(R.drawable.food_placeholder)
-                .error(R.drawable.food_placeholder)
-                .into(holder.pic);
+        if (food.getImagePath() != null && !food.getImagePath().isEmpty()) {
+            Glide.with(context)
+                    .load(food.getImagePath())
+                    .transform(new CenterCrop(), new RoundedCorners(30))
+                    .placeholder(R.drawable.food_placeholder)
+                    .error(R.drawable.food_placeholder)
+                    .into(holder.pic);
+        } else {
+            holder.pic.setImageResource(R.drawable.food_placeholder);
+        }
 
         // Add click listener to open detail activity
         holder.itemView.setOnClickListener(v -> {
@@ -78,7 +81,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
     }
 
     public class viewholder extends RecyclerView.ViewHolder {
-        TextView titleTxt, priceTxt, rateTxt, timeTxt;
+        TextView titleTxt, priceTxt, rateTxt;
         ImageView pic;
 
         public viewholder(@NonNull View itemView) {
@@ -86,7 +89,6 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
             titleTxt = itemView.findViewById(R.id.titleTxt);
             priceTxt = itemView.findViewById(R.id.priceTxt);
             rateTxt = itemView.findViewById(R.id.rateTxt);
-            timeTxt = itemView.findViewById(R.id.commentTxt);
             pic = itemView.findViewById(R.id.img);
         }
     }

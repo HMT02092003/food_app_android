@@ -4,7 +4,7 @@ public class Foods {
     private int CategoryId;
     private String Description;
     private boolean BestFood;
-    private int Id;
+    private String Id;
     private int LocationId;
     private double Price;
     private String ImagePath;
@@ -47,11 +47,11 @@ public class Foods {
         BestFood = bestFood;
     }
 
-    public int getId() {
+    public String getId() {
         return Id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         Id = id;
     }
 
