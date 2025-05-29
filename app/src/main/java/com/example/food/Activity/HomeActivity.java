@@ -446,30 +446,18 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
         try {
 
-            Glide.with(this)
-
-                    .load(R.drawable.hero_placeholder)
-
-                    .into(heroImageView);
-
+// ... existing code ...
         } catch (Exception e) {
-
             Log.e("HomeActivity", "Error loading hero image: " + e.getMessage());
-
             heroImageView.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
-
         }
 
-
-
         heroTitleTextView.setText("Khám phá hương vị mới mỗi ngày!");
-
         heroExploreButton.setOnClickListener(v -> {
 
             navigateToFoodListActivity("Khám phá");
 
         });
-
     }
 
 

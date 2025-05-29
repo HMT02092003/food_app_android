@@ -132,7 +132,7 @@
 
                 android:scaleType="centerCrop"
 
-                android:src="@drawable/hero_placeholder"
+                android:src="@drawable/vietnamese_food"
 
                 app:layout_constraintBottom_toBottomOf="parent"
 
