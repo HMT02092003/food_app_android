@@ -2,34 +2,32 @@ package com.example.food.Model;
 
 import java.util.List;
 
-public class FoodModel {
+public class PendingRecipe {
     private String id;
     private String name;
     private double price;
-    private String ingredients; // Trường nguyên liệu
-    private String details;     // Trường mô tả chi tiết món ăn
-    private String recipe;      // *** ĐÃ THÊM: Trường công thức món ăn ***
-    private List<String> imageUrls; // Danh sách các URL ảnh
+    private String ingredients;
+    private String details;
+    private String recipe;
+    private List<String> imageUrls;
     private String category;
     private float rating;
-    private int reviewCount; // Trường để lưu số lượng đánh giá
-    private String status; // Trường để lưu trạng thái của công thức
-    private String userId; // Trường để lưu ID của người dùng đăng công thức
+    private int reviewCount;
+    private String status;
+    private String userId;
 
-    public FoodModel() {
-        // Constructor rỗng cần thiết cho Firestore để tự động chuyển đổi dữ liệu
+    public PendingRecipe() {
+        // Constructor rỗng cần thiết cho Firestore
     }
 
-    // Constructor đầy đủ
-    // Đã bao gồm tất cả các trường hiện có, bao gồm recipe và reviewCount
-    public FoodModel(String id, String name, double price, String ingredients, String details,
-                     String recipe, List<String> imageUrls, String category, float rating, int reviewCount, String status, String userId) {
+    public PendingRecipe(String id, String name, double price, String ingredients, String details,
+                         String recipe, List<String> imageUrls, String category, float rating, int reviewCount, String status, String userId) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.ingredients = ingredients;
         this.details = details;
-        this.recipe = recipe; // Khởi tạo recipe
+        this.recipe = recipe;
         this.imageUrls = imageUrls;
         this.category = category;
         this.rating = rating;
@@ -38,9 +36,7 @@ public class FoodModel {
         this.userId = userId;
     }
 
-    // --- Getters và Setters ---
-    // Firestore sử dụng các phương thức này để ánh xạ dữ liệu từ/đến các tài liệu
-
+    // Getters và Setters
     public String getId() {
         return id;
     }
@@ -81,7 +77,6 @@ public class FoodModel {
         this.details = details;
     }
 
-    // *** ĐÃ THÊM: Getter và Setter cho recipe ***
     public String getRecipe() {
         return recipe;
     }
@@ -137,4 +132,4 @@ public class FoodModel {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-}
+} 

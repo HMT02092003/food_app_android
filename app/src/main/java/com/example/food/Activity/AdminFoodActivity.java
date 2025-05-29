@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+
 public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.OnFoodDeletedListener {
 
     private BottomNavigationView bottomNavigationView;
@@ -135,18 +137,23 @@ public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.
         finish();
     }
 
-    private boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.homeBtn) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        
+        if (itemId == R.id.notificationBtn) {
+            // Chuyển sang màn hình duyệt món ăn
+            Intent intent = new Intent(AdminFoodActivity.this, PendingRecipesActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.homeBtn) {
             // Xử lý khi nút Home được nhấn (nếu cần)
             return true;
-        } else if (id == R.id.createBtn) {
+        } else if (itemId == R.id.createBtn) {
             // Chuyển sang AdminAddFoodActivity khi nút New được nhấn
             Intent intent = new Intent(AdminFoodActivity.this, AdminAddFoodActivity.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.profileBtn) {
+        } else if (itemId == R.id.profileBtn) {
             // Xử lý khi nút Profile được nhấn (nếu cần)
             return true;
         }
