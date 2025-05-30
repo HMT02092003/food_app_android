@@ -21,6 +21,12 @@ import com.bumptech.glide.Glide;
 import com.example.food.Adapter.CommentAdapter;
 import com.example.food.Model.Comment;
 import com.example.food.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     // Khai báo các View từ layout activity_detail.xml
     private ImageView imageView8; // Ảnh món ăn chính
@@ -55,6 +61,9 @@ public class DetailActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private CommentAdapter commentAdapter;
     private List<Comment> comments;
+
+    private GoogleMap mMap;
+    private static final LatLng HANOI = new LatLng(21.0285, 105.8542);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,36 @@ public class DetailActivity extends AppCompatActivity {
         setupListeners();
         setupCommentsRecyclerView();
         loadComments();
+
+        // Initialize map
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Hanoi
+        mMap.addMarker(new MarkerOptions()
+                .position(HANOI)
+                .title("Hà Nội, Việt Nam"));
+
+        // Move camera to Hanoi with zoom level 15
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HANOI, 15));
+
+        // Enable zoom controls
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        
+        // Enable my location button if you have location permission
+        try {
+            mMap.setMyLocationEnabled(true);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
