@@ -43,7 +43,9 @@ public class CategoryHomeAdapter extends RecyclerView.Adapter<CategoryHomeAdapte
         holder.categoryNameTextView.setText(categoryName);
 
         // Set selected state for TextView
-        holder.categoryNameTextView.setSelected(position == selectedPosition);
+        boolean isSelected = position == selectedPosition;
+        holder.categoryNameTextView.setSelected(isSelected);
+        holder.categoryNameTextView.setTypeface(null, isSelected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
 
         // Set click listener for the entire item
         holder.itemView.setOnClickListener(v -> {

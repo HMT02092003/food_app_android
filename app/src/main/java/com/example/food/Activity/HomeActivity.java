@@ -26,6 +26,7 @@ import com.example.food.Adapter.FoodVerticalAdapter;
 import com.example.food.Model.FoodModel;
 import com.example.food.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.CollectionReference;
@@ -419,5 +420,20 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         super.onResume();
         // Refresh featured foods to update ratings
         loadFeaturedFoods();
+        
+        // Update user name from Firestore
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            db.collection("Users").document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String name = documentSnapshot.getString("name");
+                        if (name != null && !name.isEmpty()) {
+                            userNameTextView.setText(name);
+                        }
+                    }
+                });
+        }
     }
 }
