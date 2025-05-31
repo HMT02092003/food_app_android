@@ -37,25 +37,28 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String category = categoryList.get(position);
-        holder.categoryNameTextView.setText(category); // Resolved: Cannot resolve symbol 'categoryNameTextView'
+        holder.categoryNameTextView.setText(category);
 
         // Highlight the selected category
-        if (position == selectedPosition) {
-            holder.categoryNameTextView.setBackgroundResource(R.drawable.category_background_selected); // Resolved: Cannot resolve symbol 'category_background_selected'
+        boolean isSelected = position == selectedPosition;
+        if (isSelected) {
+            holder.categoryNameTextView.setBackgroundResource(R.drawable.category_background_selected);
             holder.categoryNameTextView.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.white));
+            holder.categoryNameTextView.setTypeface(null, android.graphics.Typeface.BOLD);
         } else {
-            holder.categoryNameTextView.setBackgroundResource(R.drawable.category_background_default); // Resolved: Cannot resolve symbol 'category_background_default'
+            holder.categoryNameTextView.setBackgroundResource(R.drawable.category_background_default);
             holder.categoryNameTextView.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.black));
+            holder.categoryNameTextView.setTypeface(null, android.graphics.Typeface.NORMAL);
         }
 
         holder.itemView.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition(); // Correct way to get the current position
-            if (adapterPosition != RecyclerView.NO_POSITION && selectedPosition != adapterPosition) { // Check if the item is still valid
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION && selectedPosition != adapterPosition) {
                 int previousPosition = selectedPosition;
                 selectedPosition = adapterPosition;
                 notifyItemChanged(previousPosition);
                 notifyItemChanged(selectedPosition);
-                listener.onCategoryClick(categoryList.get(adapterPosition)); // Use the adapter position to get the correct category
+                listener.onCategoryClick(categoryList.get(adapterPosition));
             }
         });
     }
