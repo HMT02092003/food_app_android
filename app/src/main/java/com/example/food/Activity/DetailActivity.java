@@ -61,6 +61,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.CircularBounds;
+import com.google.android.libraries.places.api.net.SearchNearbyRequest;
+import com.google.android.libraries.places.api.net.SearchNearbyResponse;
+
+import java.util.Arrays;
+
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     // Khai báo các View từ layout activity_detail.xml
@@ -95,6 +104,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private String foodName;
     private static final String PLACES_API_KEY = "YOUR_API_KEY_HERE"; // <-- Thay bằng API Key của bạn
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private PlacesClient placesClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +141,12 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Khởi tạo Places API
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), PLACES_API_KEY); // Đảm bảo PLACES_API_KEY là API Key của bạn
+        }
+        placesClient = Places.createClient(this);
     }
 
     private boolean checkLocationPermission() {
@@ -205,49 +221,36 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void searchNearbyRestaurants(LatLng location, String foodName) {
-        int radius = 2000; // Bán kính tìm kiếm (mét)
-        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
-                "?location=" + location.latitude + "," + location.longitude +
-                "&radius=" + radius +
-                "&type=restaurant" +
-                "&keyword=" + foodName +
-                "&key=" + PLACES_API_KEY;
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(url).build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(DetailActivity.this, "Lỗi khi tìm nhà hàng", Toast.LENGTH_SHORT).show());
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseData = response.body().string();
-                    try {
-                        JSONObject json = new JSONObject(responseData);
-                        JSONArray results = json.getJSONArray("results");
-                        runOnUiThread(() -> {
-                            for (int i = 0; i < results.length(); i++) {
-                                try {
-                                    JSONObject place = results.getJSONObject(i);
-                                    JSONObject geometry = place.getJSONObject("geometry").getJSONObject("location");
-                                    double lat = geometry.getDouble("lat");
-                                    double lng = geometry.getDouble("lng");
-                                    String name = place.getString("name");
-                                    mMap.addMarker(new MarkerOptions()
-                                            .position(new LatLng(lat, lng))
-                                            .title(name));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+        final List<Place.Field> placeFields = Arrays.asList(
+            Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS
+        );
+        CircularBounds circle = CircularBounds.newInstance(location, 2000);
+        final List<String> includedTypes = Arrays.asList("restaurant", "cafe");
+
+        final SearchNearbyRequest searchNearbyRequest =
+            SearchNearbyRequest.builder(circle, placeFields)
+                .setIncludedTypes(includedTypes)
+                .setMaxResultCount(20)
+                .build();
+
+        placesClient.searchNearby(searchNearbyRequest)
+            .addOnSuccessListener(response -> {
+                List<Place> places = response.getPlaces();
+                mMap.clear();
+                mMap.addMarker(new MarkerOptions().position(location).title("Vị trí của bạn"));
+                for (Place place : places) {
+                    if (place.getLatLng() != null && place.getName() != null &&
+                        place.getName().toLowerCase().contains(foodName.toLowerCase())) {
+                        mMap.addMarker(new MarkerOptions()
+                            .position(place.getLatLng())
+                            .title(place.getName())
+                            .snippet(place.getAddress()));
                     }
                 }
-            }
-        });
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(this, "Không tìm được nhà hàng gần bạn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
     }
 
     /**
