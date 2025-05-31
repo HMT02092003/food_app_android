@@ -91,6 +91,19 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         initViews();
         setupListeners();
         loadData();
+
+
+
+        // Load ảnh bo góc ở cuối màn hình Home
+
+        ImageView homeBottomIllustration = findViewById(R.id.homeBottomIllustration);
+
+        Glide.with(this)
+
+            .load("https://baodongkhoi.vn/image/fckeditor/upload/2023/20230510/images/nau%20an.png")
+
+            .into(homeBottomIllustration);
+
     }
 
     private void initViews() {
@@ -220,6 +233,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
             Glide.with(this)
                     .load(R.drawable.hero_placeholder)
                     .into(heroImageView);
+
+// ... existing code ...
         } catch (Exception e) {
             Log.e("HomeActivity", "Error loading hero image: " + e.getMessage());
             heroImageView.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
@@ -420,7 +435,7 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         super.onResume();
         // Refresh featured foods to update ratings
         loadFeaturedFoods();
-        
+
         // Update user name from Firestore
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {

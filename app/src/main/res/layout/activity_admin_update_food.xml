@@ -217,6 +217,36 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detailsLabel" />
 
+        <TextView
+            android:id="@+id/recipeLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Công thức nấu ăn"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detailsInput" />
+
+        <EditText
+            android:id="@+id/recipeInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edit_text_bg"
+            android:gravity="top"
+            android:hint="Nhập công thức nấu ăn"
+            android:minHeight="100dp"
+            android:padding="12dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recipeLabel" />
+
         <Button
             android:id="@+id/saveButton"
             android:layout_width="0dp"
@@ -230,7 +260,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/detailsInput" />
+            app:layout_constraintTop_toBottomOf="@id/recipeInput" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -21,6 +21,7 @@ import java.util.Map;
 public class AdminUpdateFoodActivity extends AppCompatActivity {
 
     private EditText itemName, priceInput, ingredientInput, detailsInput, imageUrl1;
+    private EditText recipeInput;
     private ImageView backBtn;
     private Button saveButton, resetBtn;
     private String foodId;
@@ -28,6 +29,7 @@ public class AdminUpdateFoodActivity extends AppCompatActivity {
     private double foodPrice;
     private String foodIngredients;
     private String foodDetails;
+    private String foodRecipe;
     private ArrayList<String> foodImageUrls;
     private FirebaseFirestore db;
 
@@ -52,6 +54,7 @@ public class AdminUpdateFoodActivity extends AppCompatActivity {
         priceInput = findViewById(R.id.priceInput);
         ingredientInput = findViewById(R.id.ingredientInput);
         detailsInput = findViewById(R.id.detailsInput);
+        recipeInput = findViewById(R.id.recipeInput);
         imageUrl1 = findViewById(R.id.imageUrl1);
         saveButton = findViewById(R.id.saveButton);
 
@@ -63,6 +66,7 @@ public class AdminUpdateFoodActivity extends AppCompatActivity {
             foodPrice = bundle.getDouble("FOOD_PRICE");
             foodIngredients = bundle.getString("FOOD_INGREDIENTS");
             foodDetails = bundle.getString("FOOD_DETAILS");
+            foodRecipe = bundle.getString("FOOD_RECIPE");
             foodImageUrls = bundle.getStringArrayList("FOOD_IMAGE_URLS");
 
             // Hiển thị dữ liệu lên các view
@@ -70,6 +74,7 @@ public class AdminUpdateFoodActivity extends AppCompatActivity {
             priceInput.setText(String.valueOf(foodPrice));
             ingredientInput.setText(foodIngredients);
             detailsInput.setText(foodDetails);
+            recipeInput.setText(foodRecipe);
             if (foodImageUrls != null && !foodImageUrls.isEmpty()) {
                 imageUrl1.setText(foodImageUrls.get(0));
             }
@@ -85,6 +90,7 @@ public class AdminUpdateFoodActivity extends AppCompatActivity {
             priceInput.setText(String.valueOf(foodPrice));
             ingredientInput.setText(foodIngredients);
             detailsInput.setText(foodDetails);
+            recipeInput.setText(foodRecipe);
             if (foodImageUrls != null && !foodImageUrls.isEmpty()) {
                 imageUrl1.setText(foodImageUrls.get(0));
             }
@@ -100,8 +106,8 @@ public class AdminUpdateFoodActivity extends AppCompatActivity {
         String newPriceStr = priceInput.getText().toString().trim();
         String newIngredients = ingredientInput.getText().toString().trim();
         String newDetails = detailsInput.getText().toString().trim();
+        String newRecipe = recipeInput.getText().toString().trim();
         String newImageUrl1 = imageUrl1.getText().toString().trim();
-
 
         // Basic validation
         if (newName.isEmpty() || newPriceStr.isEmpty() || newIngredients.isEmpty() || newDetails.isEmpty()) {
@@ -123,6 +129,7 @@ public class AdminUpdateFoodActivity extends AppCompatActivity {
         foodData.put("price", newPrice);
         foodData.put("ingredients", newIngredients);
         foodData.put("details", newDetails);
+        foodData.put("recipe", newRecipe);
 
         ArrayList<String> newImageUrls = new ArrayList<>();
         if (!newImageUrl1.isEmpty()) {
