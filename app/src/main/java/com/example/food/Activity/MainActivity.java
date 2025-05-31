@@ -127,38 +127,64 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setVariable() {
-        // Đã xóa nút logoutbtn nên không cần binding.logoutbtn.setOnClickListener nữa
         binding.searchBtn.setOnClickListener(view -> {
-            performSearch();
+            String searchText = binding.searchEdt.getText().toString().trim();
+            if (!searchText.isEmpty()) {
+                performSearch(searchText);
+            } else {
+                // Nếu ô tìm kiếm rỗng, hiển thị lại toàn bộ danh sách
+                initFoodList("Tất cả");
+            }
         });
+
         binding.searchEdt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH ||
                 actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
                 (event != null && event.getKeyCode() == android.view.KeyEvent.KEYCODE_ENTER && event.getAction() == android.view.KeyEvent.ACTION_DOWN)) {
-                performSearch();
+                String searchText = binding.searchEdt.getText().toString().trim();
+                if (!searchText.isEmpty()) {
+                    performSearch(searchText);
+                }
                 return true;
             }
             return false;
         });
     }
 
-    private void performSearch() {
-        String text = binding.searchEdt.getText().toString().trim();
-        if (!text.isEmpty()) {
-            // Lọc danh sách món ăn theo tên (không phân biệt hoa thường)
-            List<FoodModel> filteredList = new ArrayList<>();
-            for (FoodModel food : foodList) {
-                if (food.getName() != null && food.getName().toLowerCase().contains(text.toLowerCase())) {
-                    filteredList.add(food);
+    private void performSearch(String searchText) {
+        binding.progressBarFoodList.setVisibility(View.VISIBLE);
+        
+        // Tìm kiếm trong Firestore
+        CollectionReference foodsRef = db.collection("Foods");
+        foodsRef.get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                List<FoodModel> filteredList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    FoodModel food = document.toObject(FoodModel.class);
+                    food.setId(document.getId());
+                    // Tìm kiếm không phân biệt hoa thường
+                    if (food.getName() != null && food.getName().toLowerCase().contains(searchText.toLowerCase())) {
+                        filteredList.add(food);
+                    }
                 }
-            }
-            userFoodAdapter = new UserFoodAdapter(MainActivity.this, filteredList);
-            binding.foodListView.setAdapter(userFoodAdapter);
-        } else {
-            // Nếu ô tìm kiếm rỗng, hiển thị lại toàn bộ danh sách
-            userFoodAdapter = new UserFoodAdapter(MainActivity.this, foodList);
-            binding.foodListView.setAdapter(userFoodAdapter);
-        }
+                
+                if (filteredList.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Không tìm thấy món ăn nào", Toast.LENGTH_SHORT).show();
+                }
+                
+                updateFoodListWithSearchResults(filteredList);
+                binding.progressBarFoodList.setVisibility(View.GONE);
+            })
+            .addOnFailureListener(e -> {
+                binding.progressBarFoodList.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this, "Lỗi khi tìm kiếm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+    }
+
+    private void updateFoodListWithSearchResults(List<FoodModel> searchResults) {
+        foodList.clear();
+        foodList.addAll(searchResults);
+        updateFoodRecyclerView();
     }
 
     private void initFoodList(String category) {
