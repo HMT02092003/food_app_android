@@ -1,5 +1,10 @@
 package com.example.food.Activity;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,6 +27,8 @@ import com.bumptech.glide.Glide;
 import com.example.food.Adapter.CommentAdapter;
 import com.example.food.Model.Comment;
 import com.example.food.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,10 +40,26 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
+import android.os.Looper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import androidx.core.app.ActivityCompat;
 
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -62,8 +86,15 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private CommentAdapter commentAdapter;
     private List<Comment> comments;
 
+    // Google Maps variables
     private GoogleMap mMap;
     private static final LatLng HANOI = new LatLng(21.0285, 105.8542);
+    private String selectedLocation;
+    private FusedLocationProviderClient fusedLocationClient;
+    private Location currentLocation;
+    private String foodName;
+    private static final String PLACES_API_KEY = "YOUR_API_KEY_HERE"; // <-- Thay bằng API Key của bạn
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,30 +126,128 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+        } else {
+            Toast.makeText(this, "Error: Map fragment not found", Toast.LENGTH_SHORT).show();
+        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    }
+
+    private boolean checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        // Lấy foodName từ intent
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            foodName = extras.getString("foodName", "Tên món ăn không xác định");
+        } else {
+            foodName = "Tên món ăn không xác định";
+        }
+        // Kiểm tra quyền trước khi lấy vị trí
+        if (checkLocationPermission()) {
+            fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        currentLocation = location;
+                        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+                        mMap.addMarker(new MarkerOptions().position(userLatLng).title("Vị trí của bạn"));
+                        // Tìm nhà hàng quanh đây theo tên món ăn
+                        searchNearbyRestaurants(userLatLng, foodName);
+                    } else {
+                        // Nếu không có vị trí cuối cùng, yêu cầu cập nhật vị trí mới
+                        LocationRequest locationRequest = LocationRequest.create()
+                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                                .setInterval(1000)
+                                .setNumUpdates(1);
+                        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                Location location1 = locationResult.getLastLocation();
+                                if (location1 != null) {
+                                    currentLocation = location1;
+                                    LatLng userLatLng = new LatLng(location1.getLatitude(), location1.getLongitude());
+                                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+                                    mMap.addMarker(new MarkerOptions().position(userLatLng).title("Vị trí của bạn"));
+                                    searchNearbyRestaurants(userLatLng, foodName);
+                                } else {
+                                    Toast.makeText(DetailActivity.this, "Không lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, Looper.getMainLooper());
+                    }
+                });
         }
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Hanoi
-        mMap.addMarker(new MarkerOptions()
-                .position(HANOI)
-                .title("Hà Nội, Việt Nam"));
-
-        // Move camera to Hanoi with zoom level 15
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HANOI, 15));
-
-        // Enable zoom controls
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        
-        // Enable my location button if you have location permission
-        try {
-            mMap.setMyLocationEnabled(true);
-        } catch (SecurityException e) {
-            e.printStackTrace();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Được cấp quyền, reload lại map
+                if (mMap != null) {
+                    onMapReady(mMap);
+                }
+            } else {
+                Toast.makeText(this, "Bạn cần cấp quyền vị trí để sử dụng chức năng này", Toast.LENGTH_SHORT).show();
+            }
         }
+    }
+
+    private void searchNearbyRestaurants(LatLng location, String foodName) {
+        int radius = 2000; // Bán kính tìm kiếm (mét)
+        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
+                "?location=" + location.latitude + "," + location.longitude +
+                "&radius=" + radius +
+                "&type=restaurant" +
+                "&keyword=" + foodName +
+                "&key=" + PLACES_API_KEY;
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(DetailActivity.this, "Lỗi khi tìm nhà hàng", Toast.LENGTH_SHORT).show());
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    try {
+                        JSONObject json = new JSONObject(responseData);
+                        JSONArray results = json.getJSONArray("results");
+                        runOnUiThread(() -> {
+                            for (int i = 0; i < results.length(); i++) {
+                                try {
+                                    JSONObject place = results.getJSONObject(i);
+                                    JSONObject geometry = place.getJSONObject("geometry").getJSONObject("location");
+                                    double lat = geometry.getDouble("lat");
+                                    double lng = geometry.getDouble("lng");
+                                    String name = place.getString("name");
+                                    mMap.addMarker(new MarkerOptions()
+                                            .position(new LatLng(lat, lng))
+                                            .title(name));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     /**

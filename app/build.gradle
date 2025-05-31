@@ -67,7 +67,10 @@ dependencies {
 
     // Facebook Login
     implementation("com.facebook.android:facebook-login:16.3.0")
-
+    //Google map
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.libraries.places:places:3.4.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

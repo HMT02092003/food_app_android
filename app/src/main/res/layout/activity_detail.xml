@@ -267,9 +267,9 @@
                         app:tint="#FF5722" />
 
                     <TextView
-                        android:id="@+id/recipeTitleTxt" android:layout_width="wrap_content"
+                        android:id="@+id/recipeTitleTxt"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:text="Công thức"
                         android:textColor="#FF5722"
                         android:textSize="18sp"
@@ -289,6 +289,7 @@
                 android:id="@+id/mapgg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:orientation="vertical">
 
                 <fragment
