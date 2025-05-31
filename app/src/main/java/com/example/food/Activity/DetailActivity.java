@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -98,6 +99,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private FirebaseUser currentUser;
     private CommentAdapter commentAdapter;
     private List<Comment> comments;
+    private boolean isFavorite = false;
 
     // Google Maps variables
     private GoogleMap mMap;
@@ -421,7 +423,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 imageView8.setImageResource(R.drawable.food_placeholder);
             }
 
-            // Nếu không có recipe từ Intent, thử lấy từ Firestore
+            // Check if food is in favorites
+            checkIfFavorite();
+
+            // If no recipe from Intent, try to get from Firestore
             if (foodRecipe.equals("Công thức đang được cập nhật...") && !foodId.isEmpty()) {
                 loadFoodDataFromFirestore();
             }
@@ -452,15 +457,73 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
      */
     private void setupListeners() {
         // Xử lý sự kiện click cho nút quay lại
-        backBtn.setOnClickListener(v -> finish()); // Đóng DetailActivity và quay lại màn hình trước đó
+        backBtn.setOnClickListener(v -> finish());
 
-        // Xử lý sự kiện click cho nút yêu thích (placeholder)
+        // Xử lý sự kiện click cho nút yêu thích
         favBtn.setOnClickListener(v -> {
-            // TODO: Triển khai logic yêu thích tại đây
-            // Ví dụ: Thay đổi icon yêu thích, lưu trạng thái yêu thích vào cơ sở dữ liệu (Firebase, Room...)
+            if (currentUser == null) {
+                Toast.makeText(this, "Vui lòng đăng nhập để thêm vào yêu thích", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            toggleFavorite();
         });
 
         submitRatingBtn.setOnClickListener(v -> submitRating());
+    }
+
+    private void toggleFavorite() {
+        if (currentUser == null || foodId == null) return;
+
+        String userId = currentUser.getUid();
+        DocumentReference userFavoritesRef = db.collection("Users")
+                .document(userId)
+                .collection("Favorites")
+                .document(foodId);
+
+        if (isFavorite) {
+            // Remove from favorites
+            userFavoritesRef.delete()
+                    .addOnSuccessListener(aVoid -> {
+                        isFavorite = false;
+                        favBtn.setImageResource(R.drawable.ic_favorite_white);
+                        Toast.makeText(this, "Đã xóa khỏi yêu thích", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> 
+                        Toast.makeText(this, "Lỗi khi xóa khỏi yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
+        } else {
+            // Add to favorites
+            userFavoritesRef.set(new HashMap<String, Object>() {{
+                put("foodId", foodId);
+                put("timestamp", System.currentTimeMillis());
+            }})
+            .addOnSuccessListener(aVoid -> {
+                isFavorite = true;
+                favBtn.setImageResource(R.drawable.ic_favorite_filled);
+                Toast.makeText(this, "Đã thêm vào yêu thích", Toast.LENGTH_SHORT).show();
+            })
+            .addOnFailureListener(e -> 
+                Toast.makeText(this, "Lỗi khi thêm vào yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+            );
+        }
+    }
+
+    private void checkIfFavorite() {
+        if (currentUser == null || foodId == null) return;
+
+        String userId = currentUser.getUid();
+        db.collection("Users")
+                .document(userId)
+                .collection("Favorites")
+                .document(foodId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    isFavorite = documentSnapshot.exists();
+                    favBtn.setImageResource(isFavorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_white);
+                })
+                .addOnFailureListener(e -> 
+                    Toast.makeText(this, "Lỗi khi kiểm tra yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 
     private void submitRating() {
