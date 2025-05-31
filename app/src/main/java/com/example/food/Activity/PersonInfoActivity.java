@@ -19,7 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class PersonInfoActivity extends AppCompatActivity {
     private ImageView avatar, backBtn;
     private TextView userName, userEmail, userBio, phoneNumber, userAddress, fullName; // Thêm fullName
-    private Button btnLogout, btnEditInfo, btnRecommendedFoods;
+    private Button btnLogout, btnEditInfo, btnRecommendedFoods, btnFavoriteFoods;
     private FirebaseFirestore db;
     private FirebaseUser firebaseUser;
     private String userId;
@@ -50,6 +50,7 @@ public class PersonInfoActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
         btnEditInfo = findViewById(R.id.btnEditInfo);
         btnRecommendedFoods = findViewById(R.id.btnRecommendedFoods);
+        btnFavoriteFoods = findViewById(R.id.btnFavoriteFoods);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
@@ -71,6 +72,11 @@ public class PersonInfoActivity extends AppCompatActivity {
 
         btnRecommendedFoods.setOnClickListener(v -> {
             Intent intent = new Intent(PersonInfoActivity.this, RecommendedFoodsActivity.class);
+            startActivity(intent);
+        });
+
+        btnFavoriteFoods.setOnClickListener(v -> {
+            Intent intent = new Intent(PersonInfoActivity.this, FavoriteFoodsActivity.class);
             startActivity(intent);
         });
 

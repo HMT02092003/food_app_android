@@ -107,6 +107,7 @@
         </activity>
         <activity android:name=".Activity.PendingRecipesActivity" />
         <activity android:name=".Activity.RecommendedFoodsActivity" />
+        <activity android:name=".Activity.FavoriteFoodsActivity" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/YOUR_MAPS_API_KEY" />

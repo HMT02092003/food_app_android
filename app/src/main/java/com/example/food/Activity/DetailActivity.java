@@ -104,7 +104,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
     private String foodName;
-    private static final String PLACES_API_KEY = "YOUR_API_KEY_HERE"; // <-- Thay bằng API Key của bạn
+    private static final String PLACES_API_KEY = "AIzaSyCM8udCcG9nU5ShHAEXNg0miJq2zYPcuK4";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private PlacesClient placesClient;
 
@@ -226,7 +226,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         final List<Place.Field> placeFields = Arrays.asList(
             Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS
         );
-        CircularBounds circle = CircularBounds.newInstance(location, 2000);
+        CircularBounds circle = CircularBounds.newInstance(location, 10000);
         final List<String> includedTypes = Arrays.asList("restaurant", "cafe");
 
         final SearchNearbyRequest searchNearbyRequest =
@@ -371,7 +371,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             }
 
             // Check if food is in favorites
-            checkIfFavorite();
+            if (foodId != null && !foodId.isEmpty()) {
+                checkIfFavorite();
+            }
 
             // If no recipe from Intent, try to get from Firestore
             if (foodRecipe.equals("Công thức đang được cập nhật...") && !foodId.isEmpty()) {
