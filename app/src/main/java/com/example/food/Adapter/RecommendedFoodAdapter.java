@@ -1,10 +1,10 @@
 package com.example.food.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.food.Activity.DetailActivity;
 import com.example.food.Domain.Food;
 import com.example.food.R;
 
@@ -19,22 +20,17 @@ import java.util.List;
 
 public class RecommendedFoodAdapter extends RecyclerView.Adapter<RecommendedFoodAdapter.ViewHolder> {
     private List<Food> foods;
-    private OnDeleteClickListener onDeleteClickListener;
+    private Context context;
 
-    public interface OnDeleteClickListener {
-        void onDeleteClick(int position, Food food);
-    }
-
-    public RecommendedFoodAdapter(List<Food> foods, OnDeleteClickListener onDeleteClickListener) {
+    public RecommendedFoodAdapter(List<Food> foods, Context context) {
         this.foods = foods;
-        this.onDeleteClickListener = onDeleteClickListener;
+        this.context = context;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.viewholder_recommended_food, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.viewholder_recommended_food, parent, false);
         return new ViewHolder(view);
     }
 
@@ -42,19 +38,21 @@ public class RecommendedFoodAdapter extends RecyclerView.Adapter<RecommendedFood
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Food food = foods.get(position);
         holder.titleTxt.setText(food.getName());
-        holder.descriptionTxt.setText(food.getDetails());
         holder.priceTxt.setText(String.format("%,.0f VNĐ", food.getPrice()));
+
         if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
-            Glide.with(holder.itemView.getContext())
+            Glide.with(context)
                 .load(food.getImageUrls().get(0))
                 .into(holder.pic);
         } else {
-            holder.pic.setImageResource(R.drawable.intro_pic);
+            holder.pic.setImageResource(R.drawable.food_placeholder);
         }
-        holder.btnDelete.setOnClickListener(v -> {
-            if (onDeleteClickListener != null) {
-                onDeleteClickListener.onDeleteClick(position, food);
-            }
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("foodId", food.getId());
+            intent.putExtra("foodName", food.getName());
+            context.startActivity(intent);
         });
     }
 
@@ -64,17 +62,14 @@ public class RecommendedFoodAdapter extends RecyclerView.Adapter<RecommendedFood
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTxt, descriptionTxt, priceTxt;
+        TextView titleTxt, priceTxt;
         ImageView pic;
-        Button btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTxt = itemView.findViewById(R.id.titleTxt);
-            descriptionTxt = itemView.findViewById(R.id.descriptionTxt);
             priceTxt = itemView.findViewById(R.id.priceTxt);
             pic = itemView.findViewById(R.id.pic);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 } 
