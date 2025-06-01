@@ -71,6 +71,12 @@ import com.google.android.libraries.places.api.net.SearchNearbyResponse;
 
 import java.util.Arrays;
 
+import com.example.food.Domain.Food;
+import com.example.food.Adapter.RecommendedFoodAdapter;
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.Collections;
+
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     // Khai báo các View từ layout activity_detail.xml
@@ -81,14 +87,14 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private TextView priceTxt;    // Giá món ăn
     private RatingBar ratingBar;  // Rating Bar
     private TextView rateTxt;     // Text hiển thị số rating (ví dụ: "5 Rating")
-    private TextView categoryTxt; // Giá trị thể loại món ăn (ví dụ: "Món Cơm")
     private TextView descriptionTxt; // Mô tả món ăn
-    private TextView ingridentTxt; // Nguyên liệu món ăn
-    private TextView recipeContentTxt; // Thêm TextView cho công thức
     private RatingBar userRatingBar;
     private EditText commentInput;
     private Button submitRatingBtn;
     private RecyclerView commentsRecyclerView;
+    private RecyclerView recommendedRecyclerView;
+    private RecommendedFoodAdapter recommendedAdapter;
+    private List<Food> recommendedFoods = new ArrayList<>();
 
     private String foodId;
     private FirebaseFirestore db;
@@ -132,6 +138,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         setupListeners();
         setupCommentsRecyclerView();
         loadComments();
+        setupRecommendedRecyclerView();
 
         // Initialize map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -146,7 +153,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
         // Khởi tạo Places API
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), PLACES_API_KEY); // Đảm bảo PLACES_API_KEY là API Key của bạn
+            Places.initialize(getApplicationContext(), PLACES_API_KEY);
         }
         placesClient = Places.createClient(this);
     }
@@ -266,15 +273,22 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         priceTxt = findViewById(R.id.priceTxt);
         ratingBar = findViewById(R.id.ratingBar);
         rateTxt = findViewById(R.id.rateTxt);
-
-        categoryTxt = findViewById(R.id.categoryTxt);
         descriptionTxt = findViewById(R.id.descriptionTxt);
-        ingridentTxt = findViewById(R.id.ingridentTxt);
-        recipeContentTxt = findViewById(R.id.recipeContentTxt); // Ánh xạ TextView cho công thức
         userRatingBar = findViewById(R.id.userRatingBar);
         commentInput = findViewById(R.id.commentInput);
         submitRatingBtn = findViewById(R.id.submitRatingBtn);
         commentsRecyclerView = findViewById(R.id.commentsRecyclerView);
+        recommendedRecyclerView = findViewById(R.id.recommendedRecyclerView);
+        
+        // Initialize category and ingredients TextViews
+        TextView categoryTxt = findViewById(R.id.categoryTxt);
+        TextView ingredientsTxt = findViewById(R.id.ingridentTxt);
+        TextView recipeContentTxt = findViewById(R.id.recipeContentTxt);
+        
+        // Set initial values
+        if (categoryTxt != null) categoryTxt.setText("");
+        if (ingredientsTxt != null) ingredientsTxt.setText("");
+        if (recipeContentTxt != null) recipeContentTxt.setText("");
     }
 
     private void setupCommentsRecyclerView() {
@@ -329,76 +343,137 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .addOnFailureListener(e -> Toast.makeText(this, "Error updating rating: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void getAndSetFoodData() {
-        // Lấy Bundle chứa các extra từ Intent
-        Bundle extras = getIntent().getExtras();
+    private void setupRecommendedRecyclerView() {
+        recommendedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recommendedAdapter = new RecommendedFoodAdapter(recommendedFoods, this);
+        recommendedRecyclerView.setAdapter(recommendedAdapter);
+    }
 
-        if (extras != null) {
-            // Lấy dữ liệu từng trường, cung cấp giá trị mặc định nếu không tồn tại
-            foodId = extras.getString("foodId", "");
-            String foodName = extras.getString("foodName", "Tên món ăn không xác định");
-            double foodPrice = extras.getDouble("foodPrice", 0.0);
-            String foodDescription = extras.getString("foodDescription", "Mô tả món ăn đang được cập nhật...");
-            String foodImagePath = extras.getString("foodImagePath", "");
-            double foodRating = extras.getDouble("foodRating", 0.0);
-            String foodCategory = extras.getString("foodCategory", "Chưa phân loại");
-            String foodIngredients = extras.getString("foodIngredients", "Nguyên liệu đang được cập nhật...");
-            String foodRecipe = extras.getString("foodRecipe", "Công thức đang được cập nhật...");
-
-            // Đặt dữ liệu vào các View
-            titleTxt.setText(foodName);
-            priceTxt.setText(String.format("%,.0f VNĐ", foodPrice));
-            descriptionTxt.setText(foodDescription);
-            ingridentTxt.setText(foodIngredients);
-            recipeContentTxt.setText(foodRecipe);
-
-            // Đặt RatingBar và Rate Text
-            ratingBar.setRating((float) foodRating);
-            rateTxt.setText(String.format("%.1f Rating", foodRating));
-
-            // Đặt thể loại món ăn
-            categoryTxt.setText(foodCategory);
-
-            // Tải ảnh món ăn bằng Glide
-            if (!foodImagePath.isEmpty()) {
-                Glide.with(this)
-                        .load(foodImagePath)
-                        .placeholder(R.drawable.food_placeholder)
-                        .error(R.drawable.food_placeholder)
-                        .into(imageView8);
-            } else {
-                imageView8.setImageResource(R.drawable.food_placeholder);
-            }
-
-            // Check if food is in favorites
-            if (foodId != null && !foodId.isEmpty()) {
-                checkIfFavorite();
-            }
-
-            // If no recipe from Intent, try to get from Firestore
-            if (foodRecipe.equals("Công thức đang được cập nhật...") && !foodId.isEmpty()) {
-                loadFoodDataFromFirestore();
-            }
+    private void loadRecommendedFoods() {
+        if (foodId == null) {
+            return;
         }
+
+        // First get the current food to get its category
+        db.collection("Foods").document(foodId)
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Food currentFood = documentSnapshot.toObject(Food.class);
+                    if (currentFood != null && currentFood.getCategory() != null) {
+                        // Then query for foods in the same category
+                        db.collection("Foods")
+                            .whereEqualTo("category", currentFood.getCategory())
+                            .get()
+                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                recommendedFoods.clear();
+                                List<Food> sameCategoryFoods = new ArrayList<>();
+                                
+                                // Convert documents to Food objects
+                                for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                                    Food food = doc.toObject(Food.class);
+                                    if (food != null) {
+                                        food.setId(doc.getId());
+                                        // Don't add the current food
+                                        if (!food.getId().equals(foodId)) {
+                                            sameCategoryFoods.add(food);
+                                        }
+                                    }
+                                }
+                                
+                                // Shuffle the list to get random order
+                                Collections.shuffle(sameCategoryFoods);
+                                
+                                // Take up to 10 items
+                                int count = Math.min(sameCategoryFoods.size(), 10);
+                                for (int i = 0; i < count; i++) {
+                                    recommendedFoods.add(sameCategoryFoods.get(i));
+                                }
+                                
+                                recommendedAdapter.notifyDataSetChanged();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Không thể tải món ăn đề xuất", Toast.LENGTH_SHORT).show();
+                            });
+                    }
+                }
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(this, "Không thể tải thông tin món ăn", Toast.LENGTH_SHORT).show();
+            });
+    }
+
+    private void getAndSetFoodData() {
+        foodId = getIntent().getStringExtra("foodId");
+        if (foodId == null) {
+            Toast.makeText(this, "Không tìm thấy thông tin món ăn", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        loadFoodDataFromFirestore();
     }
 
     private void loadFoodDataFromFirestore() {
-        if (foodId == null || foodId.isEmpty()) return;
-
-        db.collection("Foods")
-                .document(foodId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String recipe = documentSnapshot.getString("recipe");
-                        if (recipe != null && !recipe.isEmpty()) {
-                            recipeContentTxt.setText(recipe);
+        db.collection("Foods").document(foodId)
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Food food = documentSnapshot.toObject(Food.class);
+                    if (food != null) {
+                        food.setId(documentSnapshot.getId());
+                        // Set data to views
+                        titleTxt.setText(food.getName());
+                        priceTxt.setText(String.format("%.0f$", food.getPrice()));
+                        descriptionTxt.setText(food.getDetails());
+                        
+                        // Set category
+                        TextView categoryTxt = findViewById(R.id.categoryTxt);
+                        if (categoryTxt != null) {
+                            categoryTxt.setText(food.getCategory() != null ? food.getCategory() : "Chưa phân loại");
                         }
+                        
+                        // Set ingredients
+                        TextView ingredientsTxt = findViewById(R.id.ingridentTxt);
+                        if (ingredientsTxt != null) {
+                            ingredientsTxt.setText(food.getIngredients() != null ? food.getIngredients() : "Chưa có thông tin nguyên liệu");
+                        }
+                        
+                        // Set recipe
+                        TextView recipeContentTxt = findViewById(R.id.recipeContentTxt);
+                        if (recipeContentTxt != null) {
+                            recipeContentTxt.setText(food.getRecipe() != null ? food.getRecipe() : "Chưa có công thức");
+                        }
+                        
+                        // Set rating
+                        if (food.getRating() > 0) {
+                            ratingBar.setRating(food.getRating());
+                            rateTxt.setText(String.format("%.1f Rating", food.getRating()));
+                        } else {
+                            ratingBar.setRating(0);
+                            rateTxt.setText("0 Rating");
+                        }
+                        
+                        // Load image
+                        if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
+                            Glide.with(this)
+                                .load(food.getImageUrls().get(0))
+                                .into(imageView8);
+                        } else {
+                            imageView8.setImageResource(R.drawable.food_placeholder);
+                        }
+                        
+                        // Load recommended foods
+                        loadRecommendedFoods();
                     }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Lỗi khi tải công thức: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                } else {
+                    Toast.makeText(this, "Không tìm thấy thông tin món ăn", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(this, "Lỗi khi tải thông tin món ăn", Toast.LENGTH_SHORT).show();
+                finish();
+            });
     }
 
     /**

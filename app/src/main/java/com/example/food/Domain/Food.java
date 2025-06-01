@@ -8,17 +8,25 @@ public class Food {
     private double price;
     private List<String> imageUrls;
     private String id;
+    private String category;
+    private float rating;
+    private String ingredients;
+    private String recipe;
 
     // Empty constructor for Firebase
     public Food() {
     }
 
     // Constructor with all fields
-    public Food(String name, String details, double price, List<String> imageUrls) {
+    public Food(String name, String details, double price, List<String> imageUrls, String category, float rating, String ingredients, String recipe) {
         this.name = name;
         this.details = details;
         this.price = price;
         this.imageUrls = imageUrls;
+        this.category = category;
+        this.rating = rating;
+        this.ingredients = ingredients;
+        this.recipe = recipe;
     }
 
     // Getters and Setters
@@ -60,5 +68,37 @@ public class Food {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public String getRecipe() {
+        return recipe;
+    }
+
+    public void setRecipe(String recipe) {
+        this.recipe = recipe;
     }
 } 

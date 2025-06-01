@@ -44,24 +44,7 @@ public class RecommendedFoodsActivity extends AppCompatActivity {
         
         // Setup RecyclerView
         recommendedFoods = new ArrayList<>();
-        adapter = new RecommendedFoodAdapter(recommendedFoods, (position, food) -> {
-            // Xóa trên Firestore
-            String docId = food.getId();
-            if (docId != null && !docId.isEmpty()) {
-                db.collection("PendingRecipes").document(docId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        recommendedFoods.remove(position);
-                        adapter.notifyItemRemoved(position);
-                        Toast.makeText(this, "Đã xóa món ăn!", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Lỗi xóa: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-            } else {
-                Toast.makeText(this, "Không tìm thấy id món ăn để xóa!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        adapter = new RecommendedFoodAdapter(recommendedFoods, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
