@@ -33,6 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -69,6 +70,9 @@ import com.google.android.libraries.places.api.net.SearchNearbyRequest;
 import com.google.android.libraries.places.api.net.SearchNearbyResponse;
 
 import java.util.Arrays;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+import android.util.Log;
 
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -102,7 +106,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
     private String foodName;
-    private static final String PLACES_API_KEY = "YOUR_API_KEY_HERE"; // <-- Thay bằng API Key của bạn
+    private static final String PLACES_API_KEY = "AIzaSyB1WBuHRowfPITiKK8DqkH3-RzVw-0Paj0"; // Replace with your new API key
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private PlacesClient placesClient;
 
@@ -156,7 +160,87 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         }
         return true;
     }
+    private void searchNearbyRestaurants(LatLng location, String foodName) {
+        int radius = 5000; // 5km radius
+        String url = "";
+        try {
+            // Encode food name for URL
+            String encodedFoodName = URLEncoder.encode(foodName, "UTF-8");
+            url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
+                    "?location=" + location.latitude + "," + location.longitude +
+                    "&radius=" + radius +
+                    "&type=restaurant" +
+                    "&keyword=" + encodedFoodName + // Add food name as keyword
+                    "&key=" + PLACES_API_KEY;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi mã hóa tên món ăn", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(DetailActivity.this, "Lỗi khi tìm nhà hàng", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    Log.d("PLACES_API", "RESPONSE: " + responseData);
+                    try {
+                        JSONObject json = new JSONObject(responseData);
+                        JSONArray results = json.getJSONArray("results");
+                        runOnUiThread(() -> {
+                            mMap.clear();
+                            // Add user location marker
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(location)
+                                    .title("Vị trí của bạn")
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+
+                            if (results.length() == 0) {
+                                Toast.makeText(DetailActivity.this, 
+                                    "Không tìm thấy nhà hàng nào phục vụ " + foodName + " trong bán kính 5km!", 
+                                    Toast.LENGTH_SHORT).show();
+                            }
+
+                            for (int i = 0; i < results.length(); i++) {
+                                try {
+                                    JSONObject place = results.getJSONObject(i);
+                                    JSONObject geometry = place.getJSONObject("geometry").getJSONObject("location");
+                                    double lat = geometry.getDouble("lat");
+                                    double lng = geometry.getDouble("lng");
+                                    String name = place.getString("name");
+                                    String address = place.optString("vicinity", "");
+                                    double rating = place.optDouble("rating", 0.0);
+                                    
+                                    // Create marker with custom icon and info
+                                    MarkerOptions markerOptions = new MarkerOptions()
+                                            .position(new LatLng(lat, lng))
+                                            .title(name)
+                                            .snippet("Địa chỉ: " + address + "\nĐánh giá: " + rating + "⭐")
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                                    
+                                    mMap.addMarker(markerOptions);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            
+                            // Move camera to show all markers
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13.0f));
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -220,38 +304,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         }
     }
 
-    private void searchNearbyRestaurants(LatLng location, String foodName) {
-        final List<Place.Field> placeFields = Arrays.asList(
-            Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS
-        );
-        CircularBounds circle = CircularBounds.newInstance(location, 2000);
-        final List<String> includedTypes = Arrays.asList("restaurant", "cafe");
 
-        final SearchNearbyRequest searchNearbyRequest =
-            SearchNearbyRequest.builder(circle, placeFields)
-                .setIncludedTypes(includedTypes)
-                .setMaxResultCount(20)
-                .build();
-
-        placesClient.searchNearby(searchNearbyRequest)
-            .addOnSuccessListener(response -> {
-                List<Place> places = response.getPlaces();
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(location).title("Vị trí của bạn"));
-                for (Place place : places) {
-                    if (place.getLatLng() != null && place.getName() != null &&
-                        place.getName().toLowerCase().contains(foodName.toLowerCase())) {
-                        mMap.addMarker(new MarkerOptions()
-                            .position(place.getLatLng())
-                            .title(place.getName())
-                            .snippet(place.getAddress()));
-                    }
-                }
-            })
-            .addOnFailureListener(e -> {
-                Toast.makeText(this, "Không tìm được nhà hàng gần bạn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-    }
 
     /**
      * Phương thức này dùng để ánh xạ các View từ layout XML vào các biến Java.

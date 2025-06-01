@@ -25,37 +25,39 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp">
 
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:text="Nguyễn Hoàng Cầm"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textView" />
-
                 <ImageView
-                    android:id="@+id/logoutbtn"
+                    android:id="@+id/backBtn"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:padding="14dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:padding="12dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:srcCompat="@drawable/logout" />
+                    app:srcCompat="@drawable/back" />
 
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="224dp"
                     android:text="Chào mừng"
                     app:layout_constraintBottom_toTopOf="@+id/textView3"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/backBtn"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="216dp"
+                    android:layout_marginTop="4dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:text="Tên người dùng"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/backBtn"
+                    app:layout_constraintTop_toBottomOf="@id/textView" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -83,33 +85,35 @@
                     android:layout_weight="1"
                     android:background="@drawable/grey_background"
                     android:minHeight="50dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <EditText
                         android:id="@+id/searchEdt"
                         android:layout_width="0dp"
                         android:layout_height="48dp"
                         android:layout_weight="1"
-                        android:background="@color/grey"
+                        android:background="@null"
                         android:drawablePadding="8dp"
                         android:ems="10"
                         android:hint="Tìm kiếm món ăn..."
                         android:inputType="text"
                         android:padding="8dp"
-                        android:textAlignment="center"
+                        android:textAlignment="viewStart"
+                        android:gravity="start|center_vertical"
                         android:textColor="#6699CC"
                         android:textColorHint="#6699CC"
                         android:textSize="16sp" />
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/searchBtn"
-                        android:layout_width="42dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:padding="4dp"
-                        tools:srcCompat="@drawable/search_icon" />
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Tìm kiếm"
+                        android:padding="8dp"
+                        android:src="@drawable/search_icon" />
                 </LinearLayout>
 
                 <ImageView
@@ -130,7 +134,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:text="Chọn thể loại món ăn"
-                android:textColor="#B0BEC5"
+                android:textColor="#000000"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -169,7 +173,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="Danh sách món ăn"
-                android:textColor="#B0BEC5"
+                android:textColor="#000000"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 

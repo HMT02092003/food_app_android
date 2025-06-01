@@ -2,6 +2,7 @@
 package com.example.food.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.food.Activity.DetailActivity;
 import com.example.food.R;
 import com.example.food.Model.FoodModel;
 import java.util.List;
@@ -20,6 +22,15 @@ public class UserFoodAdapter extends RecyclerView.Adapter<UserFoodAdapter.FoodVi
 
     private Context context;
     private List<FoodModel> foodList;
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(FoodModel food);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public UserFoodAdapter(Context context, List<FoodModel> foodList) {
         this.context = context;
@@ -46,6 +57,13 @@ public class UserFoodAdapter extends RecyclerView.Adapter<UserFoodAdapter.FoodVi
                     .load(currentFood.getImageUrls().get(0))
                     .into(holder.imgFood);
         }
+
+        // Add click listener to navigate to DetailActivity
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(currentFood);
+            }
+        });
     }
 
     @Override
