@@ -15,14 +15,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="250dp"> <ImageView
-            android:id="@+id/imageView8"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="Ảnh món ăn" tools:srcCompat="@tools:sample/avatars" />
+            android:layout_height="250dp">
+
+            <ImageView
+                android:id="@+id/imageView8"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="Ảnh món ăn chính"
+                tools:srcCompat="@tools:sample/avatars" />
 
             <View
                 android:layout_width="match_parent"
@@ -42,7 +45,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@android:color/white"
-                android:contentDescription="Nút quay lại" /> <ImageView
+                android:contentDescription="Nút quay lại" />
+
+            <ImageView
                 android:id="@+id/favBtn"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
@@ -50,11 +55,12 @@
                 android:layout_marginTop="24dp"
                 android:background="@drawable/circle_background"
                 android:padding="12dp"
-                android:src="@drawable/favorite_white"
+                android:src="@drawable/ic_favorite_white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@android:color/white"
-                android:contentDescription="Nút yêu thích" /> <TextView
+                android:contentDescription="Nút yêu thích" />
+
+            <TextView
                 android:id="@+id/titleTxt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -67,8 +73,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/imageView8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:text="Tên món ăn"
-                android:text="Tên món ăn" /> </androidx.constraintlayout.widget.ConstraintLayout>
+                tools:text="Tên món ăn" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -104,8 +110,8 @@
                     android:textColor="#FF5722"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    tools:text="40$"
-                    android:text="40$" /> </LinearLayout>
+                    tools:text="40$" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,7 +131,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="Thể loại:" android:textColor="#FF5722"
+                    android:text="Thể loại:"
+                    android:textColor="#FF5722"
                     android:textSize="16sp" />
 
                 <TextView
@@ -135,8 +142,8 @@
                     android:layout_marginStart="8dp"
                     android:textColor="#FF5722"
                     android:textSize="16sp"
-                    tools:text="Món Cơm"
-                    android:text="Món Cơm" /> </LinearLayout>
+                    tools:text="Món Cơm" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -150,11 +157,11 @@
                     style="@android:style/Widget.DeviceDefault.Light.RatingBar.Indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:numStars="5"
                     android:progressTint="#FFC106"
                     android:rating="3.5"
-                    android:stepSize="0.1" />
+                    android:stepSize="0.1"
+                    android:layout_marginStart="8dp" />
 
                 <TextView
                     android:id="@+id/rateTxt"
@@ -163,8 +170,8 @@
                     android:layout_marginStart="8dp"
                     android:textColor="#FF5722"
                     android:textSize="16sp"
-                    tools:text="5 Rating"
-                    android:text="5 Rating" /> </LinearLayout>
+                    tools:text="5 Rating" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -190,7 +197,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Chi tiết" android:textColor="#FF5722"
+                        android:text="Chi tiết"
+                        android:textColor="#FF5722"
                         android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -201,8 +209,8 @@
                     android:layout_height="wrap_content"
                     android:textColor="#333333"
                     android:textSize="16sp"
-                    tools:text="Mô tả món ăn..."
-                    android:text="Mô tả món ăn..." /> </LinearLayout>
+                    tools:text="Mô tả món ăn..." />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -228,9 +236,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Nguyên liệu" android:textColor="#FF5722"
+                        android:text="Nguyên liệu"
+                        android:textColor="#FF5722"
                         android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
@@ -240,8 +249,8 @@
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp"
-                    tools:text="• Nguyên liệu 1&#10;• Nguyên liệu 2&#10;• Nguyên liệu 3"
-                    android:text="• Nguyên liệu 1&#10;• Nguyên liệu 2&#10;• Nguyên liệu 3" /> </LinearLayout>
+                    tools:text="• Nguyên liệu 1\n• Nguyên liệu 2\n• Nguyên liệu 3" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -268,7 +277,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Công thức" android:textColor="#FF5722"
+                        android:text="Công thức"
+                        android:textColor="#FF5722"
                         android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -280,8 +290,71 @@
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp"
-                    tools:text="1. Bước 1&#10;2. Bước 2&#10;3. Bước 3"
-                    android:text="1. Bước 1&#10;2. Bước 2&#10;3. Bước 3" /> </LinearLayout>
+                    tools:text="1. Bước 1\n2. Bước 2\n3. Bước 3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/map_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:text="Vị trí nhà hàng gợi ý"
+                    android:textColor="#FF5722"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="225dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_recommended"
+                        app:tint="#FF5722"
+                        android:contentDescription="Icon món ăn đề xuất" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Món ăn đề xuất"
+                        android:textColor="#FF5722"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recommendedRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -307,7 +380,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Đánh giá của bạn" android:textColor="#FF5722"
+                        android:text="Đánh giá của bạn"
+                        android:textColor="#FF5722"
                         android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -322,16 +396,17 @@
                     android:stepSize="0.5" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_marginBottom="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/commentInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Viết bình luận của bạn..." android:inputType="textMultiLine"
+                        android:hint="Viết bình luận của bạn..."
+                        android:inputType="textMultiLine"
                         android:minLines="2" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -340,7 +415,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:text="Gửi đánh giá" android:backgroundTint="#FF5722"
+                    android:backgroundTint="#FF5722"
+                    android:text="Gửi đánh giá"
                     app:cornerRadius="8dp" />
             </LinearLayout>
 
@@ -367,7 +443,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="Bình luận" android:textColor="#FF5722"
+                        android:text="Bình luận"
+                        android:textColor="#FF5722"
                         android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>

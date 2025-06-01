@@ -210,6 +210,9 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             Log.d(TAG, "Google Sign-In successful, ID Token retrieved");
+            Log.d(TAG, "Account email: " + account.getEmail());
+            Log.d(TAG, "Account ID: " + account.getId());
+            Log.d(TAG, "Account display name: " + account.getDisplayName());
             
             // Kiểm tra token ID
             String idToken = account.getIdToken();
@@ -237,6 +240,15 @@ public class LoginActivity extends AppCompatActivity {
                 case 10: // Developer error
                     errorMessage = "Lỗi cấu hình, vui lòng liên hệ quản trị viên";
                     break;
+                case 12500: // App not configured
+                    errorMessage = "Ứng dụng chưa được cấu hình đúng. Vui lòng liên hệ quản trị viên";
+                    break;
+                case 12502: // Sign in currently in progress
+                    errorMessage = "Đang có quá trình đăng nhập khác đang diễn ra";
+                    break;
+                case 12503: // Sign in failed
+                    errorMessage = "Đăng nhập thất bại, vui lòng thử lại";
+                    break;
                 default:
                     errorMessage = "Lỗi đăng nhập: " + e.getMessage();
             }
@@ -258,9 +270,24 @@ public class LoginActivity extends AppCompatActivity {
                             navigateToAppropriateScreen();
                         } else {
                             Log.e(TAG, "Firebase Auth with Google failed", task.getException());
-                            Toast.makeText(LoginActivity.this, "Xác thực thất bại: " + 
-                                    (task.getException() != null ? task.getException().getMessage() : "Lỗi không xác định"), 
-                                    Toast.LENGTH_LONG).show();
+                            String errorMessage;
+                            if (task.getException() != null) {
+                                String errorCode = task.getException().getMessage();
+                                if (errorCode.contains("account-exists-with-different-credential")) {
+                                    errorMessage = "Email này đã được đăng ký bằng phương thức khác";
+                                } else if (errorCode.contains("invalid-credential")) {
+                                    errorMessage = "Thông tin xác thực không hợp lệ";
+                                } else if (errorCode.contains("operation-not-allowed")) {
+                                    errorMessage = "Đăng nhập bằng Google chưa được bật";
+                                } else if (errorCode.contains("user-disabled")) {
+                                    errorMessage = "Tài khoản này đã bị vô hiệu hóa";
+                                } else {
+                                    errorMessage = "Xác thực thất bại: " + errorCode;
+                                }
+                            } else {
+                                errorMessage = "Xác thực thất bại: Lỗi không xác định";
+                            }
+                            Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                         }
                     }
                 });

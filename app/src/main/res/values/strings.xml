@@ -9,4 +9,6 @@
     <!-- Google Play Services configuration -->
     <string name="app_id">1:911075402577:android:a80ac4fcfe7eb8ba54a970</string>
     <string name="api_key">AIzaSyBoTG3XPvFOAnlN7stfda-FjC6CAlBLS-w</string>
+
+    <string name="YOUR_MAPS_API_KEY">AIzaSyCM8udCcG9nU5ShHAEXNg0miJq2zYPcuK4</string>
 </resources>
