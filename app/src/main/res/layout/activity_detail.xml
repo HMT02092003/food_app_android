@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -24,6 +23,7 @@
                 android:scaleType="centerCrop"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="Ảnh món ăn"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <View
@@ -43,7 +43,8 @@
                 android:src="@drawable/arrow"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@android:color/white" />
+                app:tint="@android:color/white"
+                android:contentDescription="Nút quay lại" />
 
             <ImageView
                 android:id="@+id/favBtn"
@@ -55,7 +56,9 @@
                 android:padding="12dp"
                 android:src="@drawable/ic_favorite_white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@android:color/white"
+                android:contentDescription="Nút yêu thích" />
 
             <TextView
                 android:id="@+id/titleTxt"
@@ -97,7 +100,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_price"
-                    app:tint="#FF5722" />
+                    app:tint="#FF5722"
+                    android:contentDescription="Icon giá" />
 
                 <TextView
                     android:id="@+id/priceTxt"
@@ -121,7 +125,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_category"
-                    app:tint="#FF5722" />
+                    app:tint="#FF5722"
+                    android:contentDescription="Icon thể loại" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -186,7 +191,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_description"
-                        app:tint="#FF5722" />
+                        app:tint="#FF5722"
+                        android:contentDescription="Icon mô tả" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -224,7 +230,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_ingredients"
-                        app:tint="#FF5722" />
+                        app:tint="#FF5722"
+                        android:contentDescription="Icon nguyên liệu" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -233,7 +240,7 @@
                         android:text="Nguyên liệu"
                         android:textColor="#FF5722"
                         android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"/>
                 </LinearLayout>
 
                 <TextView
@@ -243,7 +250,7 @@
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp"
-                    tools:text="• Nguyên liệu 1&#10;• Nguyên liệu 2&#10;• Nguyên liệu 3" />
+                    tools:text="• Nguyên liệu 1\n• Nguyên liệu 2\n• Nguyên liệu 3" />
             </LinearLayout>
 
             <LinearLayout
@@ -263,7 +270,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_recipe"
-                        app:tint="#FF5722" />
+                        app:tint="#FF5722"
+                        android:contentDescription="Icon công thức" />
 
                     <TextView
                         android:id="@+id/recipeTitleTxt"
@@ -271,17 +279,19 @@
                         android:layout_height="wrap_content"
                         android:text="Công thức"
                         android:textColor="#FF5722"
+                        android:layout_marginStart="8dp"
                         android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/recipeContentTxt" android:layout_width="match_parent"
+                    android:id="@+id/recipeContentTxt"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:lineSpacingExtra="4dp"
-                    tools:text="1. Bước 1&#10;2. Bước 2&#10;3. Bước 3" />
+                    tools:text="1. Bước 1\n2. Bước 2\n3. Bước 3" />
             </LinearLayout>
 
             <LinearLayout
@@ -299,7 +309,6 @@
                     tools:context=".MapsActivity" />
             </LinearLayout>
 
-            <!-- Món ăn đề xuất -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -317,7 +326,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_recommended"
-                        app:tint="#FF5722" />
+                        app:tint="#FF5722"
+                        android:contentDescription="Icon món ăn đề xuất" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -356,7 +366,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_rating"
-                        app:tint="#FF5722" />
+                        app:tint="#FF5722"
+                        android:contentDescription="Icon đánh giá" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -418,7 +429,8 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/ic_comments"
-                        app:tint="#FF5722" />
+                        app:tint="#FF5722"
+                        android:contentDescription="Icon bình luận" />
 
                     <TextView
                         android:layout_width="wrap_content"

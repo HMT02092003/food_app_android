@@ -235,6 +235,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
                     .into(heroImageView);
 
 // ... existing code ...
+            // Không cần load ảnh bằng Glide vì đã set trực tiếp trong layout
+            heroImageView.setImageResource(R.drawable.vietnamese_food);
         } catch (Exception e) {
             Log.e("HomeActivity", "Error loading hero image: " + e.getMessage());
             heroImageView.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
