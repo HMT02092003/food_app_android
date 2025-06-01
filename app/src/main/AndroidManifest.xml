@@ -3,18 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/my_app_ic"          android:label="@string/app_name"
-        android:roundIcon="@mipmap/my_app_ic_round" android:supportsRtl="true"
+        android:icon="@mipmap/my_app_icon"          android:label="@string/app_name"
+        android:roundIcon="@mipmap/my_app_icon_round" android:supportsRtl="true"
         android:theme="@style/Theme.Food"
         tools:targetApi="31">
         <activity
@@ -102,12 +97,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.PendingRecipesActivity" />
-        <activity android:name=".Activity.RecommendedFoodsActivity" />
-        <activity android:name=".Activity.FavoriteFoodsActivity" />
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/YOUR_MAPS_API_KEY" />
-    </application>
+        <activity
+            android:name=".Activity.PendingRecipesActivity"
+            android:exported="false" /> <activity
+        android:name=".Activity.RecommendedFoodsActivity"
+        android:exported="false" /> </application>
 
 </manifest>

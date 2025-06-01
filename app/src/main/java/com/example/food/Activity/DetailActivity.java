@@ -2,10 +2,10 @@ package com.example.food.Activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,9 +14,9 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -25,107 +25,94 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.food.Adapter.CommentAdapter;
+import com.example.food.Adapter.RecommendedFoodAdapter;
+import com.example.food.Domain.Food;
 import com.example.food.Model.Comment;
 import com.example.food.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
-import android.os.Looper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import androidx.core.app.ActivityCompat;
-
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.CircularBounds;
-import com.google.android.libraries.places.api.net.SearchNearbyRequest;
-import com.google.android.libraries.places.api.net.SearchNearbyResponse;
-
-import java.util.Arrays;
-
-import com.example.food.Domain.Food;
-import com.example.food.Adapter.RecommendedFoodAdapter;
-import com.google.firebase.firestore.DocumentSnapshot;
-
-import java.util.Collections;
 
 public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    // Khai báo các View từ layout activity_detail.xml
-    private ImageView imageView8; // Ảnh món ăn chính
-    private ImageView favBtn;     // Nút yêu thích
-    private ImageView backBtn;    // Nút quay lại
-    private TextView titleTxt;    // Tên món ăn
-    private TextView priceTxt;    // Giá món ăn
-    private RatingBar ratingBar;  // Rating Bar
-    private TextView rateTxt;     // Text hiển thị số rating (ví dụ: "5 Rating")
-    private TextView descriptionTxt; // Mô tả món ăn
+    // --- Khai báo View ---
+    private ImageView imageView8;
+    private ImageView favBtn;
+    private ImageView backBtn;
+    private TextView titleTxt;
+    private TextView priceTxt;
+    private RatingBar ratingBar;
+    private TextView rateTxt;
+    private TextView descriptionTxt;
     private RatingBar userRatingBar;
     private EditText commentInput;
     private Button submitRatingBtn;
     private RecyclerView commentsRecyclerView;
     private RecyclerView recommendedRecyclerView;
-    private RecommendedFoodAdapter recommendedAdapter;
-    private List<Food> recommendedFoods = new ArrayList<>();
+    private TextView categoryTxt;
+    private TextView ingredientsTxt;
+    private TextView recipeContentTxt;
 
-    private String foodId;
+    // --- Firebase Variables ---
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    private String foodId;
+
+    // --- Comments & Recommended Food Variables ---
     private CommentAdapter commentAdapter;
     private List<Comment> comments;
+    private RecommendedFoodAdapter recommendedAdapter;
+    private List<Food> recommendedFoods = new ArrayList<>();
     private boolean isFavorite = false;
 
-    // Google Maps variables
+    // --- Google Maps & Location Variables ---
     private GoogleMap mMap;
-    private static final LatLng HANOI = new LatLng(21.0285, 105.8542);
-    private String selectedLocation;
     private FusedLocationProviderClient fusedLocationClient;
     private Location currentLocation;
     private String foodName;
-    private static final String PLACES_API_KEY = "AIzaSyCM8udCcG9nU5ShHAEXNg0miJq2zYPcuK4";
+    private static final String PLACES_API_KEY = "YOUR_Maps_API_KEY"; // Thay thế bằng API Key của bạn
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-    private PlacesClient placesClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_detail);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        setContentView(R.layout.activity_detail); // EdgeToEdge đã được xử lý trong layout hoặc theme
+        applyWindowInsets();
 
-        // Initialize Firebase
+        // Khởi tạo Firebase
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         comments = new ArrayList<>();
@@ -139,127 +126,33 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         setupCommentsRecyclerView();
         loadComments();
         setupRecommendedRecyclerView();
+        checkIfFavorite(); // Kiểm tra trạng thái yêu thích ban đầu
 
-        // Initialize map
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        // Khởi tạo Google Maps
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         } else {
-            Toast.makeText(this, "Error: Map fragment not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Lỗi: Không tìm thấy mảnh bản đồ", Toast.LENGTH_SHORT).show();
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Khởi tạo Places API
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), PLACES_API_KEY);
-        }
-        placesClient = Places.createClient(this);
-    }
-
-    private boolean checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        // Lấy foodName từ intent
+        // Lấy foodName từ Intent cho chức năng tìm kiếm nhà hàng
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             foodName = extras.getString("foodName", "Tên món ăn không xác định");
         } else {
             foodName = "Tên món ăn không xác định";
         }
-        // Kiểm tra quyền trước khi lấy vị trí
-        if (checkLocationPermission()) {
-            fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    if (location != null) {
-                        currentLocation = location;
-                        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
-                        mMap.addMarker(new MarkerOptions().position(userLatLng).title("Vị trí của bạn"));
-                        // Tìm nhà hàng quanh đây theo tên món ăn
-                        searchNearbyRestaurants(userLatLng, foodName);
-                    } else {
-                        // Nếu không có vị trí cuối cùng, yêu cầu cập nhật vị trí mới
-                        LocationRequest locationRequest = LocationRequest.create()
-                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                                .setInterval(1000)
-                                .setNumUpdates(1);
-                        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
-                            @Override
-                            public void onLocationResult(LocationResult locationResult) {
-                                Location location1 = locationResult.getLastLocation();
-                                if (location1 != null) {
-                                    currentLocation = location1;
-                                    LatLng userLatLng = new LatLng(location1.getLatitude(), location1.getLongitude());
-                                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
-                                    mMap.addMarker(new MarkerOptions().position(userLatLng).title("Vị trí của bạn"));
-                                    searchNearbyRestaurants(userLatLng, foodName);
-                                } else {
-                                    Toast.makeText(DetailActivity.this, "Không lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }, Looper.getMainLooper());
-                    }
-                });
-        }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Được cấp quyền, reload lại map
-                if (mMap != null) {
-                    onMapReady(mMap);
-                }
-            } else {
-                Toast.makeText(this, "Bạn cần cấp quyền vị trí để sử dụng chức năng này", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void searchNearbyRestaurants(LatLng location, String foodName) {
-        final List<Place.Field> placeFields = Arrays.asList(
-            Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS
-        );
-        CircularBounds circle = CircularBounds.newInstance(location, 10000);
-        final List<String> includedTypes = Arrays.asList("restaurant", "cafe");
-
-        final SearchNearbyRequest searchNearbyRequest =
-            SearchNearbyRequest.builder(circle, placeFields)
-                .setIncludedTypes(includedTypes)
-                .setMaxResultCount(20)
-                .build();
-
-        placesClient.searchNearby(searchNearbyRequest)
-            .addOnSuccessListener(response -> {
-                List<Place> places = response.getPlaces();
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(location).title("Vị trí của bạn"));
-                for (Place place : places) {
-                    if (place.getLatLng() != null && place.getName() != null &&
-                        place.getName().toLowerCase().contains(foodName.toLowerCase())) {
-                        mMap.addMarker(new MarkerOptions()
-                            .position(place.getLatLng())
-                            .title(place.getName())
-                            .snippet(place.getAddress()));
-                    }
-                }
-            })
-            .addOnFailureListener(e -> {
-                Toast.makeText(this, "Không tìm được nhà hàng gần bạn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
+    private void applyWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
     }
 
     /**
@@ -279,13 +172,11 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         submitRatingBtn = findViewById(R.id.submitRatingBtn);
         commentsRecyclerView = findViewById(R.id.commentsRecyclerView);
         recommendedRecyclerView = findViewById(R.id.recommendedRecyclerView);
-        
-        // Initialize category and ingredients TextViews
-        TextView categoryTxt = findViewById(R.id.categoryTxt);
-        TextView ingredientsTxt = findViewById(R.id.ingridentTxt);
-        TextView recipeContentTxt = findViewById(R.id.recipeContentTxt);
-        
-        // Set initial values
+        categoryTxt = findViewById(R.id.categoryTxt);
+        ingredientsTxt = findViewById(R.id.ingridentTxt);
+        recipeContentTxt = findViewById(R.id.recipeContentTxt);
+
+        // Đặt giá trị ban đầu (có thể không cần thiết nếu dữ liệu được tải ngay)
         if (categoryTxt != null) categoryTxt.setText("");
         if (ingredientsTxt != null) ingredientsTxt.setText("");
         if (recipeContentTxt != null) recipeContentTxt.setText("");
@@ -306,7 +197,8 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .orderBy("timestamp")
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
-                        Toast.makeText(this, "Error loading comments: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("DetailActivity", "Error loading comments: " + error.getMessage());
+                        Toast.makeText(this, "Lỗi khi tải bình luận: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -337,10 +229,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         ratingBar.setRating(averageRating);
         rateTxt.setText(String.format("%.1f Rating", averageRating));
 
-        // Update food document with new average rating
+        // Cập nhật rating trung bình vào tài liệu món ăn chính
         db.collection("Foods").document(foodId)
                 .update("rating", averageRating)
-                .addOnFailureListener(e -> Toast.makeText(this, "Error updating rating: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Log.e("DetailActivity", "Error updating average rating: " + e.getMessage()));
     }
 
     private void setupRecommendedRecyclerView() {
@@ -354,53 +246,42 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             return;
         }
 
-        // First get the current food to get its category
         db.collection("Foods").document(foodId)
-            .get()
-            .addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    Food currentFood = documentSnapshot.toObject(Food.class);
-                    if (currentFood != null && currentFood.getCategory() != null) {
-                        // Then query for foods in the same category
-                        db.collection("Foods")
-                            .whereEqualTo("category", currentFood.getCategory())
-                            .get()
-                            .addOnSuccessListener(queryDocumentSnapshots -> {
-                                recommendedFoods.clear();
-                                List<Food> sameCategoryFoods = new ArrayList<>();
-                                
-                                // Convert documents to Food objects
-                                for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                                    Food food = doc.toObject(Food.class);
-                                    if (food != null) {
-                                        food.setId(doc.getId());
-                                        // Don't add the current food
-                                        if (!food.getId().equals(foodId)) {
-                                            sameCategoryFoods.add(food);
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Food currentFood = documentSnapshot.toObject(Food.class);
+                        if (currentFood != null && currentFood.getCategory() != null) {
+                            db.collection("Foods")
+                                    .whereEqualTo("category", currentFood.getCategory())
+                                    .get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        recommendedFoods.clear();
+                                        List<Food> sameCategoryFoods = new ArrayList<>();
+
+                                        for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                                            Food food = doc.toObject(Food.class);
+                                            if (food != null) {
+                                                food.setId(doc.getId());
+                                                if (!food.getId().equals(foodId)) { // Không thêm món ăn hiện tại
+                                                    sameCategoryFoods.add(food);
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                                
-                                // Shuffle the list to get random order
-                                Collections.shuffle(sameCategoryFoods);
-                                
-                                // Take up to 10 items
-                                int count = Math.min(sameCategoryFoods.size(), 10);
-                                for (int i = 0; i < count; i++) {
-                                    recommendedFoods.add(sameCategoryFoods.get(i));
-                                }
-                                
-                                recommendedAdapter.notifyDataSetChanged();
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Không thể tải món ăn đề xuất", Toast.LENGTH_SHORT).show();
-                            });
+
+                                        Collections.shuffle(sameCategoryFoods); // Xáo trộn để có thứ tự ngẫu nhiên
+                                        int count = Math.min(sameCategoryFoods.size(), 10); // Lấy tối đa 10 món
+                                        for (int i = 0; i < count; i++) {
+                                            recommendedFoods.add(sameCategoryFoods.get(i));
+                                        }
+
+                                        recommendedAdapter.notifyDataSetChanged();
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(this, "Không thể tải món ăn đề xuất", Toast.LENGTH_SHORT).show());
+                        }
                     }
-                }
-            })
-            .addOnFailureListener(e -> {
-                Toast.makeText(this, "Không thể tải thông tin món ăn", Toast.LENGTH_SHORT).show();
-            });
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Không thể tải thông tin món ăn", Toast.LENGTH_SHORT).show());
     }
 
     private void getAndSetFoodData() {
@@ -415,75 +296,56 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
     private void loadFoodDataFromFirestore() {
         db.collection("Foods").document(foodId)
-            .get()
-            .addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    Food food = documentSnapshot.toObject(Food.class);
-                    if (food != null) {
-                        food.setId(documentSnapshot.getId());
-                        // Set data to views
-                        titleTxt.setText(food.getName());
-                        priceTxt.setText(String.format("%.0f$", food.getPrice()));
-                        descriptionTxt.setText(food.getDetails());
-                        
-                        // Set category
-                        TextView categoryTxt = findViewById(R.id.categoryTxt);
-                        if (categoryTxt != null) {
-                            categoryTxt.setText(food.getCategory() != null ? food.getCategory() : "Chưa phân loại");
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Food food = documentSnapshot.toObject(Food.class);
+                        if (food != null) {
+                            food.setId(documentSnapshot.getId());
+                            // Cập nhật foodName cho chức năng tìm kiếm nhà hàng
+                            foodName = food.getName();
+
+                            titleTxt.setText(food.getName());
+                            priceTxt.setText(String.format("%.0f$", food.getPrice()));
+                            descriptionTxt.setText(food.getDetails());
+
+                            if (categoryTxt != null) categoryTxt.setText(food.getCategory() != null ? food.getCategory() : "Chưa phân loại");
+                            if (ingredientsTxt != null) ingredientsTxt.setText(food.getIngredients() != null ? food.getIngredients() : "Chưa có thông tin nguyên liệu");
+                            if (recipeContentTxt != null) recipeContentTxt.setText(food.getRecipe() != null ? food.getRecipe() : "Chưa có công thức");
+
+                            if (food.getRating() > 0) {
+                                ratingBar.setRating(food.getRating());
+                                rateTxt.setText(String.format("%.1f Rating", food.getRating()));
+                            } else {
+                                ratingBar.setRating(0);
+                                rateTxt.setText("0 Rating");
+                            }
+
+                            if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
+                                Glide.with(this).load(food.getImageUrls().get(0)).into(imageView8);
+                            } else {
+                                imageView8.setImageResource(R.drawable.food_placeholder);
+                            }
+
+                            loadRecommendedFoods();
                         }
-                        
-                        // Set ingredients
-                        TextView ingredientsTxt = findViewById(R.id.ingridentTxt);
-                        if (ingredientsTxt != null) {
-                            ingredientsTxt.setText(food.getIngredients() != null ? food.getIngredients() : "Chưa có thông tin nguyên liệu");
-                        }
-                        
-                        // Set recipe
-                        TextView recipeContentTxt = findViewById(R.id.recipeContentTxt);
-                        if (recipeContentTxt != null) {
-                            recipeContentTxt.setText(food.getRecipe() != null ? food.getRecipe() : "Chưa có công thức");
-                        }
-                        
-                        // Set rating
-                        if (food.getRating() > 0) {
-                            ratingBar.setRating(food.getRating());
-                            rateTxt.setText(String.format("%.1f Rating", food.getRating()));
-                        } else {
-                            ratingBar.setRating(0);
-                            rateTxt.setText("0 Rating");
-                        }
-                        
-                        // Load image
-                        if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
-                            Glide.with(this)
-                                .load(food.getImageUrls().get(0))
-                                .into(imageView8);
-                        } else {
-                            imageView8.setImageResource(R.drawable.food_placeholder);
-                        }
-                        
-                        // Load recommended foods
-                        loadRecommendedFoods();
+                    } else {
+                        Toast.makeText(this, "Không tìm thấy thông tin món ăn", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
-                } else {
-                    Toast.makeText(this, "Không tìm thấy thông tin món ăn", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi khi tải thông tin món ăn", Toast.LENGTH_SHORT).show();
                     finish();
-                }
-            })
-            .addOnFailureListener(e -> {
-                Toast.makeText(this, "Lỗi khi tải thông tin món ăn", Toast.LENGTH_SHORT).show();
-                finish();
-            });
+                });
     }
 
     /**
      * Phương thức này thiết lập các lắng nghe sự kiện cho các View.
      */
     private void setupListeners() {
-        // Xử lý sự kiện click cho nút quay lại
         backBtn.setOnClickListener(v -> finish());
 
-        // Xử lý sự kiện click cho nút yêu thích
         favBtn.setOnClickListener(v -> {
             if (currentUser == null) {
                 Toast.makeText(this, "Vui lòng đăng nhập để thêm vào yêu thích", Toast.LENGTH_SHORT).show();
@@ -499,36 +361,31 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         if (currentUser == null || foodId == null) return;
 
         String userId = currentUser.getUid();
-        DocumentReference userFavoritesRef = db.collection("Users")
-                .document(userId)
-                .collection("Favorites")
-                .document(foodId);
+        DocumentReference userFavoritesRef = db.collection("Users").document(userId).collection("Favorites").document(foodId);
 
         if (isFavorite) {
-            // Remove from favorites
             userFavoritesRef.delete()
                     .addOnSuccessListener(aVoid -> {
                         isFavorite = false;
                         favBtn.setImageResource(R.drawable.ic_favorite_white);
                         Toast.makeText(this, "Đã xóa khỏi yêu thích", Toast.LENGTH_SHORT).show();
                     })
-                    .addOnFailureListener(e -> 
-                        Toast.makeText(this, "Lỗi khi xóa khỏi yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Lỗi khi xóa khỏi yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                     );
         } else {
-            // Add to favorites
             userFavoritesRef.set(new HashMap<String, Object>() {{
-                put("foodId", foodId);
-                put("timestamp", System.currentTimeMillis());
-            }})
-            .addOnSuccessListener(aVoid -> {
-                isFavorite = true;
-                favBtn.setImageResource(R.drawable.ic_favorite_filled);
-                Toast.makeText(this, "Đã thêm vào yêu thích", Toast.LENGTH_SHORT).show();
-            })
-            .addOnFailureListener(e -> 
-                Toast.makeText(this, "Lỗi khi thêm vào yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-            );
+                        put("foodId", foodId);
+                        put("timestamp", System.currentTimeMillis());
+                    }})
+                    .addOnSuccessListener(aVoid -> {
+                        isFavorite = true;
+                        favBtn.setImageResource(R.drawable.ic_favorite_filled);
+                        Toast.makeText(this, "Đã thêm vào yêu thích", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Lỗi khi thêm vào yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
         }
     }
 
@@ -545,8 +402,8 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                     isFavorite = documentSnapshot.exists();
                     favBtn.setImageResource(isFavorite ? R.drawable.ic_favorite_filled : R.drawable.ic_favorite_white);
                 })
-                .addOnFailureListener(e -> 
-                    Toast.makeText(this, "Lỗi khi kiểm tra yêu thích: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                .addOnFailureListener(e ->
+                        Log.e("DetailActivity", "Error checking favorite status: " + e.getMessage())
                 );
     }
 
@@ -569,7 +426,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             return;
         }
 
-        // Create new comment
+        // Tạo bình luận mới
         String commentId = UUID.randomUUID().toString();
         Comment comment = new Comment(
                 commentId,
@@ -581,7 +438,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 rating
         );
 
-        // Save to Firebase
+        // Lưu vào Firebase
         db.collection("Foods")
                 .document(foodId)
                 .collection("comments")
@@ -595,5 +452,172 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Lỗi khi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
+    }
+
+    // --- Google Maps and Location Logic ---
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        // Kiểm tra quyền trước khi lấy vị trí
+        if (checkLocationPermission()) {
+            getLastLocationAndSearchRestaurants();
+        }
+    }
+
+    private boolean checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return false;
+        }
+        return true;
+    }
+
+    private void getLastLocationAndSearchRestaurants() {
+        // Kiểm tra lại quyền trước khi yêu cầu vị trí
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Quyền chưa được cấp, không làm gì
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        currentLocation = location;
+                        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        updateMapWithUserLocation(userLatLng);
+                        searchNearbyRestaurants(userLatLng, foodName);
+                    } else {
+                        // Nếu không có vị trí cuối cùng, yêu cầu cập nhật vị trí mới
+                        requestNewLocationUpdates();
+                    }
+                });
+    }
+
+    private void requestNewLocationUpdates() {
+        LocationRequest locationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(1000)
+                .setNumUpdates(1);
+
+        // Kiểm tra lại quyền trước khi yêu cầu cập nhật
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location location = locationResult.getLastLocation();
+                if (location != null) {
+                    currentLocation = location;
+                    LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    updateMapWithUserLocation(userLatLng);
+                    searchNearbyRestaurants(userLatLng, foodName);
+                } else {
+                    Toast.makeText(DetailActivity.this, "Không lấy được vị trí hiện tại", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, Looper.getMainLooper());
+    }
+
+    private void updateMapWithUserLocation(LatLng userLatLng) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+        mMap.addMarker(new MarkerOptions()
+                .position(userLatLng)
+                .title("Vị trí của bạn")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Được cấp quyền, thử tải lại vị trí và tìm kiếm nhà hàng
+                if (mMap != null) {
+                    getLastLocationAndSearchRestaurants();
+                }
+            } else {
+                Toast.makeText(this, "Bạn cần cấp quyền vị trí để sử dụng chức năng này", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void searchNearbyRestaurants(LatLng location, String foodName) {
+        int radius = 5000; // Bán kính 5km
+        String url = "";
+        try {
+            String encodedFoodName = URLEncoder.encode(foodName, "UTF-8");
+            url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json" +
+                    "?location=" + location.latitude + "," + location.longitude +
+                    "&radius=" + radius +
+                    "&type=restaurant" +
+                    "&keyword=" + encodedFoodName +
+                    "&key=" + PLACES_API_KEY;
+        } catch (Exception e) {
+            Log.e("PLACES_API", "Lỗi mã hóa tên món ăn: " + e.getMessage());
+            Toast.makeText(this, "Lỗi mã hóa tên món ăn", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(DetailActivity.this, "Lỗi khi tìm nhà hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    Log.d("PLACES_API", "RESPONSE: " + responseData);
+                    try {
+                        JSONObject json = new JSONObject(responseData);
+                        JSONArray results = json.getJSONArray("results");
+                        runOnUiThread(() -> {
+                            mMap.clear(); // Xóa tất cả các marker cũ trước khi thêm mới
+                            updateMapWithUserLocation(location); // Thêm lại marker vị trí người dùng
+
+                            if (results.length() == 0) {
+                                Toast.makeText(DetailActivity.this,
+                                        "Không tìm thấy nhà hàng nào phục vụ '" + foodName + "' trong bán kính 5km!",
+                                        Toast.LENGTH_LONG).show();
+                            }
+
+                            for (int i = 0; i < results.length(); i++) {
+                                try {
+                                    JSONObject place = results.getJSONObject(i);
+                                    JSONObject geometry = place.getJSONObject("geometry").getJSONObject("location");
+                                    double lat = geometry.getDouble("lat");
+                                    double lng = geometry.getDouble("lng");
+                                    String name = place.getString("name");
+                                    String address = place.optString("vicinity", "");
+                                    double rating = place.optDouble("rating", 0.0);
+
+                                    MarkerOptions markerOptions = new MarkerOptions()
+                                            .position(new LatLng(lat, lng))
+                                            .title(name)
+                                            .snippet("Địa chỉ: " + address + "\nĐánh giá: " + rating + "⭐")
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+                                    mMap.addMarker(markerOptions);
+                                } catch (JSONException e) {
+                                    Log.e("PLACES_API", "Lỗi phân tích JSON kết quả: " + e.getMessage());
+                                }
+                            }
+                            // Di chuyển camera để hiển thị tất cả các marker (nếu cần)
+                            // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13.0f)); // Giữ nguyên zoom hoặc điều chỉnh
+                        });
+                    } catch (JSONException e) {
+                        Log.e("PLACES_API", "Lỗi phân tích JSON response: " + e.getMessage());
+                    }
+                }
+            }
+        });
     }
 }
