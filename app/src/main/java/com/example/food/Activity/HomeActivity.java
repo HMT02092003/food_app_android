@@ -51,7 +51,6 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
     private RecyclerView suggestedFoodRecyclerView;
     private FoodHomeAdapter suggestedFoodAdapter;
-    // private Button suggestedFoodSeeMoreButton; // Đã xóa tham chiếu đến nút này
     private List<FoodModel> suggestedFoodList = new ArrayList<>();
 
     private RecyclerView categoryRecyclerView;
@@ -89,21 +88,14 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         }
 
         initViews();
-        setupListeners();
+        setupListeners(); // Call setupListeners after adapters are initialized in initViews
         loadData();
 
-
-
         // Load ảnh bo góc ở cuối màn hình Home
-
         ImageView homeBottomIllustration = findViewById(R.id.homeBottomIllustration);
-
         Glide.with(this)
-
-            .load("https://baodongkhoi.vn/image/fckeditor/upload/2023/20230510/images/nau%20an.png")
-
-            .into(homeBottomIllustration);
-
+                .load("https://baodongkhoi.vn/image/fckeditor/upload/2023/20230510/images/nau%20an.png")
+                .into(homeBottomIllustration);
     }
 
     private void initViews() {
@@ -115,13 +107,23 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
         featuredFoodRecyclerView = findViewById(R.id.featuredFoodRecyclerView);
         featuredFoodSeeMoreButton = findViewById(R.id.featuredFoodSeeMoreButton);
+        // Khởi tạo và gán adapter cho Featured Food RecyclerView
+        featuredFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        featuredFoodAdapter = new FoodHomeAdapter(this, featuredFoodList);
+        featuredFoodRecyclerView.setAdapter(featuredFoodAdapter);
+
 
         suggestedFoodRecyclerView = findViewById(R.id.suggestedFoodRecyclerView);
-        // suggestedFoodSeeMoreButton = findViewById(R.id.suggestedFoodSeeMoreButton); // Đã xóa findViewById cho nút này
+        // Khởi tạo và gán adapter cho Suggested Food RecyclerView
+        suggestedFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        suggestedFoodAdapter = new FoodHomeAdapter(this, suggestedFoodList);
+        suggestedFoodRecyclerView.setAdapter(suggestedFoodAdapter);
+
 
         categoryRecyclerView = findViewById(R.id.categoryRecyclerView);
         progressBarCategory = findViewById(R.id.progressBarCategory);
         progressBarFoodList = findViewById(R.id.progressBarFoodList);
+
         categoryFoodRecyclerView = findViewById(R.id.categoryFoodRecyclerView);
         categoryFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         categoryFoodAdapter = new FoodVerticalAdapter(this, categoryFoodList);
@@ -152,20 +154,40 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
             navigateToDetailActivity(food);
         };
 
-        // Gán listener cho Featured Food Adapter
+        // Gán listener cho Featured Food Adapter (Đảm bảo đã khởi tạo adapter ở initViews)
         if (featuredFoodAdapter != null) {
             featuredFoodAdapter.setOnItemClickListener(foodHomeClickListener);
+        } else {
+            Log.e("HomeActivity", "featuredFoodAdapter is null in setupListeners");
         }
 
-        // Gán listener cho Suggested Food Adapter
+
+        // Gán listener cho Suggested Food Adapter (Đảm bảo đã khởi tạo adapter ở initViews)
         if (suggestedFoodAdapter != null) {
             suggestedFoodAdapter.setOnItemClickListener(foodHomeClickListener);
+        } else {
+            Log.e("HomeActivity", "suggestedFoodAdapter is null in setupListeners");
         }
 
         // Đã có listener cho Category Food Adapter
-        categoryFoodAdapter.setOnItemClickListener(food -> {
-            navigateToDetailActivity(food);
-        });
+        // (Đảm bảo đã khởi tạo adapter ở initViews)
+        if (categoryFoodAdapter != null) {
+            categoryFoodAdapter.setOnItemClickListener(food -> {
+                navigateToDetailActivity(food);
+            });
+        } else {
+            Log.e("HomeActivity", "categoryFoodAdapter is null in setupListeners");
+        }
+
+        // Gán listener cho Shared Recipes Adapter
+        if (sharedRecipesAdapter != null) {
+            sharedRecipesAdapter.setOnItemClickListener(food -> {
+                navigateToDetailActivity(food);
+            });
+        } else {
+            Log.e("HomeActivity", "sharedRecipesAdapter is null in setupListeners");
+        }
+
 
         if (userName != null) {
             userNameTextView.setText(userName);
@@ -230,8 +252,16 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
     private void loadHeroSection() {
         try {
-            // Không cần load ảnh bằng Glide vì đã set trực tiếp trong layout
-            heroImageView.setImageResource(R.drawable.vietnamese_food);
+            // Không cần load ảnh bằng Glide vì đã set trực tiếp trong layout nếu bạn đã đặt dán tiếp
+            // Nếu bạn muốn dùng ảnh khác ngoài R.drawable.vietnamese_food, thì mới cần Glide.
+            // Ví dụ: heroImageView.setImageResource(R.drawable.vietnamese_food);
+            // Nếu ảnh được load từ URL, thì dùng Glide như sau:
+            Glide.with(this)
+                    .load("https://example.com/your_hero_image.png") // Thay thế bằng URL ảnh hero của bạn
+                    .placeholder(R.drawable.vietnamese_food) // Ảnh tạm thời khi đang tải
+                    .error(R.drawable.vietnamese_food) // Ảnh hiển thị nếu lỗi tải
+                    .into(heroImageView);
+
         } catch (Exception e) {
             Log.e("HomeActivity", "Error loading hero image: " + e.getMessage());
             heroImageView.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
@@ -244,11 +274,10 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
     }
 
     private void loadFeaturedFoods() {
-        featuredFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        featuredFoodAdapter = new FoodHomeAdapter(this, featuredFoodList);
-        featuredFoodRecyclerView.setAdapter(featuredFoodAdapter);
-        // Gán listener sau khi adapter được khởi tạo
-        featuredFoodAdapter.setOnItemClickListener(food -> navigateToDetailActivity(food));
+        // `setLayoutManager` và khởi tạo `featuredFoodAdapter` đã được di chuyển vào `initViews()`
+        // Chỉ cần gọi `setOnItemClickListener` và tải dữ liệu ở đây
+        // Gán listener sau khi adapter được khởi tạo (đã làm ở initViews)
+        // featuredFoodAdapter.setOnItemClickListener(food -> navigateToDetailActivity(food)); // Đã gán ở setupListeners
 
         try {
             db.collection("Foods")
@@ -280,11 +309,10 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
     }
 
     private void loadSuggestedFoods() {
-        suggestedFoodRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        suggestedFoodAdapter = new FoodHomeAdapter(this, suggestedFoodList);
-        suggestedFoodRecyclerView.setAdapter(suggestedFoodAdapter);
-        // Gán listener sau khi adapter được khởi tạo
-        suggestedFoodAdapter.setOnItemClickListener(food -> navigateToDetailActivity(food));
+        // `setLayoutManager` và khởi tạo `suggestedFoodAdapter` đã được di chuyển vào `initViews()`
+        // Chỉ cần gọi `setOnItemClickListener` và tải dữ liệu ở đây
+        // Gán listener sau khi adapter được khởi tạo (đã làm ở initViews)
+        // suggestedFoodAdapter.setOnItemClickListener(food -> navigateToDetailActivity(food)); // Đã gán ở setupListeners
 
         try {
             db.collection("Foods")
@@ -437,15 +465,15 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             db.collection("Users").document(currentUser.getUid())
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String name = documentSnapshot.getString("name");
-                        if (name != null && !name.isEmpty()) {
-                            userNameTextView.setText(name);
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String name = documentSnapshot.getString("name");
+                            if (name != null && !name.isEmpty()) {
+                                userNameTextView.setText(name);
+                            }
                         }
-                    }
-                });
+                    });
         }
     }
 }
