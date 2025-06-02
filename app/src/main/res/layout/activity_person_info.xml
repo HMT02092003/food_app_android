@@ -243,17 +243,20 @@
             android:background="@drawable/btn_background" />
 
         <!-- Nút xem món ăn yêu thích -->
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnFavoriteFoods"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Xem món ăn yêu thích"
             android:layout_marginTop="16dp"
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:backgroundTint="#FF4081"
+            android:text="Xem món ăn yêu thích"
+            android:textAllCaps="false"
             android:textColor="#FFFFFF"
-            android:textStyle="bold"/>
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="@drawable/btn_background" />
 
         <!-- Spacer để đẩy nút đăng xuất xuống cuối -->
         <View

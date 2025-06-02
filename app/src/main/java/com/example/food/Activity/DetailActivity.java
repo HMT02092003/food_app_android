@@ -156,6 +156,9 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             Places.initialize(getApplicationContext(), PLACES_API_KEY);
         }
         placesClient = Places.createClient(this);
+
+        // Kiểm tra trạng thái yêu thích và cập nhật icon trái tim
+        checkIfFavorite();
     }
 
     private boolean checkLocationPermission() {

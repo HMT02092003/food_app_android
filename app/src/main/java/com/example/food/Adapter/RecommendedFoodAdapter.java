@@ -48,6 +48,8 @@ public class RecommendedFoodAdapter extends RecyclerView.Adapter<RecommendedFood
             holder.pic.setImageResource(R.drawable.food_placeholder);
         }
 
+        holder.favoriteIcon.setVisibility(View.GONE);
+
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("foodId", food.getId());
@@ -63,13 +65,14 @@ public class RecommendedFoodAdapter extends RecyclerView.Adapter<RecommendedFood
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView titleTxt, priceTxt;
-        ImageView pic;
+        ImageView pic, favoriteIcon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTxt = itemView.findViewById(R.id.titleTxt);
             priceTxt = itemView.findViewById(R.id.priceTxt);
             pic = itemView.findViewById(R.id.pic);
+            favoriteIcon = itemView.findViewById(R.id.favoriteIcon);
         }
     }
 } 
