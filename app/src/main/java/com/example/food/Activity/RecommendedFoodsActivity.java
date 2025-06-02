@@ -7,7 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager; // Import GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.food.Adapter.RecommendedFoodAdapter;
@@ -38,14 +38,21 @@ public class RecommendedFoodsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recommendedFoodsRecyclerView);
         progressBar = findViewById(R.id.progressBar);
         backBtn = findViewById(R.id.backBtn);
-        
+
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
-        
+
         // Setup RecyclerView
         recommendedFoods = new ArrayList<>();
         adapter = new RecommendedFoodAdapter(recommendedFoods, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // --- Đã sửa đổi ở đây: Sử dụng GridLayoutManager ---
+        // Tham số thứ hai (2) là 'spanCount', tức là số cột trên mỗi hàng.
+        // Bạn muốn 2 thẻ trên 1 hàng, nên đặt là 2.
+        // Mặc định GridLayoutManager sẽ sắp xếp theo chiều dọc (xuống dòng)
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        // ---------------------------------------------------
+
         recyclerView.setAdapter(adapter);
 
         // Back button click listener
@@ -84,4 +91,4 @@ public class RecommendedFoodsActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 });
     }
-} 
+}

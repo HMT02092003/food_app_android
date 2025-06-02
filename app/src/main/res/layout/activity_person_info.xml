@@ -22,16 +22,18 @@
             android:paddingTop="50dp"
             android:layout_margin="20dp"
             android:paddingBottom="8dp">
+
             <ImageView
                 android:id="@+id/backBtn"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/back"
                 android:background="@drawable/circle_background"
                 android:backgroundTint="#F3F3F3"
-                android:padding="4dp" />
+                android:padding="4dp"
+                android:src="@drawable/arrow" />
+
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="237dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"

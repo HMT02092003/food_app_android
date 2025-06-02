@@ -34,7 +34,7 @@
                 android:layout_marginTop="8dp"
                 android:contentDescription="Back"
                 android:padding="8dp"
-                android:src="@drawable/back" />
+                android:src="@drawable/arrow" />
 
             <Button
                 android:id="@+id/resetBtn"
