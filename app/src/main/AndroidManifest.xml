@@ -106,6 +106,9 @@
             android:name=".Activity.PendingRecipesActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.MyPendingRecipesActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.RecommendedFoodsActivity"
             android:exported="false" />
         <activity android:name=".Activity.FavoriteFoodsActivity" />

@@ -33,11 +33,12 @@ public class UserShareRecipeActivity extends AppCompatActivity {
 
     private ImageView backBtn;
     private Button resetBtn, submitButton;
-    private EditText itemName, priceInput, ingredientInput, detailsInput;
+    private EditText itemName, priceInput, ingredientInput, detailsInput, recipeInput;
     private EditText imageUrl1;
     private Spinner categorySpinner;
     private ArrayAdapter<String> categoryAdapter;
     private List<String> categoryList;
+    private String recipeId;
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -59,6 +60,30 @@ public class UserShareRecipeActivity extends AppCompatActivity {
         initViews();
         setupCategorySpinner();
         setupClickListeners();
+
+        // Check if we're editing an existing recipe
+        recipeId = getIntent().getStringExtra("recipeId");
+        if (recipeId != null) {
+            // Load existing recipe data
+            String name = getIntent().getStringExtra("recipeName");
+            String category = getIntent().getStringExtra("recipeCategory");
+            double price = getIntent().getDoubleExtra("recipePrice", 0);
+            String ingredients = getIntent().getStringExtra("recipeIngredients");
+            String details = getIntent().getStringExtra("recipeDetails");
+            String imageUrl = getIntent().getStringExtra("recipeImageUrl");
+
+            // Set the data to views
+            itemName.setText(name);
+            int categoryPosition = categoryAdapter.getPosition(category);
+            if (categoryPosition >= 0) {
+                categorySpinner.setSelection(categoryPosition);
+            }
+            priceInput.setText(String.valueOf(price));
+            ingredientInput.setText(ingredients);
+            detailsInput.setText(details);
+            imageUrl1.setText(imageUrl);
+            submitButton.setText("Cập nhật công thức");
+        }
     }
 
     private void initViews() {
@@ -71,6 +96,7 @@ public class UserShareRecipeActivity extends AppCompatActivity {
         detailsInput = findViewById(R.id.detailsInput);
         categorySpinner = findViewById(R.id.categorySpinner);
         imageUrl1 = findViewById(R.id.imageUrl1);
+        recipeInput = findViewById(R.id.recipeInput);
     }
 
     private void setupCategorySpinner() {
@@ -95,7 +121,9 @@ public class UserShareRecipeActivity extends AppCompatActivity {
         backBtn.setOnClickListener(view -> finish());
         resetBtn.setOnClickListener(view -> resetForm());
         submitButton.setOnClickListener(view -> {
-            if (validateForm()) {
+            if (recipeId != null) {
+                updateRecipe(recipeId);
+            } else {
                 submitRecipe();
             }
         });
@@ -179,6 +207,54 @@ public class UserShareRecipeActivity extends AppCompatActivity {
                         Log.e("UserShareRecipeActivity", "Lỗi khi gửi công thức", e);
                     }
                 });
+    }
+
+    private void updateRecipe(String recipeId) {
+        submitButton.setEnabled(false);
+        submitButton.setText("Đang cập nhật...");
+
+        String selectedCategory = categorySpinner.getSelectedItem().toString();
+
+        List<String> imageUrls = new ArrayList<>();
+        String url1 = imageUrl1.getText().toString().trim();
+        if (!url1.isEmpty()) {
+            imageUrls.add(url1);
+        }
+
+        FoodModel recipe = new FoodModel();
+        recipe.setId(recipeId);
+        recipe.setCategory(selectedCategory);
+        recipe.setName(itemName.getText().toString().trim());
+        try {
+            recipe.setPrice(Double.parseDouble(priceInput.getText().toString().trim()));
+        } catch (NumberFormatException e) {
+            showToast("Giá tiền không hợp lệ");
+            submitButton.setEnabled(true);
+            submitButton.setText("Cập nhật công thức");
+            return;
+        }
+        recipe.setIngredients(ingredientInput.getText().toString().trim());
+        recipe.setDetails(detailsInput.getText().toString().trim());
+        recipe.setRecipe(recipeInput.getText().toString().trim());
+        recipe.setImageUrls(imageUrls);
+        recipe.setStatus("pending");
+        recipe.setUserId(auth.getCurrentUser().getUid());
+
+        db.collection("PendingRecipes")
+            .document(recipeId)
+            .set(recipe)
+            .addOnSuccessListener(aVoid -> {
+                submitButton.setEnabled(true);
+                submitButton.setText("Cập nhật công thức");
+                showToast("Đã cập nhật công thức thành công. Vui lòng chờ admin duyệt.");
+                finish();
+            })
+            .addOnFailureListener(e -> {
+                submitButton.setEnabled(true);
+                submitButton.setText("Cập nhật công thức");
+                showToast("Lỗi khi cập nhật công thức: " + e.getMessage());
+                Log.e("UserShareRecipeActivity", "Lỗi khi cập nhật công thức", e);
+            });
     }
 
     private void showToast(String message) {
