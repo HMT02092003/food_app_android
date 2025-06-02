@@ -10,7 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp">
 
         <LinearLayout
             android:id="@+id/topBar"
@@ -28,8 +29,6 @@
                 android:id="@+id/backBtn"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:contentDescription="Back"
                 android:padding="8dp"
                 android:src="@drawable/back" />
@@ -53,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Chia sẻ công thức món ăn"
-            android:textSize="18sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center_horizontal"
             android:layout_marginStart="24dp"
@@ -66,9 +65,9 @@
             android:id="@+id/categoryLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:text="Thể loại"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -82,6 +81,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_bg"
+            android:padding="12dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Tải ảnh lên"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -145,7 +145,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Giá tiền"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -174,7 +174,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Nguyên liệu"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -203,7 +203,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Mô tả món ăn"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -231,9 +231,9 @@
             android:id="@+id/recipeLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:text="Công thức món ăn"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
@@ -261,8 +261,7 @@
             android:id="@+id/submitButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginTop="32dp"
             android:backgroundTint="#FF7622"
             android:text="Gửi công thức"
             android:textColor="#FFFFFF"
@@ -273,17 +272,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/recipeInput" />
 
-        <ImageView
-            android:id="@+id/shareRecipeIllustration"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/rounded_image_bg"
-            android:scaleType="centerCrop"
-            android:src="@drawable/hero_placeholder" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView> 
+</ScrollView>
