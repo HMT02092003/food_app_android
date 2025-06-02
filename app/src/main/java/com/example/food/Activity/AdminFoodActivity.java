@@ -153,9 +153,6 @@ public class AdminFoodActivity extends AppCompatActivity implements FoodAdapter.
             Intent intent = new Intent(AdminFoodActivity.this, AdminAddFoodActivity.class);
             startActivity(intent);
             return true;
-        } else if (itemId == R.id.profileBtn) {
-            // Xử lý khi nút Profile được nhấn (nếu cần)
-            return true;
         }
         return false;
     }

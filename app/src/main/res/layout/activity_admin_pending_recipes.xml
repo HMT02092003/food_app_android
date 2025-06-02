@@ -5,27 +5,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/orange"
-        android:elevation="4dp"
-        android:layout_marginTop="50dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:padding="16dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@drawable/ic_back"
+            />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="Duyệt món ăn"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:background="@color/orange" />
+            />
 
+        <Space
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
 
-    </androidx.appcompat.widget.Toolbar>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewPending"
@@ -34,4 +45,4 @@
         android:padding="8dp"
         android:clipToPadding="false"/>
 
-</LinearLayout> 
+</LinearLayout>
