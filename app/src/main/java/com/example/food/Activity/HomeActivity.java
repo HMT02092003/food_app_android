@@ -288,20 +288,30 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
 
         try {
             db.collection("Foods")
-                    .limit(5)
                     .get()
                     .addOnSuccessListener(query -> {
                         if (isDestroyed() || isFinishing()) return;
                         suggestedFoodList.clear();
+                        List<FoodModel> allFoods = new ArrayList<>();
+                        
+                        // First collect all foods
                         for (QueryDocumentSnapshot document : query) {
                             try {
                                 FoodModel food = document.toObject(FoodModel.class);
                                 food.setId(document.getId());
-                                suggestedFoodList.add(food);
+                                allFoods.add(food);
                             } catch (Exception e) {
                                 Log.e("HomeActivity", "Lỗi chuyển đổi dữ liệu khi tải món ăn đề xuất: " + e.getMessage());
                             }
                         }
+                        
+                        // Then randomly select 10 items
+                        if (!allFoods.isEmpty()) {
+                            java.util.Collections.shuffle(allFoods);
+                            int count = Math.min(10, allFoods.size());
+                            suggestedFoodList.addAll(allFoods.subList(0, count));
+                        }
+                        
                         suggestedFoodAdapter.notifyDataSetChanged();
                     })
                     .addOnFailureListener(e -> {
