@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -40,6 +41,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import android.app.Activity;
+import android.view.inputmethod.InputMethodManager;
 
 import java.util.Arrays;
 
@@ -114,7 +117,6 @@ public class LoginActivity extends AppCompatActivity {
         userEmailEdt = findViewById(R.id.userEdt);
         userPasswordEdt = findViewById(R.id.passEdt);
         loginButton = findViewById(R.id.button4);
-        forgotPasswordText = findViewById(R.id.textView8);
 
         // Xử lý nút đăng nhập bằng email và password
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -125,18 +127,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Xử lý chức năng quên mật khẩu
-        forgotPasswordText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = userEmailEdt.getText().toString().trim();
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(LoginActivity.this, "Vui lòng nhập email trước", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                sendPasswordResetEmail(email);
-            }
-        });
 
         // Khởi tạo Google Sign-In
         configureGoogleSignIn();
@@ -172,6 +162,31 @@ public class LoginActivity extends AppCompatActivity {
 
         // Đăng ký callback cho Facebook Login
         setupFacebookCallback();
+
+        setupHideKeyboardOnTouchOutside();
+    }
+
+    private void setupHideKeyboardOnTouchOutside() {
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            root.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    View currentFocus = getCurrentFocus();
+                    if (currentFocus instanceof EditText) {
+                        currentFocus.clearFocus();
+                        hideKeyboard(this);
+                    }
+                }
+                return false;
+            });
+        }
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) view = new View(activity);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     /**

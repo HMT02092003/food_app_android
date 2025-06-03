@@ -1,10 +1,11 @@
 package com.example.food.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.food.Adapter.PendingRecipesAdapter;
@@ -24,21 +25,22 @@ public class PendingRecipesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pending_recipes);
-
-        // Setup Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        setContentView(R.layout.activity_admin_pending_recipes);
 
         // Setup RecyclerView
         recyclerView = findViewById(R.id.recyclerViewPending);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new PendingRecipesAdapter(recipeList, this::approveRecipe);
         recyclerView.setAdapter(adapter);
+
+        // Xử lý nút back về trang admin
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(PendingRecipesActivity.this, AdminFoodActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
         loadPendingRecipes();
     }

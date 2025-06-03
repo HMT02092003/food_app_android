@@ -53,46 +53,60 @@
 
         <activity
             android:name=".Activity.AdminUpdateFoodActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.AdminAddFoodActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.AdminFoodActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.PersonInfoDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.PersonInfoActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.SignupActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.ListFoodsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.DetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.ForgotPasswordActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.BaseActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.UserShareRecipeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.AdminPendingRecipesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.IntroActivity"
             android:exported="true">
@@ -104,14 +118,18 @@
         </activity>
         <activity
             android:name=".Activity.PendingRecipesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.MyPendingRecipesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Activity.RecommendedFoodsActivity"
-            android:exported="false" />
-        <activity android:name=".Activity.FavoriteFoodsActivity" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Activity.FavoriteFoodsActivity"
+            android:windowSoftInputMode="adjustResize" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/YOUR_MAPS_API_KEY" />

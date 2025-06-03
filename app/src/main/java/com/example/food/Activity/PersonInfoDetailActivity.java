@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log; // Import Log
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -23,6 +25,8 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import android.app.Activity;
+import android.view.inputmethod.InputMethodManager;
 
 public class PersonInfoDetailActivity extends AppCompatActivity {
 
@@ -84,6 +88,8 @@ public class PersonInfoDetailActivity extends AppCompatActivity {
 
         // Lưu thông tin người dùng
         saveButton.setOnClickListener(v -> updateFirebaseUser());
+
+        setupHideKeyboardOnTouchOutside();
     }
 
     private void loadUserInfo() {
@@ -276,5 +282,28 @@ public class PersonInfoDetailActivity extends AppCompatActivity {
                 // và sau đó lấy URL tải xuống để lưu vào Firestore và Auth.
             }
         }
+    }
+
+    private void setupHideKeyboardOnTouchOutside() {
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            root.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    View currentFocus = getCurrentFocus();
+                    if (currentFocus instanceof EditText) {
+                        currentFocus.clearFocus();
+                        hideKeyboard(this);
+                    }
+                }
+                return false;
+            });
+        }
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) view = new View(activity);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

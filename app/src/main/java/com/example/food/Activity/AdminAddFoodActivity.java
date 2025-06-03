@@ -3,6 +3,7 @@ package com.example.food.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +29,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import android.app.Activity;
+import android.view.inputmethod.InputMethodManager;
 
 public class AdminAddFoodActivity extends AppCompatActivity {
 
@@ -59,6 +63,7 @@ public class AdminAddFoodActivity extends AppCompatActivity {
         initViews();
         setupCategorySpinner();
         setupClickListeners();
+        setupHideKeyboardOnTouchOutside();
     }
 
     private void initViews() {
@@ -190,5 +195,28 @@ public class AdminAddFoodActivity extends AppCompatActivity {
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setupHideKeyboardOnTouchOutside() {
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            root.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    View currentFocus = getCurrentFocus();
+                    if (currentFocus instanceof EditText) {
+                        currentFocus.clearFocus();
+                        hideKeyboard(this);
+                    }
+                }
+                return false;
+            });
+        }
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) view = new View(activity);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

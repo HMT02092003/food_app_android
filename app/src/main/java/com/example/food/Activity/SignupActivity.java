@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,6 +27,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+
+import android.app.Activity;
+import android.view.inputmethod.InputMethodManager;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -91,6 +95,31 @@ public class SignupActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        setupHideKeyboardOnTouchOutside();
+    }
+
+    private void setupHideKeyboardOnTouchOutside() {
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            root.setOnTouchListener((v, event) -> {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    View currentFocus = getCurrentFocus();
+                    if (currentFocus instanceof EditText) {
+                        currentFocus.clearFocus();
+                        hideKeyboard(this);
+                    }
+                }
+                return false;
+            });
+        }
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) view = new View(activity);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void registerUser() {

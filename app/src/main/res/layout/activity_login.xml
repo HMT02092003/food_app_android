@@ -80,17 +80,6 @@
                 android:paddingEnd="32dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="Quên mật khẩu?"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textStyle="bold"
-            android:textSize="18sp" />
-
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button4"
             style="@android:style/Widget.Button"
