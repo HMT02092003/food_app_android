@@ -83,8 +83,8 @@ public class MyPendingRecipesAdapter extends RecyclerView.Adapter<MyPendingRecip
             holder.recipeImage.setImageResource(R.drawable.food_placeholder);
         }
 
-        holder.editBtn.setOnClickListener(v -> listener.onEdit(recipe));
-        holder.deleteBtn.setOnClickListener(v -> listener.onDelete(recipe));
+        holder.iconEdit.setOnClickListener(v -> listener.onEdit(recipe));
+        holder.iconDelete.setOnClickListener(v -> listener.onDelete(recipe));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class MyPendingRecipesAdapter extends RecyclerView.Adapter<MyPendingRecip
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, category, price, status;
         ImageView recipeImage;
-        Button editBtn, deleteBtn;
+        ImageView iconEdit, iconDelete;
         
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,8 +104,8 @@ public class MyPendingRecipesAdapter extends RecyclerView.Adapter<MyPendingRecip
             price = itemView.findViewById(R.id.textPrice);
             status = itemView.findViewById(R.id.textStatus);
             recipeImage = itemView.findViewById(R.id.recipeImage);
-            editBtn = itemView.findViewById(R.id.btnEdit);
-            deleteBtn = itemView.findViewById(R.id.btnDelete);
+            iconEdit = itemView.findViewById(R.id.iconEdit);
+            iconDelete = itemView.findViewById(R.id.iconDelete);
         }
     }
 } 
