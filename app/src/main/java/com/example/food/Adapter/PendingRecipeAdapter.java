@@ -38,8 +38,7 @@ public class PendingRecipeAdapter extends RecyclerView.Adapter<PendingRecipeAdap
         PendingRecipe recipe = recipeList.get(position);
         holder.name.setText(recipe.getName());
         holder.description.setText(recipe.getDetails());
-        holder.category.setText(recipe.getCategory());
-        holder.price.setText(String.format("%.0f VNĐ", recipe.getPrice()));
+        holder.user.setText("Đề xuất bởi: " + recipe.getUserId());
         
         // Load ảnh từ URL
         if (recipe.getImageUrls() != null && !recipe.getImageUrls().isEmpty()) {
@@ -57,18 +56,17 @@ public class PendingRecipeAdapter extends RecyclerView.Adapter<PendingRecipeAdap
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView name, description, category, price;
+        TextView name, description, user;
         ImageView recipeImage;
         Button approveBtn;
         
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.textName);
-            description = itemView.findViewById(R.id.textDescription);
-            category = itemView.findViewById(R.id.textCategory);
-            price = itemView.findViewById(R.id.textPrice);
+            name = itemView.findViewById(R.id.textViewRecipeName);
+            description = itemView.findViewById(R.id.textViewDescription);
+            user = itemView.findViewById(R.id.textViewUser);
             recipeImage = itemView.findViewById(R.id.recipeImage);
-            approveBtn = itemView.findViewById(R.id.btnApprove);
+            approveBtn = itemView.findViewById(R.id.buttonApprove);
         }
     }
 } 

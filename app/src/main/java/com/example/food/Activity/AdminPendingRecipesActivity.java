@@ -60,4 +60,18 @@ public class AdminPendingRecipesActivity extends AppCompatActivity implements Pe
                     });
             });
     }
+
+    @Override
+    public void onDelete(PendingRecipe recipe) {
+        // Xóa khỏi PendingRecipes
+        db.collection("PendingRecipes").document(recipe.getId())
+            .delete()
+            .addOnSuccessListener(aVoid -> {
+                Toast.makeText(this, "Đã xóa món ăn!", Toast.LENGTH_SHORT).show();
+                loadPendingRecipes();
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(this, "Lỗi khi xóa món ăn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+    }
 } 

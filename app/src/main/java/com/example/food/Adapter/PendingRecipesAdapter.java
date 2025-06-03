@@ -19,6 +19,7 @@ public class PendingRecipesAdapter extends RecyclerView.Adapter<PendingRecipesAd
 
     public interface OnApproveClickListener {
         void onApprove(PendingRecipe recipe);
+        void onDelete(PendingRecipe recipe);
     }
 
     public PendingRecipesAdapter(List<PendingRecipe> recipeList, OnApproveClickListener listener) {
@@ -29,7 +30,8 @@ public class PendingRecipesAdapter extends RecyclerView.Adapter<PendingRecipesAd
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pending_recipe, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_my_pending_recipe, parent, false);
         return new ViewHolder(view);
     }
 
@@ -37,18 +39,23 @@ public class PendingRecipesAdapter extends RecyclerView.Adapter<PendingRecipesAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PendingRecipe recipe = recipeList.get(position);
         holder.name.setText(recipe.getName());
-        holder.description.setText(recipe.getDetails());
         holder.category.setText(recipe.getCategory());
         holder.price.setText(String.format("%.0f VNĐ", recipe.getPrice()));
+        holder.status.setText("Trạng thái: Đang chờ duyệt");
         
         // Load ảnh từ URL
         if (recipe.getImageUrls() != null && !recipe.getImageUrls().isEmpty()) {
             Glide.with(holder.itemView.getContext())
                 .load(recipe.getImageUrls().get(0))
+                .placeholder(R.drawable.food_placeholder)
+                .error(R.drawable.food_placeholder)
                 .into(holder.recipeImage);
+        } else {
+            holder.recipeImage.setImageResource(R.drawable.food_placeholder);
         }
-        
-        holder.approveBtn.setOnClickListener(v -> listener.onApprove(recipe));
+
+        holder.editBtn.setOnClickListener(v -> listener.onApprove(recipe));
+        holder.deleteBtn.setOnClickListener(v -> listener.onDelete(recipe));
     }
 
     @Override
@@ -56,19 +63,20 @@ public class PendingRecipesAdapter extends RecyclerView.Adapter<PendingRecipesAd
         return recipeList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView name, description, category, price;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView name, category, price, status;
         ImageView recipeImage;
-        Button approveBtn;
-        
-        public ViewHolder(@NonNull View itemView) {
+        Button editBtn, deleteBtn;
+
+        ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.textName);
-            description = itemView.findViewById(R.id.textDescription);
             category = itemView.findViewById(R.id.textCategory);
             price = itemView.findViewById(R.id.textPrice);
+            status = itemView.findViewById(R.id.textStatus);
             recipeImage = itemView.findViewById(R.id.recipeImage);
-            approveBtn = itemView.findViewById(R.id.btnApprove);
+            editBtn = itemView.findViewById(R.id.btnEdit);
+            deleteBtn = itemView.findViewById(R.id.btnDelete);
         }
     }
 } 

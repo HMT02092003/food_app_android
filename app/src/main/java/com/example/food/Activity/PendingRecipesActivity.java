@@ -16,7 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PendingRecipesActivity extends AppCompatActivity {
+public class PendingRecipesActivity extends AppCompatActivity implements PendingRecipesAdapter.OnApproveClickListener {
     private RecyclerView recyclerView;
     private PendingRecipesAdapter adapter;
     private List<PendingRecipe> recipeList = new ArrayList<>();
@@ -30,7 +30,7 @@ public class PendingRecipesActivity extends AppCompatActivity {
         // Setup RecyclerView
         recyclerView = findViewById(R.id.recyclerViewPending);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new PendingRecipesAdapter(recipeList, this::approveRecipe);
+        adapter = new PendingRecipesAdapter(recipeList, this);
         recyclerView.setAdapter(adapter);
 
         // Xử lý nút back về trang admin
@@ -70,7 +70,8 @@ public class PendingRecipesActivity extends AppCompatActivity {
             });
     }
 
-    private void approveRecipe(PendingRecipe recipe) {
+    @Override
+    public void onApprove(PendingRecipe recipe) {
         // Thêm vào Foods
         db.collection("Foods").document(recipe.getId())
             .set(recipe)
@@ -81,13 +82,24 @@ public class PendingRecipesActivity extends AppCompatActivity {
                     .addOnSuccessListener(aVoid1 -> {
                         Toast.makeText(this, "Đã duyệt món ăn!", Toast.LENGTH_SHORT).show();
                         loadPendingRecipes();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Lỗi khi xóa món ăn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
             })
             .addOnFailureListener(e -> {
                 Toast.makeText(this, "Lỗi khi thêm món ăn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+    }
+
+    @Override
+    public void onDelete(PendingRecipe recipe) {
+        // Xóa khỏi PendingRecipes
+        db.collection("PendingRecipes").document(recipe.getId())
+            .delete()
+            .addOnSuccessListener(aVoid -> {
+                Toast.makeText(this, "Đã xóa món ăn!", Toast.LENGTH_SHORT).show();
+                loadPendingRecipes();
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(this, "Lỗi khi xóa món ăn: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
     }
 } 
