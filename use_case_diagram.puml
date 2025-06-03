@@ -1,0 +1,29 @@
+@startuml
+
+left to right direction
+
+actor User
+
+usecase "Đăng ký tài khoản" as UC1
+usecase "Xem thông tin món ăn" as UC2
+usecase "Tìm kiếm món ăn" as UC3
+usecase "Đánh giá món ăn" as UC4
+usecase "Đề xuất món ăn" as UC5
+usecase "Tìm quán ăn trên bản đồ" as UC6
+usecase "Đăng nhập" as UC7
+usecase "Đăng xuất" as UC8
+usecase "Đăng nhập bằng Google" as UC9
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+User --> UC9
+
+UC7 --|> UC8 : <<include>>
+
+@enduml 
