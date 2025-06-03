@@ -35,6 +35,7 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapter.OnCategoryClickListener {
 
@@ -388,31 +389,71 @@ public class HomeActivity extends AppCompatActivity implements CategoryHomeAdapt
         Query query;
 
         if (!category.equals("Tất cả")) {
-            query = foodsRef.whereEqualTo("category", category).limit(10);
+            query = foodsRef.whereEqualTo("category", category);
         } else {
-            query = foodsRef.limit(10);
+            query = foodsRef;
         }
 
         query.get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    categoryFoodList.clear();
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            FoodModel food = document.toObject(FoodModel.class);
-                            food.setId(document.getId());
-                            categoryFoodList.add(food);
-                        }
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                categoryFoodList.clear();
+                List<FoodModel> tempList = new ArrayList<>();
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        FoodModel food = document.toObject(FoodModel.class);
+                        food.setId(document.getId());
+                        tempList.add(food);
                     }
+                }
+
+                if (tempList.isEmpty()) {
                     if (categoryFoodAdapter != null) {
                         categoryFoodAdapter.notifyDataSetChanged();
                     }
                     progressBarFoodList.setVisibility(View.GONE);
-                })
-                .addOnFailureListener(e -> {
-                    progressBarFoodList.setVisibility(View.GONE);
-                    Log.e("HomeActivity", "Lỗi khi lấy dữ liệu món ăn từ Firestore: ", e);
-                    Toast.makeText(HomeActivity.this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                    return;
+                }
+
+                final int[] finishedCount = {0};
+                for (FoodModel food : tempList) {
+                    db.collection("Foods").document(food.getId())
+                        .collection("comments")
+                        .get()
+                        .addOnSuccessListener(commentsSnapshot -> {
+                            food.setCommentsCount(commentsSnapshot.size());
+                            finishedCount[0]++;
+                            if (finishedCount[0] == tempList.size()) {
+                                categoryFoodList.clear();
+                                categoryFoodList.addAll(tempList);
+                                Collections.sort(categoryFoodList, (f1, f2) ->
+                                        Integer.compare(f2.getCommentsCount(), f1.getCommentsCount()));
+                                if (categoryFoodAdapter != null) {
+                                    categoryFoodAdapter.notifyDataSetChanged();
+                                }
+                                progressBarFoodList.setVisibility(View.GONE);
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            food.setCommentsCount(0);
+                            finishedCount[0]++;
+                            if (finishedCount[0] == tempList.size()) {
+                                categoryFoodList.clear();
+                                categoryFoodList.addAll(tempList);
+                                Collections.sort(categoryFoodList, (f1, f2) ->
+                                        Integer.compare(f2.getCommentsCount(), f1.getCommentsCount()));
+                                if (categoryFoodAdapter != null) {
+                                    categoryFoodAdapter.notifyDataSetChanged();
+                                }
+                                progressBarFoodList.setVisibility(View.GONE);
+                            }
+                        });
+                }
+            })
+            .addOnFailureListener(e -> {
+                progressBarFoodList.setVisibility(View.GONE);
+                Log.e("HomeActivity", "Lỗi khi lấy dữ liệu món ăn từ Firestore: ", e);
+                Toast.makeText(HomeActivity.this, "Lỗi khi tải dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
     }
 
     private void loadSharedRecipes() {
