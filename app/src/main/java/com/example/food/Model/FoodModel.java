@@ -15,7 +15,6 @@ public class FoodModel {
     private int reviewCount; // Trường để lưu số lượng đánh giá
     private String status; // Trường để lưu trạng thái của công thức
     private String userId; // Trường để lưu ID của người dùng đăng công thức
-    private int commentsCount; // Trường để lưu số lượng comments
 
     public FoodModel() {
         // Constructor rỗng cần thiết cho Firestore để tự động chuyển đổi dữ liệu
@@ -24,7 +23,7 @@ public class FoodModel {
     // Constructor đầy đủ
     // Đã bao gồm tất cả các trường hiện có, bao gồm recipe và reviewCount
     public FoodModel(String id, String name, double price, String ingredients, String details,
-                     String recipe, List<String> imageUrls, String category, float rating, int reviewCount, String status, String userId, int commentsCount) {
+                     String recipe, List<String> imageUrls, String category, float rating, int reviewCount, String status, String userId) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -37,7 +36,6 @@ public class FoodModel {
         this.reviewCount = reviewCount;
         this.status = status;
         this.userId = userId;
-        this.commentsCount = commentsCount;
     }
 
     // --- Getters và Setters ---
@@ -138,13 +136,5 @@ public class FoodModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public int getCommentsCount() {
-        return commentsCount;
-    }
-
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
     }
 }

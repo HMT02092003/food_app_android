@@ -210,7 +210,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void createAccount(String email, String password, String fullName, String address, String phone, String bio) {
-            mAuth.createUserWithEmailAndPassword(email, password)
+        mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

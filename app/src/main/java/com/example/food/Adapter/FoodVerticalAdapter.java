@@ -48,9 +48,9 @@ public class FoodVerticalAdapter extends RecyclerView.Adapter<FoodVerticalAdapte
         holder.foodNameTextView.setText(food.getName());
         holder.foodPriceTextView.setText(String.format("%,.0f VNĐ", food.getPrice())); // Định dạng giá VNĐ
         holder.foodCategoryTextView.setText(food.getCategory());
+
+        // *** ĐÃ SỬA: Dùng food.getDetails() thay vì food.getDescription() ***
         holder.foodDescriptionTextView.setText(food.getDetails());
-        holder.foodCommentsTextView.setText(food.getCommentsCount() + " đánh giá");
-        holder.foodRatingTextView.setText(String.format("%.1f ★", food.getRating()));
 
         // *** ĐÃ SỬA: Dùng food.getImageUrls() thay vì food.getImagePath() ***
         // Lấy URL của ảnh đầu tiên từ danh sách imageUrls
@@ -94,8 +94,6 @@ public class FoodVerticalAdapter extends RecyclerView.Adapter<FoodVerticalAdapte
         TextView foodNameTextView;
         TextView foodPriceTextView;
         TextView foodCategoryTextView;
-        TextView foodCommentsTextView;
-        TextView foodRatingTextView;
         TextView foodDescriptionTextView;
 
         public ViewHolder(@NonNull View itemView) {
@@ -104,8 +102,6 @@ public class FoodVerticalAdapter extends RecyclerView.Adapter<FoodVerticalAdapte
             foodNameTextView = itemView.findViewById(R.id.foodNameTextView);
             foodPriceTextView = itemView.findViewById(R.id.foodPriceTextView);
             foodCategoryTextView = itemView.findViewById(R.id.foodCategoryTextView);
-            foodCommentsTextView = itemView.findViewById(R.id.foodCommentsTextView);
-            foodRatingTextView = itemView.findViewById(R.id.foodRatingTextView);
             foodDescriptionTextView = itemView.findViewById(R.id.foodDescriptionTextView);
         }
     }

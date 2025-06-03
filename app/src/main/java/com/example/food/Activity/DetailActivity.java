@@ -91,7 +91,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     private RatingBar userRatingBar;
     private EditText commentInput;
     private Button submitRatingBtn;
-    private Button submitCommentBtn;
     private RecyclerView commentsRecyclerView;
     private RecyclerView recommendedRecyclerView;
     private RecommendedFoodAdapter recommendedAdapter;
@@ -281,7 +280,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         userRatingBar = findViewById(R.id.userRatingBar);
         commentInput = findViewById(R.id.commentInput);
         submitRatingBtn = findViewById(R.id.submitRatingBtn);
-        submitCommentBtn = findViewById(R.id.submitCommentBtn);
         commentsRecyclerView = findViewById(R.id.commentsRecyclerView);
         recommendedRecyclerView = findViewById(R.id.recommendedRecyclerView);
         
@@ -328,43 +326,24 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void updateAverageRating() {
-        if (foodId == null) return;
+        if (comments.isEmpty()) {
+            ratingBar.setRating(0);
+            rateTxt.setText("0 Rating");
+            return;
+        }
 
-        db.collection("Foods")
-            .document(foodId)
-            .collection("ratings")
-            .get()
-            .addOnSuccessListener(queryDocumentSnapshots -> {
-                if (queryDocumentSnapshots.isEmpty()) {
-                    ratingBar.setRating(0);
-                    rateTxt.setText("0 Rating");
-                    return;
-                }
+        float totalRating = 0;
+        for (Comment comment : comments) {
+            totalRating += comment.getRating();
+        }
+        float averageRating = totalRating / comments.size();
+        ratingBar.setRating(averageRating);
+        rateTxt.setText(String.format("%.1f Rating", averageRating));
 
-                float totalRating = 0;
-                int ratingCount = 0;
-                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                    Double rating = doc.getDouble("rating");
-                    if (rating != null) {
-                        totalRating += rating;
-                        ratingCount++;
-                    }
-                }
-
-                float averageRating = ratingCount > 0 ? totalRating / ratingCount : 0;
-                ratingBar.setRating(averageRating);
-                rateTxt.setText(String.format("%.1f Rating", averageRating));
-
-                // Update food document with new average rating
-                db.collection("Foods").document(foodId)
-                    .update("rating", averageRating, "reviewCount", ratingCount)
-                    .addOnFailureListener(e -> 
-                        Toast.makeText(this, "Error updating rating: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
-            })
-            .addOnFailureListener(e -> 
-                Toast.makeText(this, "Error calculating average rating: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-            );
+        // Update food document with new average rating
+        db.collection("Foods").document(foodId)
+                .update("rating", averageRating)
+                .addOnFailureListener(e -> Toast.makeText(this, "Error updating rating: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     private void setupRecommendedRecyclerView() {
@@ -447,7 +426,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                         food.setId(documentSnapshot.getId());
                         // Set data to views
                         titleTxt.setText(food.getName());
-                        priceTxt.setText(String.format("%,.0f VNĐ", food.getPrice()));
+                        priceTxt.setText(String.format("%.0f$", food.getPrice()));
                         descriptionTxt.setText(food.getDetails());
                         
                         // Set category
@@ -517,7 +496,6 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         });
 
         submitRatingBtn.setOnClickListener(v -> submitRating());
-        submitCommentBtn.setOnClickListener(v -> submitComment());
     }
 
     private void toggleFavorite() {
@@ -581,6 +559,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             return;
         }
 
+        String commentText = commentInput.getText().toString().trim();
         float rating = userRatingBar.getRating();
 
         if (rating == 0) {
@@ -588,105 +567,36 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
             return;
         }
 
-        // Check if user has already rated
-        db.collection("Foods")
-            .document(foodId)
-            .collection("ratings")
-            .document(currentUser.getUid())
-            .get()
-            .addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    // User has already rated, update the rating
-                    documentSnapshot.getReference()
-                        .update("rating", rating, "timestamp", System.currentTimeMillis())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Đã cập nhật đánh giá", Toast.LENGTH_SHORT).show();
-                            loadComments(); // Reload to update average rating
-                        })
-                        .addOnFailureListener(e -> 
-                            Toast.makeText(this, "Lỗi khi cập nhật đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                        );
-                } else {
-                    // User hasn't rated yet, create new rating
-                    HashMap<String, Object> ratingData = new HashMap<>();
-                    ratingData.put("userId", currentUser.getUid());
-                    ratingData.put("userName", currentUser.getDisplayName());
-                    ratingData.put("userPhoto", currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "");
-                    ratingData.put("rating", rating);
-                    ratingData.put("timestamp", System.currentTimeMillis());
-
-                    documentSnapshot.getReference()
-                        .set(ratingData)
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Đánh giá thành công", Toast.LENGTH_SHORT).show();
-                            loadComments(); // Reload to update average rating
-                        })
-                        .addOnFailureListener(e -> 
-                            Toast.makeText(this, "Lỗi khi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                        );
-                }
-            })
-            .addOnFailureListener(e -> 
-                Toast.makeText(this, "Lỗi khi kiểm tra đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-            );
-    }
-
-    private void submitComment() {
-        if (currentUser == null) {
-            Toast.makeText(this, "Vui lòng đăng nhập để bình luận", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String commentText = commentInput.getText().toString().trim();
-
         if (commentText.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập bình luận", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Get user's rating if exists
+        // Create new comment
+        String commentId = UUID.randomUUID().toString();
+        Comment comment = new Comment(
+                commentId,
+                currentUser.getUid(),
+                currentUser.getDisplayName(),
+                currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "",
+                foodId,
+                commentText,
+                rating
+        );
+
+        // Save to Firebase
         db.collection("Foods")
-            .document(foodId)
-            .collection("ratings")
-            .document(currentUser.getUid())
-            .get()
-            .addOnSuccessListener(documentSnapshot -> {
-                float userRating = 0;
-                if (documentSnapshot.exists() && documentSnapshot.get("rating") != null) {
-                    Object ratingObj = documentSnapshot.get("rating");
-                    if (ratingObj instanceof Number) {
-                        userRating = ((Number) ratingObj).floatValue();
-                    }
-                }
-
-                // Create new comment
-                String commentId = UUID.randomUUID().toString();
-                Comment comment = new Comment(
-                    commentId,
-                    currentUser.getUid(),
-                    currentUser.getDisplayName(),
-                    currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "",
-                    foodId,
-                    commentText,
-                    userRating
+                .document(foodId)
+                .collection("comments")
+                .document(commentId)
+                .set(comment)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Đánh giá thành công", Toast.LENGTH_SHORT).show();
+                    commentInput.setText("");
+                    userRatingBar.setRating(0);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Lỗi khi gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
-
-                // Save to Firebase
-                db.collection("Foods")
-                    .document(foodId)
-                    .collection("comments")
-                    .document(commentId)
-                    .set(comment)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Bình luận thành công", Toast.LENGTH_SHORT).show();
-                        commentInput.setText("");
-                    })
-                    .addOnFailureListener(e ->
-                        Toast.makeText(this, "Lỗi khi gửi bình luận: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                    );
-            })
-            .addOnFailureListener(e -> 
-                Toast.makeText(this, "Lỗi khi lấy đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-            );
     }
 }
