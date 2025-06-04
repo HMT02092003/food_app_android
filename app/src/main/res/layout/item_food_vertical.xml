@@ -57,6 +57,43 @@
         app:layout_constraintTop_toBottomOf="@id/foodNameTextView"
         tools:text="Món kho,hầm" />
 
+    <LinearLayout
+        android:id="@+id/ratingAndCommentsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toEndOf="@id/foodCategoryTextView"
+        app:layout_constraintTop_toTopOf="@id/foodCategoryTextView"
+        app:layout_constraintBottom_toBottomOf="@id/foodCategoryTextView">
+
+        <ImageView
+            android:id="@+id/starIcon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_star"
+            android:tint="@color/orange" />
+
+        <TextView
+            android:id="@+id/ratingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:textColor="@color/text_color"
+            android:textSize="12sp"
+            tools:text="4.5" />
+
+        <TextView
+            android:id="@+id/commentsCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="12sp"
+            tools:text="(120)" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/foodPriceTextView"
         android:layout_width="wrap_content"

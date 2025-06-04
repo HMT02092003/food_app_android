@@ -124,6 +124,8 @@ public class ListFoodsActivity extends BaseActivity {
                     food.setPrice(price != null ? price : 0);
                     Double star = document.getDouble("rating");
                     food.setStar(star != null ? star : 0.0);
+                    Long reviewCount = document.getLong("reviewCount");
+                    food.setReviewCount(reviewCount != null ? reviewCount : 0);
                     // Nếu đang tìm kiếm thì chỉ add nếu tên chứa từ khóa
                     if (isSearch && searchText != null && !searchText.isEmpty()) {
                         if (food.getTitle().toLowerCase().contains(searchText.toLowerCase())) {
@@ -133,7 +135,9 @@ public class ListFoodsActivity extends BaseActivity {
                         list.add(food);
                     }
                 }
-                Collections.sort(list, (food1, food2) -> Double.compare(food2.getStar(), food1.getStar()));
+                // Sắp xếp theo số lượng comments giảm dần
+                Collections.sort(list, (food1, food2) -> Long.compare(food2.getReviewCount(), food1.getReviewCount()));
+                
                 if(list.size() > 0) {
                     binding.foodListView.setLayoutManager(new GridLayoutManager(ListFoodsActivity.this, 2));
                     adapterListFood = new FoodListAdapter(list);

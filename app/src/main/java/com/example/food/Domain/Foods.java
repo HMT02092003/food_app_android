@@ -14,6 +14,7 @@ public class Foods {
     private int TimeValue;
     private String Title;
     private int numberInCart;
+    private long reviewCount;
 
     public Foods() {
     }
@@ -125,5 +126,13 @@ public class Foods {
 
     public void setNumberInCart(int numberInCart) {
         this.numberInCart = numberInCart;
+    }
+
+    public long getReviewCount() {
+        return reviewCount;
+    }
+
+    public void setReviewCount(long reviewCount) {
+        this.reviewCount = reviewCount;
     }
 }

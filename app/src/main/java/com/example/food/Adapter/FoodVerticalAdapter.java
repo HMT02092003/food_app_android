@@ -52,6 +52,10 @@ public class FoodVerticalAdapter extends RecyclerView.Adapter<FoodVerticalAdapte
         // *** ĐÃ SỬA: Dùng food.getDetails() thay vì food.getDescription() ***
         holder.foodDescriptionTextView.setText(food.getDetails());
 
+        // Hiển thị rating và số lượng comments
+        holder.ratingTextView.setText(String.format("%.1f", food.getRating()));
+        holder.commentsCountTextView.setText(String.format("(%d)", food.getReviewCount()));
+
         // *** ĐÃ SỬA: Dùng food.getImageUrls() thay vì food.getImagePath() ***
         // Lấy URL của ảnh đầu tiên từ danh sách imageUrls
         if (food.getImageUrls() != null && !food.getImageUrls().isEmpty()) {
@@ -95,6 +99,8 @@ public class FoodVerticalAdapter extends RecyclerView.Adapter<FoodVerticalAdapte
         TextView foodPriceTextView;
         TextView foodCategoryTextView;
         TextView foodDescriptionTextView;
+        TextView ratingTextView;
+        TextView commentsCountTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -103,6 +109,8 @@ public class FoodVerticalAdapter extends RecyclerView.Adapter<FoodVerticalAdapte
             foodPriceTextView = itemView.findViewById(R.id.foodPriceTextView);
             foodCategoryTextView = itemView.findViewById(R.id.foodCategoryTextView);
             foodDescriptionTextView = itemView.findViewById(R.id.foodDescriptionTextView);
+            ratingTextView = itemView.findViewById(R.id.ratingTextView);
+            commentsCountTextView = itemView.findViewById(R.id.commentsCountTextView);
         }
     }
 }
