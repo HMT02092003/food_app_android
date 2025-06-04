@@ -69,9 +69,9 @@
                 android:id="@+id/btnEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:minWidth="56dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
+                android:minWidth="64dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:text="Sửa"
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_edit_button"
@@ -83,9 +83,9 @@
                 android:id="@+id/btnDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:minWidth="56dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
+                android:minWidth="64dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
                 android:text="Xóa"
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_delete_button"
@@ -93,4 +93,4 @@
                 android:ellipsize="none"/>
         </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView> 
+</androidx.cardview.widget.CardView>
